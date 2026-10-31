@@ -25,11 +25,17 @@ show = df.assign(규칙=df.rules.map(lambda l: " ".join(r[:3] for r in l)), 금�
                  일시=df.tx_ts.dt.strftime("%m-%d %H:%M"), 합성=df.is_synthetic.map({True: "T", False: ""}))[
     ["tx_id", "일시", "emp_name", "dept", "rank", "account_policy", "merchant", "mcc_name", "금액", "규칙", "review_status", "합성"]].rename(
     columns={"emp_name": "사용자", "dept": "부서", "rank": "직급", "account_policy": "계정", "merchant": "가맹점", "mcc_name": "업종", "review_status": "상태"})
-ev = st.dataframe(show, width='stretch', hide_index=True, on_select="rerun", selection_mode="single-row", height=380)
+# Stable widget key + selected tx_id kept in session_state: the detail survives reruns (filter change, save) even if the table re-renders.
+ev = st.dataframe(show, width='stretch', hide_index=True, on_select="rerun", selection_mode="single-row", height=380, key="flags_table")
 sel = ev.selection.rows if ev and ev.selection else []
-if not sel: st.stop()
-tx_id = int(df.tx_id.iloc[sel[0]]); t = s.get_transaction(tx_id)
-s.log_event(reviewer, "open_case", {"tx_id": tx_id})
+if sel:
+    picked = int(df.tx_id.iloc[sel[0]])
+    if picked != st.session_state.get("tx_id"):
+        st.session_state["tx_id"] = picked; s.log_event(reviewer, "open_case", {"tx_id": picked})
+tx_id = st.session_state.get("tx_id")
+if tx_id is None:
+    st.info("위 표에서 한 줄의 맨 왼쪽 체크박스를 클릭하면 여기에 상세가 열립니다."); st.stop()
+t = s.get_transaction(tx_id)
 
 # ---------- case detail ----------
 st.divider()

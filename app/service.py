@@ -58,7 +58,7 @@ def list_flags(rule_ids=None, depts=None, date_from=None, date_to=None, min_tota
     if depts: where += f" and t.dept in ({','.join('?'*len(depts))})"; p += list(depts)
     if min_total: where += " and t.total >= ?"; p.append(min_total)
     if synthetic_only is not None: where += " and t.is_synthetic = ?"; p.append(synthetic_only)
-    order = {"total": "t.total desc", "rules": "n_rules desc, t.total desc", "date": "t.tx_ts desc"}[sort]
+    order = {"total": "t.total desc, t.tx_id", "rules": "n_rules desc, t.total desc, t.tx_id", "date": "t.tx_ts desc, t.tx_id"}[sort]  # tx_id tiebreak: order must be deterministic across reruns
     status_filter = {"unreviewed": "having count(l.decision)=0", "reviewed": "having count(l.decision)>0", "violation": "having bool_or(l.decision='violation')", None: ""}[review_status]
     df = q(f"""with {_LATEST}
       select t.tx_id, t.tx_ts, t.emp_id, t.emp_name, t.dept, t.rank, t.account_policy, t.merchant, t.mcc_name, t.total, t.is_synthetic,
