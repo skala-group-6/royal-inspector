@@ -146,3 +146,27 @@ def log_event(reviewer, event, payload=None):
     con().execute("insert into ui_events values (?,?,?,?)", [dt.datetime.now(), reviewer, event, json.dumps(payload, ensure_ascii=False, default=str) if payload else None]).fetchall()
 
 def list_depts() -> list[str]: return q("select distinct dept from tx_active where dept is not null order by 1").dept.tolist()
+
+
+def get_policy(account) -> dict | None:
+    df = q("select account, description, dos, donts, required_evidence from policy_accounts where account=?", [account])
+    return df.iloc[0].to_dict() if len(df) else None
+
+def get_day_timeline(tx_id) -> pd.DataFrame:
+    """Access events and all card transactions of the same person on the same day, in time order. The focal tx is marked."""
+    t = q("select emp_id, tx_date from transactions where tx_id=?", [tx_id]).iloc[0]
+    df = q("""
+      select tx_ts ts, '카드' kind, merchant || ' · ' || coalesce(mcc_name,'') what, sigungu_of(merchant_addr) place, total amount,
+             (select string_agg(rule_id[1:3], ' ') from flags f where f.tx_id=t.tx_id) rules, tx_id = ? focal
+      from tx_active t where emp_id=? and tx_date=? and not time_is_dummy
+      union all
+      select access_ts, '출입', gate || ' · ' || event, site, null, null, false from access_logs where emp_id=? and cast(access_ts as date)=?
+      order by 1""", [tx_id, int(t.emp_id), t.tx_date, int(t.emp_id), t.tx_date])
+    return df
+
+def next_unreviewed(after_tx_id, **filters):
+    df = list_flags(review_status="unreviewed", page_size=500, **filters)
+    ids = df.tx_id.tolist()
+    if after_tx_id in ids:
+        i = ids.index(after_tx_id); return ids[i + 1] if i + 1 < len(ids) else None
+    return ids[0] if ids else None
