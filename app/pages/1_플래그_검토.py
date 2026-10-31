@@ -63,7 +63,9 @@ with left:
         if p: st.write(f"같은 계정·업종({p['account_policy']} × {p['mcc_name']}) {p['n']:,}건 중앙값 **{p['median']:,.0f}원**, 상위 10% 경계 {p['p90']:,.0f}원. 이 거래는 상위 **{100-p['percentile_of_this']:.0f}%** 지점.")
         else: st.write("비교 집단 없음")
     with tabs[2]:
-        a = ctx["access_same_day"]; st.dataframe(a, hide_index=True, width='stretch') if len(a) else st.write("당일 출입기록 없음")
+        a = ctx["access_same_day"]
+        if len(a): st.dataframe(a, hide_index=True, width='stretch')
+        else: st.write("당일 출입기록 없음")
     with tabs[3]:
         st.write({"휴일": ctx["holiday"], "출장": ctx["trip"], "휴가": ctx["leave"]})
     h = ctx["history"]; st.caption(f"이 사용자: 걸린 거래 {h['flagged_tx']}건, 위반 확정 {h['violations']}건, 아님 처리 {h['cleared']}건")
@@ -81,4 +83,5 @@ with right:
         st.success("저장됨"); st.rerun()
     st.markdown("##### 이 거래의 결정 이력")
     rv = s.get_reviews(tx_id)
-    st.dataframe(rv, hide_index=True, width='stretch') if len(rv) else st.caption("없음")
+    if len(rv): st.dataframe(rv, hide_index=True, width='stretch')
+    else: st.caption("없음")
