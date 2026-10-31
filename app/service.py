@@ -8,7 +8,7 @@ import duckdb, pandas as pd, yaml
 DB = Path(__file__).resolve().parents[1] / "data" / "warehouse.duckdb"
 CATALOG = Path(__file__).resolve().parents[1] / "rules" / "catalog.yaml"
 RULE_CLASS = {"①규정": ["R01", "R02", "R08", "R10", "R11", "R18"], "②임계치": ["R03", "R04", "R05", "R06", "R09", "R16"],
-              "③가설": ["R12", "R13", "R14", "R15", "R17", "R21"]}
+              "③가설": ["R07", "R12", "R13", "R14", "R15", "R17", "R21"]}
 REASON_CODES = [("preapproved", "사전 승인·품의 있음"), ("trip_extended", "출장 일정 변경·연장"), ("business_confirmed", "업무 관련성 확인됨"),
                 ("data_error", "데이터 오류(주소·시간·계정)"), ("legit_mismatch", "정당한 불일치(환율·매입일·부분취소)"), ("duplicate_flag", "다른 플래그와 중복"),
                 ("need_evidence", "증빙 요청 필요"), ("other", "기타")]
