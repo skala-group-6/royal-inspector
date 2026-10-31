@@ -9,7 +9,7 @@ command = ".venv/bin/streamlit run app/Home.py --server.headless true --server.p
 [[scripts.check]]
 name = "unit"
 command = "cp data/warehouse.duckdb /tmp/royal_test.duckdb && ROYAL_DB=/tmp/royal_test.duckdb .venv/bin/python -m pytest -q tests"
-description = "A service-layer test fails: list/evidence/context/review functions no longer behave as pinned down (needs data/warehouse.duckdb with flags)."
+description = "A service-layer or precedents test fails: list/evidence/context/review/precedent functions no longer behave as pinned down (needs data/warehouse.duckdb with flags and precedents)."
 
 [[scripts.check]]
 name = "rules"

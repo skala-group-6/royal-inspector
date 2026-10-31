@@ -7,6 +7,7 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python -I scripts/load.py        # 1단계: DuckDB 적재
 .venv/bin/python -I scripts/synth.py       # 2단계: 합성 정답셋 주입
 .venv/bin/python -I scripts/run_rules.py   # 3단계: 규칙 실행 + 채점
+.venv/bin/python -I scripts/load_precedents.py  # 4.5단계: 징계사례 선례 적재
 .venv/bin/streamlit run app/Home.py        # 4단계: 임시 검토 화면
 .venv/bin/python -m pytest -q tests
 ```
@@ -16,6 +17,7 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 - `docs/ROADMAP.md` 진행 순서와 상태
 - `docs/RULES.md` 규칙 19개, 실데이터 적중, 임계치 민감도
 - `docs/API.md` 서비스 함수 / API 설계 (프런트 계약)
+- `docs/REVIEW_SCREEN.md` 검토 화면 사양 · `docs/PRECEDENTS.md` 선례 기능 · `docs/MODEL.md` 우선순위 모델
 
 ## 구조
 `scripts/` 적재·합성·규칙 실행 · `rules/` 규칙 SQL과 카탈로그 · `synth/` 사례 명세 · `app/service.py` 서비스 함수 · `app/Home.py`, `app/pages/` Streamlit
