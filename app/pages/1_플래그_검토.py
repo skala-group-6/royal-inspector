@@ -19,7 +19,7 @@ page = st.sidebar.number_input("페이지", min_value=1, value=1)
 
 df = s.list_flags(rule_ids=sel_rules or None, min_total=min_total or None, review_status=status, sort=sort, page=page, page_size=page_size, synthetic_only=syn)
 st.title("플래그 검토")
-st.caption(f"{len(df)}건 표시 (페이지 {page}). 행을 클릭하면 아래에 상세가 열립니다.")
+st.caption(f"{len(df)}건 표시 (페이지 {page}). 거래 한 건을 보려면 그 줄 **맨 왼쪽의 체크박스**를 클릭하세요. 아래에 상세와 판정 버튼이 열립니다.")
 
 show = df.assign(규칙=df.rules.map(lambda l: " ".join(r[:3] for r in l)), 금액=df.total.map(lambda v: f"{v:,.0f}"),
                  일시=df.tx_ts.dt.strftime("%m-%d %H:%M"), 합성=df.is_synthetic.map({True: "T", False: ""}))[
