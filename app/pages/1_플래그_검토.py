@@ -22,7 +22,7 @@ F = dict(rule_ids=sel_rules or None, min_total=min_total or None, sort=sort, syn
 df = s.list_flags(review_status=status, page=page, page_size=100, **F)
 c1, c2 = st.columns([4, 1]); c1.title("플래그 검토")
 c2.markdown(f"<p class='sub' style='text-align:right;padding-top:1.4rem'>이 목록 {len(df)}건 · 오늘 처리 {s.today_count(reviewer) if reviewer else 0}건</p>", unsafe_allow_html=True)
-show = pd.DataFrame({"": [("🔴" if r.sev == 3 else "⚪") + f" ×{r.n_rules}" for r in df.itertuples()], "일시": df.tx_ts.dt.strftime("%m-%d %H:%M"), "사용자": df.emp_name, "직급": df["rank"],
+show = pd.DataFrame({"": [("🔴" if r.sev == 2 else "⚪") + f" ×{r.n_rules}" for r in df.itertuples()], "일시": df.tx_ts.dt.strftime("%m-%d %H:%M"), "사용자": df.emp_name, "직급": df["rank"],
                      "가맹점": df.merchant, "업종": df.mcc_name, "금액": df.total.map(lambda v: f"{v:,.0f}"), "계정": df.account_policy,
                      "상태": df.review_status.map({"unreviewed": "", "violation": "위반", "ok": "아님", "hold": "보류"}), "T": df.is_synthetic.map({True: "T", False: ""})})
 st.caption("🔴 규정 근거가 있는 규칙에 걸림 (확인 대상) · ⚪ 통계·가설 규칙만 걸림 (참고) · ×n 걸린 규칙 수")

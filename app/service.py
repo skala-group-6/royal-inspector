@@ -67,7 +67,7 @@ def list_flags(rule_ids=None, depts=None, date_from=None, date_to=None, min_tota
     df = q(f"""with {_LATEST}
       select t.tx_id, t.tx_ts, t.emp_id, t.emp_name, t.dept, t.rank, t.account_policy, t.merchant, t.mcc_name, t.total, t.is_synthetic,
              list(distinct f.rule_id order by f.rule_id) rules, count(distinct f.rule_id) n_rules,
-             max(case f.severity when 'high' then 3 when 'medium' then 2 else 1 end) sev,
+             max(case f.severity when 'violation' then 2 else 1 end) sev,  -- 2 = at least one rule with written-policy basis
              coalesce(max(l.decision), 'unreviewed') review_status
       from flags f join tx_active t using(tx_id) left join latest l on l.tx_id=f.tx_id and l.rule_id=f.rule_id
       where {where} group by all {status_filter} order by {order} limit ? offset ?""", p + [page_size, (page - 1) * page_size])

@@ -34,3 +34,8 @@ def test_tier_and_citation():
     tx = int(s.list_flags(rule_ids=["R08_banned_mcc"], synthetic_only=True, page_size=1).tx_id.iloc[0])
     t = s.get_transaction(tx); c = s.policy_citation("R08_banned_mcc", t)
     assert c and ("Don'ts" in c or "규정" in c or "시나리오" in c)
+
+
+def test_list_tier_marker():
+    df = s.list_flags(rule_ids=["R08_banned_mcc"], page_size=5)
+    assert (df.sev == 2).all(), "rows flagged by a violation-tier rule must carry sev=2"
