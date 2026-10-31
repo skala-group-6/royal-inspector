@@ -221,3 +221,40 @@ def policy_citation(rule_id, t: dict) -> str:
                 if any(k and k in line for k in keys):
                     return f"{acct} 규정 Don'ts: “{line.strip()[:60]}”"
     return RULES.get(rule_id, {}).get("policy_ref", "")
+
+# ---------- precedents: similar disciplinary cases (now) and similar reviewed transactions (later) ----------
+def _amount_band(v):
+    return "<5만" if v < 50000 else "5~20만" if v < 200000 else "20~50만" if v < 500000 else "50만+"
+
+_RULE_W = None
+def rule_weights() -> dict:
+    """IDF-style weight per rule: common rules (e.g. R16 amount outlier) count less than rare, specific ones."""
+    global _RULE_W
+    if _RULE_W is None:
+        import math
+        df = q("select rule_id, count(distinct tx_id) n from flags group by 1"); total = q("select count(distinct tx_id) from flags").iloc[0, 0] or 1
+        _RULE_W = {r.rule_id: math.log(1 + total / max(r.n, 1)) for r in df.itertuples()}
+    return _RULE_W
+
+def get_precedents(tx_id, k=3) -> dict:
+    """Rank precedents by weighted-Jaccard overlap of flagged-rule sets (weights = rule rarity) with small bonuses for same account / mcc.
+    Returns overlap and difference as rule ids so the UI can show '겹치는 점 / 다른 점'. Empty when nothing overlaps."""
+    if not con().execute("select count(*) from information_schema.tables where table_name='precedents'").fetchall()[0][0]:
+        return dict(cases=[], reviews=[], summary=dict(n=0, violation=0, ok=0))
+    t = q("select account_policy, mcc_name, total from transactions where tx_id=?", [tx_id]).iloc[0]
+    tx_rules = set(q("select distinct rule_id from flags where tx_id=?", [tx_id]).rule_id)
+    if not tx_rules: return dict(cases=[], reviews=[], summary=dict(n=0, violation=0, ok=0))
+    W = rule_weights(); w = lambda rs: sum(W.get(r, 1.0) for r in rs)
+    pre = q("select * from precedents")
+    out = {"case": [], "review": []}
+    for p in pre.itertuples():
+        pr = set(list(p.rule_ids) if p.rule_ids is not None else []); inter = tx_rules & pr
+        if not inter: continue
+        score = w(inter) / w(tx_rules | pr) + 0.1 * (p.account == t.account_policy) + 0.1 * (p.mcc_group == t.mcc_name)
+        out[p.kind].append(dict(precedent_id=p.precedent_id, kind=p.kind, title=p.title, summary=p.summary, cues=list(p.cues) if p.cues is not None else [], outcome=p.outcome, source=p.source,
+                                score=round(score, 3), overlap=sorted(inter), only_in_precedent=sorted(pr - tx_rules), only_in_tx=sorted(tx_rules - pr)))
+    num = lambda pid: int(pid.split(":")[1]) if pid.split(":")[1].isdigit() else 0
+    for kind in out: out[kind].sort(key=lambda d: (-d["score"], num(d["precedent_id"])))
+    rv = out["review"]
+    return dict(cases=out["case"][:k], reviews=rv[:k],
+                summary=dict(n=len(rv), violation=sum(r["outcome"] == "violation" for r in rv), ok=sum(r["outcome"] == "ok" for r in rv)))
