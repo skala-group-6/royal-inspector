@@ -27,3 +27,10 @@ def test_review_roundtrip():
     assert s.list_flags(review_status="reviewed", synthetic_only=True).tx_id.isin([tx]).any()
     # cleanup
     s.con().execute("delete from reviews where reviewer='tester'").fetchall()
+
+
+def test_tier_and_citation():
+    r = s.list_rules(); assert set(r.tier) == {"violation", "advisory"} and r.explain.str.len().gt(10).all()
+    tx = int(s.list_flags(rule_ids=["R08_banned_mcc"], synthetic_only=True, page_size=1).tx_id.iloc[0])
+    t = s.get_transaction(tx); c = s.policy_citation("R08_banned_mcc", t)
+    assert c and ("Don'ts" in c or "규정" in c or "시나리오" in c)

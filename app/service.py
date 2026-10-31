@@ -8,8 +8,9 @@ import duckdb, pandas as pd, yaml
 import os
 DB = Path(os.environ.get("ROYAL_DB", Path(__file__).resolve().parents[1] / "data" / "warehouse.duckdb"))  # ROYAL_DB: point tests at a copy while the app holds the lock
 CATALOG = Path(__file__).resolve().parents[1] / "rules" / "catalog.yaml"
-RULE_CLASS = {"①규정": ["R01", "R02", "R08", "R10", "R11", "R18"], "②임계치": ["R03", "R04", "R05", "R06", "R09", "R16"],
-              "③가설": ["R07", "R12", "R13", "R14", "R15", "R17", "R21"]}
+_CAT = yaml.safe_load(open(CATALOG))
+RULES = _CAT["rules"]
+TIER_LABEL = {"violation": "위반 가능", "advisory": "참고"}
 REASON_CODES = [("preapproved", "사전 승인·품의 있음"), ("trip_extended", "출장 일정 변경·연장"), ("business_confirmed", "업무 관련성 확인됨"),
                 ("data_error", "데이터 오류(주소·시간·계정)"), ("legit_mismatch", "정당한 불일치(환율·매입일·부분취소)"), ("duplicate_flag", "다른 플래그와 중복"),
                 ("need_evidence", "증빙 요청 필요"), ("other", "기타")]
@@ -26,12 +27,14 @@ def con() -> duckdb.DuckDBPyConnection:
     return _con
 def q(sql, params=None) -> pd.DataFrame: return con().execute(sql, params or []).df()
 def mask(name): return name if not isinstance(name, str) or len(name) < 2 else name[0] + "*" * (len(name) - 2) + name[-1]
-def rule_class(rid): return next((c for c, l in RULE_CLASS.items() if rid[:3] in l), "미분류")
+def rule_tier(rid): return RULES.get(rid, {}).get("tier", "advisory")
+def rule_class(rid): return TIER_LABEL[rule_tier(rid)]
+def rule_explain(rid): return RULES.get(rid, {}).get("explain", "")
 
 # ---------- rules ----------
 def list_rules() -> pd.DataFrame:
-    cat = yaml.safe_load(open(CATALOG))["rules"]
-    return pd.DataFrame([dict(rule_id=k, name=v["name"], rule_class=rule_class(k), data_ready=v["data_ready"], params=json.dumps(v["params"], ensure_ascii=False)) for k, v in cat.items()])
+    return pd.DataFrame([dict(rule_id=k, name=v["name"], tier=v["tier"], rule_class=TIER_LABEL[v["tier"]], data_ready=v["data_ready"],
+                              params=json.dumps(v["params"], ensure_ascii=False), explain=v.get("explain", ""), policy_ref=v.get("policy_ref", "")) for k, v in RULES.items()])
 RULE_NAME = {r.rule_id: r.name for r in list_rules().itertuples()}
 
 # ---------- latest review per (tx, rule) ----------
@@ -202,3 +205,19 @@ def next_unreviewed(after_tx_id, **filters):
 
 def today_count(reviewer) -> int:
     return int(q("select count(distinct tx_id) from reviews where reviewer=? and cast(created_at as date)=current_date", [reviewer]).iloc[0, 0])
+
+
+# ---------- policy citation: which written rule this flag violates ----------
+_MCC_KEYS = {"주점": ["주점", "유흥"], "유흥주점": ["유흥", "주점"], "단란주점": ["주점", "유흥"], "노래방": ["노래", "유흥"], "골프장": ["골프"], "골프연습장": ["골프"],
+             "안마": ["안마", "마사지"], "백화점": ["백화점", "개인"], "슈퍼마켓.마트": ["마트", "개인"], "인터넷상거래": ["개인용품", "개인"], "편의점": ["개인"]}
+def policy_citation(rule_id, t: dict) -> str:
+    """Return the sentence from the account's Don'ts that matches this transaction's merchant type; otherwise the rule's default policy_ref."""
+    acct = t.get("account_policy"); mcc = str(t.get("mcc_name") or "")
+    if rule_id[:3] in ("R08", "R11", "R10", "R13") and acct:
+        pol = get_policy(acct)
+        if pol:
+            keys = _MCC_KEYS.get(mcc, []) + ([mcc] if mcc else [])
+            for line in (pol["donts"] or "").split("\n"):
+                if any(k and k in line for k in keys):
+                    return f"{acct} 규정 Don'ts: “{line.strip()[:60]}”"
+    return RULES.get(rule_id, {}).get("policy_ref", "")

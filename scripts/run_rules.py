@@ -2,16 +2,15 @@
 Usage: run_rules.py [--set R03_split_payment.window_min=60 ...] [--only R03,R05]"""
 import sys, re, json, yaml, duckdb
 from pathlib import Path
-cat = yaml.safe_load(open("rules/catalog.yaml"))["rules"]
+CAT = yaml.safe_load(open("rules/catalog.yaml")); cat = CAT["rules"]; RULE_VERSION = int(CAT.get("version", 1))
 overrides = {}; only = None
 for a in sys.argv[1:]:
     if a.startswith("--set"): continue
     if a.startswith("--only"): continue
     if "=" in a: k, v = a.split("="); overrides[k] = v
     elif "," in a or a.startswith("R"): only = set(a.split(","))
-SEV = {"high": ["R03", "R05", "R06", "R08", "R12", "R17", "R18"], "low": ["R13", "R14", "R16", "R21"]}
-sev = lambda rid: next((s for s, l in SEV.items() if rid[:3] in l), "medium")
-DEFAULTS = {"R03": dict(min_sum=100000), "R09": dict(window_days=14, per_window=3), "R12": dict(lookback_min=45), "R15": dict(min_days_early=3), "R16": dict(min_group=30, min_amount=30000), "R18": dict(min_amount=100000)}
+sev = lambda rid: cat[rid]["tier"]  # violation | advisory — single source of truth is rules/catalog.yaml
+DEFAULTS = {}  # all thresholds live in the catalog
 
 def render(rid, sql, params):
     def fmt(v):
@@ -28,7 +27,7 @@ def render(rid, sql, params):
     return out
 
 TABLE = "flags" if only is None else "flags_subset"  # partial runs never overwrite the full flags table
-con = duckdb.connect("data/warehouse.duckdb")
+import os; con = duckdb.connect(os.environ.get("ROYAL_DB", "data/warehouse.duckdb"))
 con.execute(open("rules/macros.sql").read()).fetchall()
 con.execute(f"CREATE OR REPLACE TABLE {TABLE}(rule_id VARCHAR, tx_id BIGINT, evidence JSON, related_tx_ids BIGINT[], severity VARCHAR, rule_version INTEGER)").fetchall()
 rows = []
@@ -41,7 +40,7 @@ for f in sorted(Path("rules/sql").glob("R*.sql")):
         if r == rid or r == rid[:3]: params[p] = type(params.get(p, v))(v) if p in params and not isinstance(params[p], list) else v
     sql = render(rid, f.read_text(), params)
     try:
-        con.execute(f"INSERT INTO {TABLE} SELECT '{rid}', tx_id, evidence::JSON, related::BIGINT[], '{sev(rid)}', 1 FROM ({sql})").fetchall()
+        con.execute(f"INSERT INTO {TABLE} SELECT '{rid}', tx_id, evidence::JSON, related::BIGINT[], '{sev(rid)}', {RULE_VERSION} FROM ({sql})").fetchall()
     except Exception as e:
         print(f"!! {rid}: {str(e)[:300]}"); continue
     real, syn = con.execute(f"select sum(case when not t.is_synthetic then 1 else 0 end), sum(case when t.is_synthetic then 1 else 0 end) from {TABLE} f join transactions t using(tx_id) where rule_id='{rid}'").fetchall()[0]

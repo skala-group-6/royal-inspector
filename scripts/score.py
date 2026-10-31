@@ -2,7 +2,7 @@
 Prints recall per case and per rule, plus precision on synthetic users. Runs even before any rule exists."""
 import duckdb, sys
 TABLE = sys.argv[1] if len(sys.argv) > 1 else "flags"
-con = duckdb.connect("data/warehouse.duckdb", read_only=True)
+import os; con = duckdb.connect(os.environ.get("ROYAL_DB", "data/warehouse.duckdb"), read_only=True)
 has_flags = con.execute(f"select count(*) from information_schema.tables where table_name='{TABLE}'").fetchall()[0][0] > 0
 if not has_flags:
     con.execute(f"create temp table {TABLE}(rule_id varchar, tx_id bigint)").fetchall()

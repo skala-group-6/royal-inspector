@@ -1,24 +1,158 @@
-# 규칙 카탈로그. 규칙 ID는 고정하고, 임계치는 params로 노출한다.
-# data_ready: now = 현 데이터로 가능 / geo = 지오코딩 후 정밀화 / partial = 후보까지 / no = 증빙 파일 필요
+# 규칙 카탈로그 — 규칙에 관한 설정은 이 파일 한 곳에만 둔다.
+#  tier:        violation(빨강: 규정에 근거가 있어 걸리면 확인 대상) | advisory(회색: 통계·가설 기반, 참고)
+#  data_ready:  now / geo(지오코딩 후 정밀화) / partial(후보까지) / no(증빙 파일 필요)
+#  params:      임계치. 2026-10-31 초기값 고정(민감도: docs/RULES.md). 변경 시 version을 올리고 changelog에 사유를 적는다.
+#  explain:     검토 화면의 "왜 걸렸나?" 링크에 보이는 설명
+#  policy_ref:  근거 규정. 계정별 Do's/Don'ts에서 자동 인용되지 않을 때 쓰는 기본 문구
+version: 2
+changelog:
+  - {version: 2, date: 2026-10-31, change: "임계치 초기값 고정: R03 120→60분, R06 30→15분, R16 1.8→2.0배. 민감도 분석 결과(docs/RULES.md) 기준, 합성 재현율 100% 유지"}
+  - {version: 1, date: 2026-10-31, change: "최초 작성"}
 rules:
-  R01_holiday_use:        {name: 휴일 사용,              data_ready: now,     params: {}}
-  R02_leave_use:          {name: 휴가 중 사용,            data_ready: now,     params: {}}
-  R03_split_payment:      {name: 분할결제,                data_ready: now,     params: {window_min: 120, min_count: 2, near_limit: 500000}}
-  R04_prepayment:         {name: 선결제,                  data_ready: now,     params: {min_amount: 200000, round_to: 50000, mcc: [일반음식점, 커피전문점, 기타음식점]}}
-  R05_near_home:          {name: 거주지 인근 사용,         data_ready: geo,     params: {match_level: dong, exclude_if_worksite_same: true}}
-  R06_same_time_diff_place: {name: 동일인 동시간 다른 장소, data_ready: geo,     params: {window_min: 30, level: sigungu}}
-  R07_outside_trip_area:  {name: 출장 중 출장지 밖 사용,    data_ready: geo,     params: {level: sido}}
-  R08_banned_mcc:         {name: 금지 업종,                data_ready: now,     params: {mcc_names: [일반주점, 유흥주점, 단란주점, 노래방, 골프장, 골프연습장, 안마]}}
-  R09_excess_fuel:        {name: 과다 주유,                data_ready: now,     params: {per_day: 2, mcc_names: [주유소, 무인주유소, 주유소(LPG)]}}
-  R10_missing_evidence:   {name: 증빙 필수 업종 증빙 누락,  data_ready: now,     params: {mcc_names: [슈퍼마켓.마트, 대형할인점, 백화점, 인터넷상거래, 오픈마켓, 편의점, PG일반(인증), PG일반(비인증)]}}
-  R11_account_mismatch:   {name: 업종-계정 불일치,         data_ready: now,     params: {}}
-  R12_card_lending:       {name: 타인 카드 대여 의심,       data_ready: partial, params: {min_repeat: 3, min_km: 20}}
-  R13_personal_item:      {name: 개인 귀속 물품 의심,       data_ready: partial, params: {accounts: [잡비, 사무용품비, 전산소모품비, 소모품비-기타, 기념행사비], keywords: [케이블, 선풍기, 화장품, 배터리, 밧데리, 이어폰, 텀블러, 슬리퍼, 마우스, 키보드, 충전]}}
-  R14_trip_meal_double:   {name: 출장 중 식사 카드 결제(일당 중복), data_ready: now, params: {mcc_names: [일반음식점, 기타음식점, 커피전문점]}}
-  R15_trip_period_mismatch: {name: 출장 기간-복귀 교통편 불일치, data_ready: now, params: {}}
-  R16_amount_outlier:     {name: 동일 구간·동료 대비 금액 과다, data_ready: now,  params: {ratio: 1.8}}
-  R17_route_mismatch:     {name: 자택방문교통비 경로 밖 사용, data_ready: geo,    params: {}}
-  R18_approver_conflict:  {name: 승인자 이해충돌,           data_ready: now,     params: {}}
-  R19_duplicate_evidence: {name: 증빙 중복 첨부,            data_ready: no,      params: {}}
-  R20_evidence_forgery:   {name: 증빙 위변조,              data_ready: no,      params: {}}
-  R21_kickback_candidate: {name: 고액 식사 페이백 후보,     data_ready: partial, params: {min_amount: 400000, max_attendees: 3}}
+  R01_holiday_use:
+    name: 휴일 사용
+    tier: violation
+    data_ready: now
+    params: {}
+    explain: "거래일이 토·일·공휴일이고 출장 기록이 없는 거래. 휴일 사용은 사전 승인 또는 소명이 필요한 사적 사용 의심 시나리오."
+    policy_ref: "사적사용 시나리오 '휴가·휴일 사용' / 공공기관 업무추진비 지침의 공휴일 사용 소명 의무"
+  R02_leave_use:
+    name: 휴가 중 사용
+    tier: violation
+    data_ready: now
+    params: {}
+    explain: "HR 휴가 기록(연차·반차 등)이 있는 날의 거래. 휴가 중에는 업무 지출이 발생하기 어렵다."
+    policy_ref: "사적사용 시나리오 '휴가·휴일 사용'"
+  R03_split_payment:
+    name: 분할결제
+    tier: violation
+    data_ready: now
+    params: {window_min: 60, min_count: 2, min_sum: 100000, near_limit: 500000}
+    explain: "같은 사람이 같은 가맹점에서 짧은 시간 안에 여러 번 결제. 승인 한도(건당 50만원 등)를 피하려고 나눠 긁는 패턴. 합계가 기준에 가까울수록 의심."
+    policy_ref: "사적사용 시나리오 '선결제와 분할결제' / 징계사례 17(승인권자 회피 목적 2회 결제)"
+  R04_prepayment:
+    name: 선결제
+    tier: violation
+    data_ready: now
+    params: {min_amount: 200000, round_to: 50000}
+    explain: "식당·카페에 30만, 50만원처럼 딱 떨어지는 큰 금액을 결제. 장부를 달아 두고 쓰는 선결제 의심."
+    policy_ref: "사적사용 시나리오 '선결제와 분할결제' / 징계사례 10"
+  R05_near_home:
+    name: 거주지 인근 사용
+    tier: violation
+    data_ready: geo
+    params: {match_level: sigungu}
+    explain: "가맹점이 사용자 주거지와 같은 시·군·구에 있고 근무지와는 다른 곳. 지오코딩 전까지는 주소 문자열의 시·군·구 일치로 판정."
+    policy_ref: "사적사용 시나리오 '거주지 인근 사용' / 징계사례 1·5"
+  R06_same_time_diff_place:
+    name: 동일인 동시간 다른 장소
+    tier: violation
+    data_ready: geo
+    params: {window_min: 15, level: sigungu}
+    explain: "같은 카드가 15분 안에 서로 다른 시·군·구에서 결제되거나, 적요에 적힌 동석자가 같은 시각 다른 지역에서 결제. 물리적으로 한 사람이 있을 수 없는 조합."
+    policy_ref: "사적사용 시나리오 '동일인이 같은 시간 다른 장소에서 사용' / 징계사례 8"
+  R07_outside_trip_area:
+    name: 출장 중 출장지 밖 사용
+    tier: advisory
+    data_ready: geo
+    params: {level: sido}
+    explain: "출장 기간 중 거래인데 가맹점이 출장지가 아닌 곳(해외출장 중 국내, 국내출장 중 자택 인근). 출장이 실제로 이루어졌는지, 카드를 다른 사람이 썼는지 확인 대상."
+    policy_ref: "리더 점검 시나리오 '출장 기간 중 출장지 밖 사용' / 징계사례 1·9"
+  R08_banned_mcc:
+    name: 금지 업종
+    tier: violation
+    data_ready: now
+    params: {mcc_names: [일반주점, 주점, 유흥주점, 단란주점, 노래방, 골프장, 골프연습장, 안마]}
+    explain: "유흥주점·골프장 등 사용이 제한된 업종. 계정별 규정의 Don'ts에 명시되어 있고, 접대비라도 사전 품의와 상대방 정보가 필요."
+    policy_ref: "계정별 비용정산지침 Don'ts(유흥주점, 골프 등) / 클린카드 제한 업종"
+  R09_excess_fuel:
+    name: 과다 주유
+    tier: advisory
+    data_ready: now
+    params: {per_day: 2, window_days: 14, per_window: 3}
+    explain: "같은 날 주유 2회 이상, 또는 14일 안에 3회 이상. 차량 한 대가 쓰기 어려운 빈도로, 타인 차량 주유 의심."
+    policy_ref: "리더 점검 시나리오 '과다주유' / 징계사례 2·9"
+  R10_missing_evidence:
+    name: 증빙 필수 업종 증빙 누락
+    tier: violation
+    data_ready: now
+    params: {}
+    explain: "마트·백화점·인터넷쇼핑처럼 구매 품목을 알 수 없는 업종인데 세부 영수증이 첨부되지 않음."
+    policy_ref: "절차 위반 시나리오 '증빙 누락' / 징계사례 13·14(증빙 필수 업종에 전표만 첨부)"
+  R11_account_mismatch:
+    name: 업종-계정 불일치
+    tier: violation
+    data_ready: now
+    params: {}
+    explain: "업종이 그 계정에서 허용되지 않음. 예: 주점·골프를 접대비가 아닌 의욕관리비로, 해외출장 중 식사를 출장비 외 계정으로."
+    policy_ref: "계정별 비용정산지침 Don'ts / 징계사례 15·18"
+  R12_card_lending:
+    name: 타인 카드 대여 의심
+    tier: advisory
+    data_ready: partial
+    params: {lookback_min: 45, min_repeat: 3}
+    explain: "카드 주인이 사옥에 입문한 직후(45분 내)에 멀리 떨어진 시도에서 결제가 반복됨. 본인이 결제했을 수 없는 위치 모순. 3회 이상 반복될 때만 표시."
+    policy_ref: "절차 위반 시나리오 '타인 법인카드 대여' / 징계사례 1·14"
+  R13_personal_item:
+    name: 개인 귀속 물품 의심
+    tier: advisory
+    data_ready: partial
+    params: {accounts: [잡비, 사무용품비, 전산소모품비, 소모품비-기타, 기념행사비], keywords: [케이블, 선풍기, 화장품, 배터리, 밧데리, 이어폰, 텀블러, 슬리퍼, 마우스, 키보드, 충전]}
+    explain: "소모품 계정에서 쇼핑성 업종 결제이면서 적요에 개인물품 키워드, 심야·휴일, 증빙 없음 중 신호가 겹침. 점수가 높을수록 의심."
+    policy_ref: "사적사용 시나리오 '개인 귀속 물품' / 징계사례 6·11"
+  R14_trip_meal_double:
+    name: 출장 중 식사 카드 결제
+    tier: advisory
+    data_ready: now
+    params: {}
+    explain: "출장 기간 중 식당·카페 결제. 일당(식비 포함)을 받으면서 식사를 카드로도 결제하면 이중 지급. 일당 지급 방식에 따라 정상일 수 있어 참고용."
+    policy_ref: "리더 점검 시나리오 / 징계사례 15·22"
+  R15_trip_period_mismatch:
+    name: 출장 기간-복귀 교통편 불일치
+    tier: advisory
+    data_ready: now
+    params: {min_days_early: 3}
+    explain: "출장 종료일보다 3일 이상 전에 복귀 교통편(철도·항공)을 결제했고 이후 출장지 소비가 없음. 조기 복귀 후 일당을 그대로 받았을 가능성."
+    policy_ref: "징계사례 4"
+  R16_amount_outlier:
+    name: 동료 대비 금액 과다
+    tier: advisory
+    data_ready: now
+    params: {ratio: 2.0, min_group: 30, min_amount: 30000}
+    explain: "같은 계정·업종 조합에서 다른 사람들의 중앙값보다 2배 이상 큰 금액. 통계적 이상치이며 정당한 사유가 흔하므로 참고용."
+    policy_ref: "징계사례 20(KTX 2배 청구)·22(일당 초과)"
+  R17_route_mismatch:
+    name: 자택방문교통비 경로 밖 사용
+    tier: violation
+    data_ready: geo
+    params: {}
+    explain: "자택방문교통비로 정산했는데 톨게이트·주유소 위치가 자택과 근무지 어느 시도에도 속하지 않음."
+    policy_ref: "계정별 비용정산지침 '자택방문교통비' / 징계사례 19"
+  R18_approver_conflict:
+    name: 승인자 이해충돌
+    tier: violation
+    data_ready: now
+    params: {min_amount: 100000}
+    explain: "저녁·휴일의 식당·주점 결제인데 가맹점이 승인자 주거지와 같은 시·군·구. 승인자가 동석했을 가능성이 있어 승인의 독립성이 의심됨."
+    policy_ref: "징계사례 5(팀장이 부하 결제를 승인)"
+  R19_duplicate_evidence:
+    name: 증빙 중복 첨부
+    tier: violation
+    data_ready: no
+    params: {}
+    explain: "같은 증빙 파일이 여러 정산에 첨부됨. 영수증 파일이 있어야 판정 가능."
+    policy_ref: "절차 위반 시나리오 '허위 증빙' / 징계사례 16"
+  R20_evidence_forgery:
+    name: 증빙 위변조
+    tier: violation
+    data_ready: no
+    params: {}
+    explain: "증빙 파일의 수정 흔적(해시·메타데이터·픽셀). 영수증 파일이 있어야 판정 가능."
+    policy_ref: "절차 위반 시나리오 '허위 증빙' / 징계사례 3·7"
+  R21_kickback_candidate:
+    name: 고액 식사 페이백 후보
+    tier: advisory
+    data_ready: partial
+    params: {min_amount: 400000, max_attendees: 3}
+    explain: "소수 인원 식사에 40만원 이상. 결제 후 현금을 돌려받는 페이백은 거래 데이터만으로 확정할 수 없어 후보만 표시."
+    policy_ref: "징계사례 21"
