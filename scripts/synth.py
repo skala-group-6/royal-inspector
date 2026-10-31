@@ -35,6 +35,7 @@ def merchants(mcc_names, pred=None):
 sido = lambda a: str(a).split()[0][:2] if a else None           # '경기', '서울'
 sigungu = lambda a: " ".join(str(a).split()[1:3]) if a and len(str(a).split()) >= 3 else None
 profiles = real.dropna(subset=["home_addr", "work_site_addr", "main_dept"]).groupby("emp_id").first().reset_index()
+profiles = profiles[profiles.home_addr.str.contains(r"\s[가-힣]+?(?:시|군|구)", regex=True) & profiles.work_site_addr.str.contains(r"[가-힣]+(?:시|군|구)", regex=True)]
 templates = {r: real[real["rank"] == r] for r in ["팀원", "팀장"]}
 median_rail_home = real[(real.account_policy == "자택방문교통비") & (real.mcc_name == "철도")].total.median()
 used_ids = set(con.execute("select emp_id from employees").df().emp_id.dropna().astype(int))
@@ -72,7 +73,7 @@ def tx(a, merchant_row, date, time, total, account, case_id=None, rules=(), appr
     r = {c: None for c in TX_COLS}
     r.update(tx_id=None, sap_doc_no=f"SY{len(tx_rows):09d}", settle_type="법인카드", account_raw=account, account_policy=account, mid_account="A-8",
              dept=a["dept"], emp_id=a["emp_id"], emp_name=a["emp_name"], approver_id=(approver or {}).get("emp_id", a["approver_id"]),
-             approver=(approver or {}).get("emp_name"), approval_no=rng.randrange(10**6, 10**8), acquirer_no=None,
+             approver=(approver or {}).get("emp_name"), approver_addr=(approver or {}).get("home_addr"), approval_no=rng.randrange(10**6, 10**8), acquirer_no=None,
              tx_date=date, tx_time=time, created_date=date + dt.timedelta(days=3), approved_date=date + dt.timedelta(days=5),
              merchant=merchant_row["merchant"], merchant_addr=addr_override or merchant_row["merchant_addr"],
              project_no="CC-SYNTH", project_name="(조직)SYNTH", amount=total - vat, vat=vat, total=total, net_total=total, prepaid=0,
@@ -89,12 +90,14 @@ def tx(a, merchant_row, date, time, total, account, case_id=None, rules=(), appr
     for rule in rules: gt_rows.append(dict(row_idx=len(tx_rows) - 1, case_id=case_id, rule_id=rule, emp_id=a["emp_id"]))
     return r
 
-def normal_tx(a, n=None):
+def normal_tx(a, n=None, pred=None):
     n = n or rng.randrange(20, 41); t = templates.get(a["rank"], templates["팀원"])
+    if pred is not None: t = t[t.merchant_addr.map(lambda x: bool(pred(x)) if x else False)]
     for _, s in t.sample(n, random_state=rng.randrange(10**6)).iterrows():
         d = rand_date(weekday_only=True)
+        tr = next((t for t in a.get("trips", []) if t["start"] <= d <= t["end"]), None)
         tx(a, s, d, s.tx_time if s.tx_time and s.tx_time != "00:00:00" else rand_time(), float(abs(s.total)), s.account_policy or s.account_raw,
-           attachment=bool(s.has_attachment), memo=s.memo or "")
+           attachment=bool(s.has_attachment), memo=s.memo or "", trip=tr)
 
 def access_day(a, d, t_in="08:50:00", t_out="18:40:00", site="본사"):
     for t, ev, g in ((t_in, "정상입문", f"{site}-1F 고층부 S/G IN 1"), (t_out, "정상출문", f"{site}-1F 고층부 S/G OUT 1")):
@@ -107,8 +110,10 @@ def routine_access(a):
         if d.weekday() < 5 and d not in HOLIDAYS and rng.random() < 0.85: access_day(a, d)
         d += dt.timedelta(days=1)
 
-def trip(type_, days, start=None):
-    s = start or rand_date(); return dict(type=type_, start=s, end=s + dt.timedelta(days=days - 1))
+def trip(type_, days, start=None, owner=None):
+    s = start or rand_date(); t = dict(type=type_, start=s, end=s + dt.timedelta(days=days - 1))
+    if owner is not None: owner.setdefault("trips", []).append(t)
+    return t
 def pick(df): return df.iloc[rng.randrange(len(df))]
 def far_from(addr_list):
     sidos = {sido(x) for x in addr_list if x}
@@ -120,7 +125,7 @@ def home_addr_for(a): return f"{a['home_addr'].strip()} 1층"
 # ---------- cases ----------
 A = {}
 # 1
-A[1] = a = actor("S01"); tr = trip("국내출장", 5)
+A[1] = a = actor("S01"); tr = trip("국내출장", 5, owner=a)
 for _ in range(4):
     d = tr["start"] + dt.timedelta(days=rng.randrange(5)); m = pick(merchants("일반음식점"))
     tx(a, {**m, "merchant": "㈜우아한형제들_KCP"}, d, rand_time("19:00", "21:00"), rng.randrange(18000, 42000), "의욕관리비", 1, ["R05_near_home", "R07_outside_trip_area"], trip=tr, addr_override=home_addr_for(a), memo="구성원 식사")
@@ -137,7 +142,7 @@ for _ in range(3):
 A[3] = a = actor("S03"); rail = {"merchant": "철도승차권  발매", "merchant_addr": "서울 중구 한강대로 405 (봉래동2가)", "mcc_code": 7011, "mcc_name": "철도"}
 for _ in range(2): tx(a, rail, rand_date(weekend=True), rand_time("07:00", "10:00"), rng.randrange(45000, 120000), "국내출장비", 3, ["R01_holiday_use"], memo="출장 교통")
 # 4
-A[4] = a = actor("S04"); tr = trip("국내출장", 20, dt.date(2025, 3, 3))
+A[4] = a = actor("S04"); tr = trip("국내출장", 20, dt.date(2025, 3, 3), owner=a)
 tx(a, rail, tr["end"] - dt.timedelta(days=8), "18:20:00", 53500, "국내출장비", 4, ["R15_trip_period_mismatch"], trip=tr, memo="복귀")
 # 5
 A[5] = a = actor("S05"); L = actor("S05L", "팀장")
@@ -148,16 +153,16 @@ A[6] = a = actor("S06")
 for kw in ["충전케이블", "탁상용 선풍기", "화장품", "보조배터리", "이어폰"]:
     m = pick(merchants(["인터넷상거래", "오픈마켓"])); tx(a, m, rand_date(), rand_time("21:00", "23:30"), rng.randrange(15000, 90000), "잡비", 6, ["R13_personal_item", "R10_missing_evidence"], attachment=False, memo=f"사무실용 {kw} 구매")
 # 8
-A[8] = a = actor("S08"); C = actor("S08C"); tr = trip("국내출장", 3)
+A[8] = a = actor("S08"); C = actor("S08C"); tr = trip("국내출장", 3, owner=C)
 for _ in range(2):
     d = tr["start"] + dt.timedelta(days=rng.randrange(3)); t0 = rng.randrange(18 * 60 + 30, 20 * 60 + 30)
     tx(a, pick(merchants("일반음식점", near(a["work_site_addr"]))), d, f"{t0//60:02d}:{t0%60:02d}:00", 180000, "의욕관리비", 8, ["R06_same_time_diff_place"], memo=f"{C['emp_name']} 외 2명 석식")
     tx(C, pick(merchants("일반음식점", far_from([a["work_site_addr"]]))), d, f"{(t0+10)//60:02d}:{(t0+10)%60:02d}:00", 24000, "국내출장비", 8, ["R06_same_time_diff_place"], trip=tr, memo="출장 석식")
 # 9
-A[9] = a = actor("S09"); tr = trip("해외출장", 10)
+A[9] = a = actor("S09"); tr = trip("해외출장", 10, owner=a)
 for k in range(4):
     d = tr["start"] + dt.timedelta(days=rng.randrange(10)); m = pick(merchants("주유소")) if k < 3 else {"merchant": "도로공사자체_하이패스", "merchant_addr": "경기 성남시 분당구 판교로 (삼평동)", "mcc_code": 4784, "mcc_name": "고속도로통행카드"}
-    tx(a, m, d, rand_time("10:00", "20:00"), rng.randrange(40000, 90000), "승용차량비", 9, ["R07_outside_trip_area", "R09_excess_fuel"], trip=tr, memo="차량 운행")
+    tx(a, m, d, rand_time("10:00", "20:00"), rng.randrange(40000, 90000), "승용차량비", 9, ["R07_outside_trip_area"] + (["R09_excess_fuel"] if k < 3 else []), trip=tr, memo="차량 운행")
 # 10
 A[10] = a = actor("S10", "팀장")
 for amt in (300000, 500000, 300000):
@@ -176,9 +181,9 @@ A[14] = a = actor("S14", site="본사"); B = actor("S14B")
 for _ in range(5):
     d = rand_date(); t = rand_time("12:00", "13:30"); h, mi = int(t[:2]), int(t[3:5])
     tx(a, pick(merchants("일반음식점", far_from([a["work_site_addr"], a["home_addr"]]))), d, t, rng.randrange(30000, 80000), "의욕관리비", 14, ["R12_card_lending"], memo="고객 미팅 식사")
-    access_day(a, d, t_in=f"{(h*60+mi-60)//60:02d}:{(h*60+mi-60)%60:02d}:00", t_out=f"{min(23,(h*60+mi+120)//60):02d}:{(h*60+mi+120)%60:02d}:00")
+    access_day(a, d, t_in=f"{(h*60+mi-30)//60:02d}:{(h*60+mi-30)%60:02d}:00", t_out=f"{min(23,(h*60+mi+120)//60):02d}:{(h*60+mi+120)%60:02d}:00")
 # 15
-A[15] = a = actor("S15"); tr = trip("해외출장", 30, dt.date(2025, 2, 10))
+A[15] = a = actor("S15"); tr = trip("해외출장", 30, dt.date(2025, 2, 10), owner=a)
 for _ in range(6):
     d = tr["start"] + dt.timedelta(days=rng.randrange(30)); m = pick(merchants("일반음식점"))
     tx(a, {**m, "merchant": f"{m['merchant'][:6]} USD", "merchant_addr": "미국 캘리포니아 San Jose"}, d, rand_time("11:30", "20:30"), rng.randrange(30000, 90000), "의욕관리비", 15, ["R14_trip_meal_double", "R11_account_mismatch"], trip=tr, memo="현지 식사")
@@ -200,17 +205,20 @@ for _ in range(4): tx(a, rail, rand_date(weekday_only=False), rand_time("17:00",
 A[21] = a = actor("S21")
 for _ in range(2): tx(a, pick(merchants("일반음식점", near(a["work_site_addr"]))), rand_date(), rand_time("18:30", "21:00"), 480000, "의욕관리비", 21, ["R21_kickback_candidate"], memo="동료 2명과 만찬")
 # 22
-A[22] = a = actor("S22"); tr = trip("국내출장", 25, dt.date(2025, 2, 17)); far = merchants("일반음식점", far_from([a["home_addr"], a["work_site_addr"]]))
+A[22] = a = actor("S22"); tr = trip("국내출장", 25, dt.date(2025, 2, 17), owner=a); far = merchants("일반음식점", far_from([a["home_addr"], a["work_site_addr"]]))
 for _ in range(8): tx(a, pick(far), tr["start"] + dt.timedelta(days=rng.randrange(25)), rand_time("11:30", "20:00"), rng.randrange(45000, 70000), "국내출장비", 22, ["R16_amount_outlier", "R14_trip_meal_double"], trip=tr, memo="출장 식대(실비)")
 
 # ---------- normal background + routine access for every synthetic user ----------
-for e in emps: normal_tx(e); routine_access(e)
+for e in emps:
+    if e["emp_name"] == "가상S04": normal_tx(e, pred=lambda x: sido(x) == sido(e["work_site_addr"]) or sido(x) == sido(e["home_addr"]))
+    else: normal_tx(e)
+    routine_access(e)
 
 # ---------- write ----------
 base = con.execute("select coalesce(max(tx_id),0) from transactions").fetchall()[0][0]
 txdf = pd.DataFrame(tx_rows)[TX_COLS]; txdf["tx_id"] = np.arange(base + 1, base + 1 + len(txdf))
 gt = pd.DataFrame(gt_rows); gt["tx_id"] = gt.row_idx.map(lambda i: int(txdf.tx_id.iloc[i])); gt = gt.drop(columns="row_idx")
-empdf = pd.DataFrame(emps).drop(columns=["code", "dept", "approver_id"]); empdf["n_tx"] = empdf.emp_id.map(txdf.emp_id.value_counts())
+empdf = pd.DataFrame(emps).drop(columns=["code", "dept", "approver_id", "trips"], errors="ignore"); empdf["n_tx"] = empdf.emp_id.map(txdf.emp_id.value_counts())
 accdf = pd.DataFrame(acc_rows)
 for name, df in (("transactions", txdf), ("employees", empdf), ("access_logs", accdf)):
     con.register("df", df); con.execute(f"INSERT INTO {name} BY NAME SELECT * FROM df").fetchall(); con.unregister("df")
