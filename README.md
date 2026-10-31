@@ -1,1 +1,21 @@
-# royal-inspector
+# royal-inspector — 법인카드 사용 점검
+
+## 실행
+```bash
+python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+# data/raw/ 에 원본 엑셀 2개를 넣은 뒤
+.venv/bin/python -I scripts/load.py        # 1단계: DuckDB 적재
+.venv/bin/python -I scripts/synth.py       # 2단계: 합성 정답셋 주입
+.venv/bin/python -I scripts/run_rules.py   # 3단계: 규칙 실행 + 채점
+.venv/bin/streamlit run app/Home.py        # 4단계: 임시 검토 화면
+.venv/bin/python -m pytest -q tests
+```
+
+## 문서
+- `docs/PROJECT_NOTES.md` 문제·조사·설계 원칙·데이터 확인 결과
+- `docs/ROADMAP.md` 진행 순서와 상태
+- `docs/RULES.md` 규칙 19개, 실데이터 적중, 임계치 민감도
+- `docs/API.md` 서비스 함수 / API 설계 (프런트 계약)
+
+## 구조
+`scripts/` 적재·합성·규칙 실행 · `rules/` 규칙 SQL과 카탈로그 · `synth/` 사례 명세 · `app/service.py` 서비스 함수 · `app/Home.py`, `app/pages/` Streamlit
