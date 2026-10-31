@@ -1,0 +1,132 @@
+# 징계사례 22건 → 삽입 조건. actor는 가짜 사용자 ID 접두(S##). feasible: full|partial|none
+# 공통: 날짜는 2025-02-03 ~ 2025-03-27 평일(별도 명시 없으면), 상호·주소·업종코드는 실데이터 풀에서 복사.
+cases:
+  - id: 1
+    summary: 배우자에게 카드. 출장 중 집으로 배달, 배우자가 집 근처 식당·마트·편의점 사용
+    feasible: full
+    actors: {S01: {rank: 팀원, home_dong: 임의}}
+    inserts:
+      - {n: 4, rules: [R05_near_home, R07_outside_trip_area], trip: {type: 국내출장, days: 5, far_sido: true}, merchant_pool: 배달앱, addr: home_dong, time: 19:00-21:00}
+      - {n: 6, rules: [R05_near_home], merchant_pool: [슈퍼마켓.마트, 편의점, 일반음식점], addr: home_dong, time: 10:00-15:00, weekday_only: true}
+  - id: 2
+    summary: 배우자가 본인 차 주유. 하루 2회 이상 주유
+    feasible: full
+    actors: {S02: {rank: 팀원}}
+    inserts:
+      - {n: 3, rules: [R09_excess_fuel], pattern: same_day_pairs, merchant_pool: 주유소, gap_min: 40, account: 승용차량비}
+  - id: 3
+    summary: 가족여행 기차표 회사카드 결제, 탑승권 날짜 위조
+    feasible: partial
+    actors: {S03: {rank: 팀원}}
+    inserts:
+      - {n: 2, rules: [R01_holiday_use], merchant: 철도승차권  발매, mcc: 철도, weekend: true, account: 국내출장비, note: 증빙 위조(R20)는 파일 없어 미삽입}
+  - id: 4
+    summary: 출장 조기 복귀했으나 일당 그대로 수령
+    feasible: full
+    actors: {S04: {rank: 팀원}}
+    inserts:
+      - {n: 1, rules: [R15_trip_period_mismatch], trip: {type: 국내출장, days: 20}, merchant: 철도승차권  발매, mcc: 철도, tx_date: trip_end - 8, memo: 복귀}
+  - id: 5
+    summary: 팀장이 부하와 팀장 집 근처 고급 술집. 부하가 결제, 팀장이 승인
+    feasible: full
+    actors: {S05: {rank: 팀원}, S05L: {rank: 팀장, home_dong: 임의}}
+    inserts:
+      - {n: 2, rules: [R08_banned_mcc, R18_approver_conflict], merchant_pool: 일반주점, addr: S05L.home_dong, approver: S05L, account: 의욕관리비, amount: 300000-450000, time: 21:00-23:00}
+  - id: 6
+    summary: 인터넷으로 개인물품(케이블, 선풍기, 화장품 등) 구매, 사무실용이라 승인
+    feasible: full
+    actors: {S06: {rank: 팀원}}
+    inserts:
+      - {n: 5, rules: [R13_personal_item, R10_missing_evidence], merchant_pool: [인터넷상거래, 오픈마켓], account: 잡비, memo_keywords: [충전케이블, 탁상용 선풍기, 화장품, 보조배터리, 이어폰], attachment: false, time: 21:00-23:30}
+  - id: 7
+    summary: 자녀 수업료 고지서 위조
+    feasible: none
+    note: 카드 거래 아님, 증빙 파일 필요
+  - id: 8
+    summary: 친구와 식사 후 동료와 먹었다 기재. 동료는 같은 시각 출장지에서 결제
+    feasible: full
+    actors: {S08: {rank: 팀원}, S08C: {rank: 팀원}}
+    inserts:
+      - {n: 2, rules: [R06_same_time_diff_place], pair: {S08: {merchant_pool: 일반음식점, addr: worksite_sigungu, amount: 180000}, S08C: {merchant_pool: 일반음식점, addr: far_sido, trip: {type: 국내출장, days: 3}}}, gap_min: 10, note: 참석자 열이 비어 있어 "같이 먹었다" 기재는 memo에만}
+  - id: 9
+    summary: 해외출장 중 배우자가 회사차 사용, 주유·톨게이트
+    feasible: full
+    actors: {S09: {rank: 팀원}}
+    inserts:
+      - {n: 4, rules: [R07_outside_trip_area, R09_excess_fuel], trip: {type: 해외출장, days: 10}, merchant_pool: [주유소, 고속도로통행카드], addr: domestic, account: 승용차량비}
+  - id: 10
+    summary: 현장 식당에 30만, 50만원 선결제 후 장부 사용
+    feasible: full
+    actors: {S10: {rank: 팀장}}
+    inserts:
+      - {n: 3, rules: [R04_prepayment], merchant_pool: [일반음식점, 커피전문점], amount: [300000, 500000, 300000], account: PJT운영비, memo: 선결제}
+  - id: 11
+    summary: 팀 물품과 개인물품 같이 구매, 세부내역 미첨부
+    feasible: full
+    actors: {S11: {rank: 팀원}}
+    inserts:
+      - {n: 3, rules: [R10_missing_evidence, R13_personal_item], merchant_pool: 인터넷상거래, account: 사무용품비, attachment: false, amount: 150000-400000}
+  - id: 12
+    summary: 오후 반차 후 회사 근처에서 친구와 술, 팀원과 식사라 기재
+    feasible: full
+    actors: {S12: {rank: 팀원}}
+    inserts:
+      - {n: 2, rules: [R02_leave_use], leave: {type: 연차휴가, hours: 4}, merchant_pool: [일반주점, 일반음식점], addr: worksite_sigungu, time: 19:30-22:00, account: 의욕관리비}
+  - id: 13
+    summary: 마트·백화점 등 증빙 필수 업종에 전표만 첨부
+    feasible: full
+    actors: {S13: {rank: 팀원}}
+    inserts:
+      - {n: 4, rules: [R10_missing_evidence], merchant_pool: [슈퍼마켓.마트, 백화점, 대형할인점], attachment: false, account: 잡비}
+  - id: 14
+    summary: 후배에게 카드 빌려 사용
+    feasible: partial
+    actors: {S14: {rank: 팀원, worksite: 본사}, S14B: {rank: 팀원}}
+    inserts:
+      - {n: 5, rules: [R12_card_lending], card_owner: S14, access: {S14: 본사 입문 tx_time-60min, 출문 tx_time+120min}, merchant_pool: 일반음식점, addr: far_sigungu_from_본사, time: 12:00-13:30}
+  - id: 15
+    summary: 해외출장 일당 전불 받고 현지 식사를 카드로, 의욕관리비 정산
+    feasible: full
+    actors: {S15: {rank: 팀원}}
+    inserts:
+      - {n: 6, rules: [R14_trip_meal_double, R11_account_mismatch], trip: {type: 해외출장, days: 30}, merchant_pool: 일반음식점, addr: overseas, account: 의욕관리비, currency_note: 원화 환산 금액}
+  - id: 16
+    summary: 증빙 파일 하나를 여러 정산에 중복 첨부
+    feasible: none
+    note: 파일 없음(R19)
+  - id: 17
+    summary: 술집 금액이 커서 승인권자 낮추려 2번 나눠 결제
+    feasible: full
+    actors: {S17: {rank: 팀장}}
+    inserts:
+      - {n: 2, rules: [R03_split_payment, R08_banned_mcc], merchant_pool: 일반주점, same_merchant: true, amounts: [480000, 450000], gap_min: 12, account: 접대비, time: 21:40}
+  - id: 18
+    summary: 골프·유흥을 접대비 아닌 계정으로 승인 요청
+    feasible: full
+    actors: {S18: {rank: 팀장}, S18M: {rank: 팀원}}
+    inserts:
+      - {n: 2, rules: [R08_banned_mcc, R11_account_mismatch], merchant_pool: [골프장, 일반주점], account: 의욕관리비, actor: S18M, approver: S18, weekday_only: true}
+  - id: 19
+    summary: 서울-대전 통근 톨비인데 울산·부산 톨게이트
+    feasible: full
+    actors: {S19: {rank: 팀원, home_sido: 서울, worksite_sido: 대전}}
+    inserts:
+      - {n: 4, rules: [R17_route_mismatch], merchant: 부산TG 등, mcc: 고속도로통행카드, addr: [울산, 부산], account: 자택방문교통비, note: 실데이터 하이패스는 위치 없음. 합성에서만 검증 가능}
+  - id: 20
+    summary: KTX 왕복 금액이 실제의 2배
+    feasible: full
+    actors: {S20: {rank: 팀원, home_sido: 서울, worksite_sido: 대전}}
+    inserts:
+      - {n: 4, rules: [R16_amount_outlier], merchant: 철도승차권  발매, mcc: 철도, account: 자택방문교통비, amount: 2.2 * median(자택방문교통비 철도)}
+  - id: 21
+    summary: 48만원 결제 후 40만원 현금 페이백
+    feasible: partial
+    actors: {S21: {rank: 팀원}}
+    inserts:
+      - {n: 2, rules: [R21_kickback_candidate], merchant_pool: 일반음식점, addr: worksite_sigungu, amount: 480000, account: 의욕관리비, memo: 동료 2명과 만찬}
+  - id: 22
+    summary: 장기 출장 일당 사후실비가 기준 초과
+    feasible: full
+    actors: {S22: {rank: 팀원}}
+    inserts:
+      - {n: 8, rules: [R16_amount_outlier, R14_trip_meal_double], trip: {type: 국내출장, days: 25}, merchant_pool: 일반음식점, addr: trip_sido, account: 국내출장비, amount: 45000-70000, note: 일비 2.5만원 한도 대비}

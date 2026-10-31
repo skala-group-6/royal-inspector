@@ -1,0 +1,24 @@
+# 규칙 카탈로그. 규칙 ID는 고정하고, 임계치는 params로 노출한다.
+# data_ready: now = 현 데이터로 가능 / geo = 지오코딩 후 정밀화 / partial = 후보까지 / no = 증빙 파일 필요
+rules:
+  R01_holiday_use:        {name: 휴일 사용,              data_ready: now,     params: {}}
+  R02_leave_use:          {name: 휴가 중 사용,            data_ready: now,     params: {}}
+  R03_split_payment:      {name: 분할결제,                data_ready: now,     params: {window_min: 120, min_count: 2, near_limit: 500000}}
+  R04_prepayment:         {name: 선결제,                  data_ready: now,     params: {min_amount: 200000, round_to: 50000, mcc: [일반음식점, 커피전문점, 기타음식점]}}
+  R05_near_home:          {name: 거주지 인근 사용,         data_ready: geo,     params: {match_level: dong, exclude_if_worksite_same: true}}
+  R06_same_time_diff_place: {name: 동일인 동시간 다른 장소, data_ready: geo,     params: {window_min: 30, level: sigungu}}
+  R07_outside_trip_area:  {name: 출장 중 출장지 밖 사용,    data_ready: geo,     params: {level: sido}}
+  R08_banned_mcc:         {name: 금지 업종,                data_ready: now,     params: {mcc_names: [일반주점, 유흥주점, 단란주점, 노래방, 골프장, 골프연습장, 안마]}}
+  R09_excess_fuel:        {name: 과다 주유,                data_ready: now,     params: {per_day: 2, mcc_names: [주유소, 무인주유소, 주유소(LPG)]}}
+  R10_missing_evidence:   {name: 증빙 필수 업종 증빙 누락,  data_ready: now,     params: {mcc_names: [슈퍼마켓.마트, 대형할인점, 백화점, 인터넷상거래, 오픈마켓, 편의점, PG일반(인증), PG일반(비인증)]}}
+  R11_account_mismatch:   {name: 업종-계정 불일치,         data_ready: now,     params: {}}
+  R12_card_lending:       {name: 타인 카드 대여 의심,       data_ready: partial, params: {min_repeat: 3, min_km: 20}}
+  R13_personal_item:      {name: 개인 귀속 물품 의심,       data_ready: partial, params: {accounts: [잡비, 사무용품비, 전산소모품비, 소모품비-기타, 기념행사비], keywords: [케이블, 선풍기, 화장품, 배터리, 밧데리, 이어폰, 텀블러, 슬리퍼, 마우스, 키보드, 충전]}}
+  R14_trip_meal_double:   {name: 출장 중 식사 카드 결제(일당 중복), data_ready: now, params: {mcc_names: [일반음식점, 기타음식점, 커피전문점]}}
+  R15_trip_period_mismatch: {name: 출장 기간-복귀 교통편 불일치, data_ready: now, params: {}}
+  R16_amount_outlier:     {name: 동일 구간·동료 대비 금액 과다, data_ready: now,  params: {ratio: 1.8}}
+  R17_route_mismatch:     {name: 자택방문교통비 경로 밖 사용, data_ready: geo,    params: {}}
+  R18_approver_conflict:  {name: 승인자 이해충돌,           data_ready: now,     params: {}}
+  R19_duplicate_evidence: {name: 증빙 중복 첨부,            data_ready: no,      params: {}}
+  R20_evidence_forgery:   {name: 증빙 위변조,              data_ready: no,      params: {}}
+  R21_kickback_candidate: {name: 고액 식사 페이백 후보,     data_ready: partial, params: {min_amount: 400000, max_attendees: 3}}
