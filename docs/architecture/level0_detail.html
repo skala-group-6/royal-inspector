@@ -1,0 +1,56 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>아키텍처 L0 — 전체 한 장</title>
+<style>
+ body{font-family:-apple-system,"Apple SD Gothic Neo",sans-serif;background:#fafafa;color:#222;margin:0;padding:28px}
+ h1{font-size:20px;margin:0 0 4px} .sub{color:#666;font-size:13px;margin-bottom:22px}
+ svg{width:100%;max-width:1180px;display:block;margin:0 auto;background:#fff;border:1px solid #e5e5e5;border-radius:10px}
+ .legend{max-width:1180px;margin:14px auto 0;font-size:13px;color:#444;display:flex;gap:22px;flex-wrap:wrap}
+ .legend span::before{content:"";display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+ .l-auto::before{background:#dbeafe;border:1px solid #60a5fa} .l-human::before{background:#fef3c7;border:1px solid #f59e0b} .l-store::before{background:#f1f5f9;border:1px solid #94a3b8}
+ .l-fb::before{background:none;border:none;border-top:2px dashed #16a34a;height:0;width:18px;vertical-align:3px}
+</style></head><body>
+<h1>레벨 0 — 전체 한 장</h1>
+<div class="sub">데이터가 흐르는 길(위, 파랑), 사람이 끼어드는 지점(노랑), 되먹임(초록 점선). 세부는 레벨 1부터.</div>
+<svg viewBox="0 0 1180 520" font-size="13">
+ <defs>
+  <marker id="a" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#64748b"/></marker>
+  <marker id="g" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#16a34a"/></marker>
+ </defs>
+ <!-- main flow boxes -->
+ <g font-weight="600">
+  <rect x="30"  y="120" width="150" height="70" rx="10" fill="#dbeafe" stroke="#60a5fa"/><text x="105" y="150" text-anchor="middle">① 적재</text><text x="105" y="170" text-anchor="middle" font-weight="400" fill="#475569">엑셀 → 표준 테이블</text>
+  <rect x="220" y="120" width="150" height="70" rx="10" fill="#dbeafe" stroke="#60a5fa"/><text x="295" y="150" text-anchor="middle">② 규칙 엔진</text><text x="295" y="170" text-anchor="middle" font-weight="400" fill="#475569">21개 규칙, 근거 문장</text>
+  <rect x="410" y="120" width="150" height="70" rx="10" fill="#dbeafe" stroke="#60a5fa"/><text x="485" y="150" text-anchor="middle">③ 피처 · 라벨</text><text x="485" y="170" text-anchor="middle" font-weight="400" fill="#475569">평소 대비 숫자, 임시 정답</text>
+  <rect x="600" y="120" width="150" height="70" rx="10" fill="#dbeafe" stroke="#60a5fa"/><text x="675" y="150" text-anchor="middle">④ 점수 모델</text><text x="675" y="170" text-anchor="middle" font-weight="400" fill="#475569">순서만 정함</text>
+  <rect x="790" y="120" width="150" height="70" rx="10" fill="#dbeafe" stroke="#60a5fa"/><text x="865" y="150" text-anchor="middle">⑤ 검토 큐</text><text x="865" y="170" text-anchor="middle" font-weight="400" fill="#475569">걸린 것 + 무작위 표본</text>
+  <rect x="980" y="120" width="170" height="70" rx="10" fill="#fef3c7" stroke="#f59e0b"/><text x="1065" y="150" text-anchor="middle">⑥ 사람 판정</text><text x="1065" y="170" text-anchor="middle" font-weight="400" fill="#475569">위반 / 아님 / 보류</text>
+ </g>
+ <g stroke="#64748b" stroke-width="2" fill="none" marker-end="url(#a)">
+  <line x1="180" y1="155" x2="218" y2="155"/><line x1="370" y1="155" x2="408" y2="155"/><line x1="560" y1="155" x2="598" y2="155"/><line x1="750" y1="155" x2="788" y2="155"/><line x1="940" y1="155" x2="978" y2="155"/>
+ </g>
+ <!-- storage -->
+ <rect x="30" y="230" width="1120" height="46" rx="8" fill="#f1f5f9" stroke="#94a3b8"/>
+ <text x="590" y="258" text-anchor="middle" fill="#334155">DuckDB 한 파일 — transactions · flags · tx_features · weak_labels · tx_score · reviews · precedents · catalog(규칙/피처/사례)</text>
+ <!-- human inputs -->
+ <g font-weight="600">
+  <rect x="220" y="330" width="150" height="56" rx="10" fill="#fef3c7" stroke="#f59e0b"/><text x="295" y="353" text-anchor="middle">임계치 확정</text><text x="295" y="372" text-anchor="middle" font-weight="400" fill="#475569">윤경팀이 숫자 결정</text>
+  <rect x="560" y="330" width="190" height="56" rx="10" fill="#fef3c7" stroke="#f59e0b"/><text x="655" y="353" text-anchor="middle">새 규칙 승인</text><text x="655" y="372" text-anchor="middle" font-weight="400" fill="#475569">발굴 후보 → 사람이 승격</text>
+  <rect x="980" y="330" width="170" height="56" rx="10" fill="#fef3c7" stroke="#f59e0b"/><text x="1065" y="353" text-anchor="middle">과거 결과 입력</text><text x="1065" y="372" text-anchor="middle" font-weight="400" fill="#475569">윤경팀 점검 이력 → 라벨</text>
+ </g>
+ <g stroke="#f59e0b" stroke-width="2" fill="none" marker-end="url(#a)">
+  <line x1="295" y1="330" x2="295" y2="192"/>
+  <path d="M655,330 L655,300 L295,300 L295,192" stroke-dasharray="0"/>
+ </g>
+ <!-- feedback (green dashed) -->
+ <g stroke="#16a34a" stroke-width="2" fill="none" stroke-dasharray="7 5" marker-end="url(#g)">
+  <path d="M1065,190 L1065,210 L1120,210 L1120,440 L485,440 L485,192"/>
+  <path d="M1065,386 L1065,470 L470,470 L470,192"/>
+  <path d="M865,190 L865,215 L750,215 L750,300 L655,300 L655,330"/>
+ </g>
+ <g fill="#15803d" font-size="12">
+  <text x="700" y="434">되먹임 1: 사람 판정 → 임시 정답을 진짜 정답으로 교체 (모델 재학습)</text>
+  <text x="700" y="464">되먹임 2: 과거 점검 결과 → 라벨 (시연용 → 운영용)</text>
+  <text x="760" y="226">되먹임 3: 무작위 표본·변형에서 놓친 것 → 새 규칙 후보</text>
+ </g>
+</svg>
+<div class="legend"><span class="l-auto">자동</span><span class="l-human">사람</span><span class="l-store">저장소</span><span class="l-fb">되먹임</span></div>
+</body></html>
