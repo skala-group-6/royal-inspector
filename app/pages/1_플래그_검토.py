@@ -66,6 +66,23 @@ with left:
         r = pd.concat(rel).drop_duplicates("tx_id")
         st.dataframe(pd.DataFrame({"규칙": r.규칙, "일시": pd.to_datetime(r.tx_ts).dt.strftime("%m-%d %H:%M"), "사용자": r.emp_name, "가맹점": r.merchant, "업종": r.mcc_name, "금액": r.total.map(lambda v: f"{v:,.0f}"), "계정": r.account_policy}),
                      hide_index=True, width='stretch', height=min(40 + 36 * len(r), 200))
+    # ---- precedents chip: shown only when at least one case shares a rule ----
+    pre = s.get_precedents(tx_id)
+    if pre["cases"]:
+        top = pre["cases"][0]
+        with st.popover(f"📁 비슷한 징계사례 {len(pre['cases'])}건 · 가장 가까운: “{top['title']}”"):
+            st.caption("규칙이 겹치는 사례입니다. 사례가 있다는 것이 위반을 뜻하지는 않습니다. 겹치는 점과 다른 점을 함께 보세요.")
+            for c in pre["cases"]:
+                with st.container(border=True):
+                    st.markdown(f"**{c['title']}** <span class='sub'>· {c['source']} · 유사도 {c['score']:.2f}</span>", unsafe_allow_html=True)
+                    st.markdown(f"**무슨 일이었나** — {c['summary']}")
+                    st.markdown("**무엇을 보고 적발했나** — " + " · ".join(c["cues"]))
+                    a, b = st.columns(2)
+                    a.markdown("**겹치는 점**  \n" + "  \n".join(f"● {r[:3]} {s.RULE_NAME.get(r, r)}" for r in c["overlap"]))
+                    diff = [f"○ 사례에만: {r[:3]} {s.RULE_NAME.get(r, r)}" for r in c["only_in_precedent"]] + [f"○ 이 거래에만: {r[:3]} {s.RULE_NAME.get(r, r)}" for r in c["only_in_tx"]]
+                    b.markdown("**다른 점**  \n" + ("  \n".join(diff) if diff else "없음"))
+        if pre["summary"]["n"]:
+            st.caption(f"비슷한 거래의 과거 판정: {pre['summary']['n']}건 중 위반 {pre['summary']['violation']} · 아님 {pre['summary']['ok']}")
 with right:
     st.markdown("**판정**")
     if not reviewer: st.warning("왼쪽에 검토자 이름을 입력하세요.")
