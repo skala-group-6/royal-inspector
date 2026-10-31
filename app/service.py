@@ -5,7 +5,8 @@ import json, datetime as dt, uuid
 from pathlib import Path
 import duckdb, pandas as pd, yaml
 
-DB = Path(__file__).resolve().parents[1] / "data" / "warehouse.duckdb"
+import os
+DB = Path(os.environ.get("ROYAL_DB", Path(__file__).resolve().parents[1] / "data" / "warehouse.duckdb"))  # ROYAL_DB: point tests at a copy while the app holds the lock
 CATALOG = Path(__file__).resolve().parents[1] / "rules" / "catalog.yaml"
 RULE_CLASS = {"①규정": ["R01", "R02", "R08", "R10", "R11", "R18"], "②임계치": ["R03", "R04", "R05", "R06", "R09", "R16"],
               "③가설": ["R07", "R12", "R13", "R14", "R15", "R17", "R21"]}
@@ -146,3 +147,58 @@ def log_event(reviewer, event, payload=None):
     con().execute("insert into ui_events values (?,?,?,?)", [dt.datetime.now(), reviewer, event, json.dumps(payload, ensure_ascii=False, default=str) if payload else None]).fetchall()
 
 def list_depts() -> list[str]: return q("select distinct dept from tx_active where dept is not null order by 1").dept.tolist()
+
+
+# ---------- conclusion-first headlines (two lines per rule: what / numbers) ----------
+def evidence_headline(rule_id, ev: dict, t: dict) -> tuple[str, str]:
+    g = lambda k, d="": ev.get(k, d)
+    won = lambda v: f"{v:,.0f}원" if isinstance(v, (int, float)) else str(v)
+    H = {"R01": lambda: (f"휴일({g('weekday')}) 사용", f"{g('date')} · {g('mcc')} · {won(g('total'))}"),
+         "R02": lambda: (f"휴가일 {str(g('time'))[:5]} 사용", f"{g('leave_type')} {g('leave_hours')}h · {g('mcc')}"),
+         "R03": lambda: (f"같은 가게에서 {g('window_min')}분 안에 {g('count_in_window')}건 결제", f"합계 {won(g('group_total'))} · {g('merchant')}"),
+         "R04": lambda: (f"식당·카페에 {won(g('total'))} 단위금액 결제 (선결제 의심)", f"적요: {g('memo')}"),
+         "R05": lambda: (f"집 근처({g('home_sigungu')})에서 사용", f"근무지 {g('work_sigungu')} · {str(g('time'))[:5]} · {g('mcc')}"),
+         "R06": lambda: ({"same_person": f"{g('window_min')}분 안에 두 지역에서 결제", "named_attendee_elsewhere": "적요의 동석자가 같은 시각 다른 지역에서 결제", "counterpart": "다른 거래의 동석자로 적혔으나 다른 지역에 있었음"}.get(g('kind'), "동시간 다른 장소"), f"{g('this_sigungu')} ↔ {g('other_sigungu')}"),
+         "R07": lambda: (f"{g('trip_type')} 중 출장지 밖({g('merchant_sido')})에서 사용", f"출장 {g('trip')} · {g('mcc')} · {won(g('total'))}"),
+         "R08": lambda: (f"금지 업종 {g('mcc')}", f"계정 {g('account')} · {g('weekday')} {str(g('time'))[:5]} · {won(g('total'))}"),
+         "R09": lambda: (f"주유 같은 날 {g('same_day_count') or 1}회 / 14일 {g('count_in_14d') or 1}회", f"기준 하루 {g('per_day')}회 · 14일 {g('per_window')}회"),
+         "R10": lambda: (f"증빙 필수 업종({g('mcc')})인데 증빙 없음", f"{won(g('total'))} · 계정 {g('account')}"),
+         "R11": lambda: ("해외출장 중 식사를 출장비 외 계정으로" if g('reason') == 'overseas_trip_meal_not_trip_account' else f"{g('mcc')}을 접대비 아닌 계정으로", f"계정 {g('account')}"),
+         "R12": lambda: (f"사옥 입문 {g('minutes_before_purchase')}분 뒤 {g('merchant_sido')}에서 결제 (카드 대여 의심)", f"같은 패턴 {g('repeat_count')}회 · 근무지 {g('work_sido')}"),
+         "R13": lambda: (f"개인물품 의심 (신호 {g('score')}/4)", f"키워드 {'O' if g('memo_keyword') else 'X'} · 쇼핑업종 {'O' if g('shopping_mcc') else 'X'} · 심야/휴일 {'O' if g('off_hours') else 'X'} · 증빙 {'O' if g('has_attachment') else 'X'}"),
+         "R14": lambda: (f"{g('trip_type')} 중 식사를 카드로 결제", f"출장 {g('trip')} · 계정 {g('account')} · {won(g('total'))}"),
+         "R15": lambda: (f"출장 종료 {g('days_before_end')}일 전에 복귀 교통편", f"출장 {g('trip')} · 이후 출장지 소비 없음"),
+         "R16": lambda: (f"동료 중앙값의 {g('ratio')}배 금액", f"{g('peer_group')} 중앙값 {won(g('peer_median'))} vs {won(g('total'))}"),
+         "R17": lambda: (f"자택방문교통비인데 경로 밖({g('merchant_sido')})", f"주거지 {g('home_sido')} · 근무지 {g('work_sido')} · {g('mcc')}"),
+         "R18": lambda: (f"승인자 집 근처({g('approver_sigungu')}) 가맹점", f"{str(g('time'))[:5]} · {g('mcc')} · {won(g('total'))}"),
+         "R21": lambda: (f"고액 식사 {won(g('total'))}, 참석 {g('attendees_in_memo') or '?'}명 (페이백 후보)", f"적요: {g('memo')}")}
+    try: return H.get(rule_id[:3], lambda: (RULE_NAME.get(rule_id, rule_id), json.dumps(ev, ensure_ascii=False)))()
+    except Exception: return (RULE_NAME.get(rule_id, rule_id), json.dumps(ev, ensure_ascii=False))
+
+def get_policy(account):
+    df = q("select account, description, dos, donts, required_evidence from policy_accounts where account=?", [account])
+    return df.iloc[0].to_dict() if len(df) else None
+
+def get_day_timeline(tx_id) -> pd.DataFrame:
+    t = q("select emp_id, tx_date from transactions where tx_id=?", [tx_id]).iloc[0]
+    return q("""
+      select tx_ts ts, '카드' kind, merchant || ' · ' || coalesce(mcc_name,'') what, sigungu_of(merchant_addr) place, total amount, tx_id = ? focal
+      from tx_active t where emp_id=? and tx_date=? and not time_is_dummy
+      union all
+      select access_ts, '출입', gate || ' · ' || event, site, null, false from access_logs where emp_id=? and cast(access_ts as date)=?
+      order by 1""", [tx_id, int(t.emp_id), t.tx_date, int(t.emp_id), t.tx_date])
+
+def review_transaction(tx_id, decision, reason_code, memo, reviewer) -> int:
+    """Transaction-level verdict: recorded once per flagged rule so per-rule hit rates stay computable."""
+    rules = q("select distinct rule_id from flags where tx_id=?", [tx_id]).rule_id.tolist()
+    for r in rules: create_review(tx_id, r, decision, reason_code, memo, reviewer)
+    return len(rules)
+
+def next_unreviewed(after_tx_id, **filters):
+    ids = list_flags(review_status="unreviewed", page_size=500, **filters).tx_id.tolist()
+    if after_tx_id in ids:
+        i = ids.index(after_tx_id); return ids[i + 1] if i + 1 < len(ids) else None
+    return ids[0] if ids else None
+
+def today_count(reviewer) -> int:
+    return int(q("select count(distinct tx_id) from reviews where reviewer=? and cast(created_at as date)=current_date", [reviewer]).iloc[0, 0])

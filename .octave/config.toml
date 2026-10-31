@@ -1,0 +1,17 @@
+[scripts]
+# data/ is gitignored: raw Excel inputs and the DuckDB warehouse built from them (load.py → synth.py → run_rules.py).
+copy = ["data/raw", "data/warehouse.duckdb"]
+setup = "python3 -m venv .venv && .venv/bin/pip install -r requirements.txt"
+
+[scripts.run.app]
+command = ".venv/bin/streamlit run app/Home.py --server.headless true --server.port $OCTAVE_PORT"
+
+[[scripts.check]]
+name = "unit"
+command = "cp data/warehouse.duckdb /tmp/royal_test.duckdb && ROYAL_DB=/tmp/royal_test.duckdb .venv/bin/python -m pytest -q tests"
+description = "A service-layer test fails: list/evidence/context/review functions no longer behave as pinned down (needs data/warehouse.duckdb with flags)."
+
+[[scripts.check]]
+name = "rules"
+command = ".venv/bin/python -I scripts/run_rules.py | grep -q 'OVERALL recall 114/114'"
+description = "The rule engine no longer catches every planted violation in the synthetic ground truth: a rule or threshold change regressed recall."

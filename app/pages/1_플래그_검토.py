@@ -3,85 +3,99 @@ import streamlit as st, pandas as pd
 from app import service as s
 
 st.set_page_config(page_title="플래그 검토", layout="wide")
+st.markdown("<style>.block-container{padding-top:1.2rem} h1{font-size:1.5rem!important} .sub{color:#777;font-size:.9rem}</style>", unsafe_allow_html=True)
+SEV = {"high": "🔴", "medium": "🟠", "low": "🟡"}
 rules = s.list_rules()
-reviewer = st.sidebar.text_input("검토자 이름", value=st.session_state.get("reviewer", ""), help="결정 기록에 남습니다")
+reviewer = st.sidebar.text_input("검토자 이름", value=st.session_state.get("reviewer", ""))
 st.session_state["reviewer"] = reviewer
 
-# ---------- filters ----------
 st.sidebar.header("필터")
 sel_rules = st.sidebar.multiselect("규칙", rules.rule_id.tolist(), format_func=lambda r: f"{r[:3]} {s.RULE_NAME[r]}")
-status = st.sidebar.selectbox("검토 상태", [None, "unreviewed", "reviewed", "violation"], format_func=lambda v: {None: "전체", "unreviewed": "미검토", "reviewed": "검토됨", "violation": "위반 확정"}[v])
+status = st.sidebar.selectbox("검토 상태", ["unreviewed", None, "reviewed", "violation"], format_func=lambda v: {None: "전체", "unreviewed": "미검토", "reviewed": "검토됨", "violation": "위반 확정"}[v])
 min_total = st.sidebar.number_input("금액 이상", min_value=0, value=0, step=10000)
 sort = st.sidebar.selectbox("정렬", ["rules", "total", "date"], format_func=lambda v: {"rules": "걸린 규칙 수", "total": "금액", "date": "날짜"}[v])
 syn = st.sidebar.selectbox("데이터", [None, False, True], format_func=lambda v: {None: "전체", False: "실데이터만", True: "합성(테스트)만"}[v])
-page_size = st.sidebar.selectbox("페이지 크기", [50, 100, 200], index=1)
-page = st.sidebar.number_input("페이지", min_value=1, value=1)
+page = st.sidebar.number_input("페이지 (100건씩)", min_value=1, value=1)
+F = dict(rule_ids=sel_rules or None, min_total=min_total or None, sort=sort, synthetic_only=syn)
 
-df = s.list_flags(rule_ids=sel_rules or None, min_total=min_total or None, review_status=status, sort=sort, page=page, page_size=page_size, synthetic_only=syn)
-st.title("플래그 검토")
-st.caption(f"{len(df)}건 표시 (페이지 {page}). 거래 한 건을 보려면 그 줄 **맨 왼쪽의 체크박스**를 클릭하세요. 아래에 상세와 판정 버튼이 열립니다.")
-
-show = df.assign(규칙=df.rules.map(lambda l: " ".join(r[:3] for r in l)), 금액=df.total.map(lambda v: f"{v:,.0f}"),
-                 일시=df.tx_ts.dt.strftime("%m-%d %H:%M"), 합성=df.is_synthetic.map({True: "T", False: ""}))[
-    ["tx_id", "일시", "emp_name", "dept", "rank", "account_policy", "merchant", "mcc_name", "금액", "규칙", "review_status", "합성"]].rename(
-    columns={"emp_name": "사용자", "dept": "부서", "rank": "직급", "account_policy": "계정", "merchant": "가맹점", "mcc_name": "업종", "review_status": "상태"})
-# Stable widget key + selected tx_id kept in session_state: the detail survives reruns (filter change, save) even if the table re-renders.
-ev = st.dataframe(show, width='stretch', hide_index=True, on_select="rerun", selection_mode="single-row", height=380, key="flags_table")
+# ---------- A. list ----------
+df = s.list_flags(review_status=status, page=page, page_size=100, **F)
+c1, c2 = st.columns([4, 1]); c1.title("플래그 검토")
+c2.markdown(f"<p class='sub' style='text-align:right;padding-top:1.4rem'>이 목록 {len(df)}건 · 오늘 처리 {s.today_count(reviewer) if reviewer else 0}건</p>", unsafe_allow_html=True)
+sev_dots = lambda row: "".join(SEV["high" if row.sev == 3 else "medium" if row.sev == 2 else "low"] for _ in range(1)) + f" ×{row.n_rules}"
+show = pd.DataFrame({"": [sev_dots(r) for r in df.itertuples()], "일시": df.tx_ts.dt.strftime("%m-%d %H:%M"), "사용자": df.emp_name, "직급": df["rank"],
+                     "가맹점": df.merchant, "업종": df.mcc_name, "금액": df.total.map(lambda v: f"{v:,.0f}"), "계정": df.account_policy,
+                     "상태": df.review_status.map({"unreviewed": "", "violation": "위반", "ok": "아님", "hold": "보류"}), "T": df.is_synthetic.map({True: "T", False: ""})})
+ev = st.dataframe(show, width='stretch', hide_index=True, on_select="rerun", selection_mode="single-row", height=280, key="flags_table")
 sel = ev.selection.rows if ev and ev.selection else []
 if sel:
     picked = int(df.tx_id.iloc[sel[0]])
     if picked != st.session_state.get("tx_id"):
-        st.session_state["tx_id"] = picked; s.log_event(reviewer, "open_case", {"tx_id": picked})
+        st.session_state["tx_id"] = picked; st.session_state.pop("pending_ok", None); s.log_event(reviewer, "open_case", {"tx_id": picked})
 tx_id = st.session_state.get("tx_id")
 if tx_id is None:
-    st.info("위 표에서 한 줄의 맨 왼쪽 체크박스를 클릭하면 여기에 상세가 열립니다."); st.stop()
-t = s.get_transaction(tx_id)
+    st.info("한 줄의 맨 왼쪽 체크박스를 누르면 아래에 판정 화면이 열립니다."); st.stop()
+t = s.get_transaction(tx_id); evs = s.get_evidence(tx_id)
 
-# ---------- case detail ----------
+def decide(decision, reason="", memo=""):
+    s.review_transaction(tx_id, decision, reason, memo, reviewer); s.log_event(reviewer, "review", {"tx_id": tx_id, "decision": decision})
+    st.session_state.pop("pending_ok", None)
+    nxt = s.next_unreviewed(tx_id, **F)
+    st.session_state["tx_id"] = int(nxt) if nxt else None
+    st.rerun()
+
+# ---------- B. one case, two buttons ----------
 st.divider()
-st.subheader(f"거래 #{tx_id} — {t['tx_ts']:%Y-%m-%d %H:%M} · {t['emp_name']} ({t['dept']}, {t['rank']}) · {t['merchant']} · {t['mcc_name']} · {t['total']:,.0f}원 · {t['account_policy']}")
-if t.get("memo"): st.caption(f"적요: {t['memo']}")
-left, right = st.columns([3, 2])
-
+st.markdown(f"#### #{tx_id} · {t['tx_ts']:%m-%d(%a) %H:%M} · {t['emp_name']} ({t['dept']} {t['rank']}) · {t['merchant']} [{t['mcc_name']}]")
+st.markdown(f"<p class='sub'>{t['total']:,.0f}원 · {t['account_policy']}" + (f" · 적요 “{t['memo']}”" if t.get("memo") else "") + "</p>", unsafe_allow_html=True)
+left, right = st.columns([3, 1.3])
 with left:
-    st.markdown("#### 걸린 규칙과 근거")
-    evs = s.get_evidence(tx_id)
+    st.markdown("**왜 걸렸나**")
     for e in evs:
-        with st.container(border=True):
-            st.markdown(f"**{e['rule_id'][:3]} {e['rule_name']}** · {e['rule_class']} · 심각도 {e['severity']}")
-            st.write(e["evidence_text"])
-            if len(e["related_tx"]):
-                st.caption("관련 거래"); st.dataframe(e["related_tx"], hide_index=True, width='stretch')
-            with st.expander("원본 근거(JSON)"): st.json(e["evidence"])
-    ctx = s.get_context(tx_id)
-    st.markdown("#### 맥락")
-    tabs = st.tabs(["같은 사람 최근 거래", "동료 비교", "당일 출입기록", "출장·휴가"])
-    with tabs[0]:
-        r = ctx["recent_tx"]; st.dataframe(r.assign(규칙=r.rules.map(lambda l: " ".join(x[:3] for x in l))).drop(columns=["rules"]), hide_index=True, width='stretch')
-    with tabs[1]:
-        p = ctx["peer"]
-        if p: st.write(f"같은 계정·업종({p['account_policy']} × {p['mcc_name']}) {p['n']:,}건 중앙값 **{p['median']:,.0f}원**, 상위 10% 경계 {p['p90']:,.0f}원. 이 거래는 상위 **{100-p['percentile_of_this']:.0f}%** 지점.")
-        else: st.write("비교 집단 없음")
-    with tabs[2]:
-        a = ctx["access_same_day"]
-        if len(a): st.dataframe(a, hide_index=True, width='stretch')
-        else: st.write("당일 출입기록 없음")
-    with tabs[3]:
-        st.write({"휴일": ctx["holiday"], "출장": ctx["trip"], "휴가": ctx["leave"]})
-    h = ctx["history"]; st.caption(f"이 사용자: 걸린 거래 {h['flagged_tx']}건, 위반 확정 {h['violations']}건, 아님 처리 {h['cleared']}건")
-
+        head, detail = s.evidence_headline(e["rule_id"], e["evidence"], t)
+        st.markdown(f"{SEV.get(e['severity'],'')} **{head}**  \n<span class='sub'>{detail} · {e['rule_id'][:3]} {e['rule_name']}</span>", unsafe_allow_html=True)
 with right:
-    st.markdown("#### 결정")
+    st.markdown("**판정**")
     if not reviewer: st.warning("왼쪽에 검토자 이름을 입력하세요.")
-    rule_opts = [e["rule_id"] for e in evs]
-    rule_for = st.selectbox("대상 규칙", rule_opts, format_func=lambda r: f"{r[:3]} {s.RULE_NAME[r]}")
-    decision = st.radio("판정", ["violation", "ok", "hold"], horizontal=True, format_func=lambda v: {"violation": "위반", "ok": "아님", "hold": "보류"}[v])
-    reason = st.selectbox("사유", [c for c, _ in s.REASON_CODES], format_func=lambda c: dict(s.REASON_CODES)[c])
-    memo = st.text_area("메모", height=80)
-    if st.button("저장", type="primary", disabled=not reviewer, width='stretch'):
-        s.create_review(tx_id, rule_for, decision, reason, memo, reviewer); s.log_event(reviewer, "review", {"tx_id": tx_id, "rule": rule_for, "decision": decision})
-        st.success("저장됨"); st.rerun()
-    st.markdown("##### 이 거래의 결정 이력")
+    b1, b2 = st.columns(2)
+    if b1.button("위반", type="primary", width='stretch', disabled=not reviewer): decide("violation")
+    if b2.button("아님", width='stretch', disabled=not reviewer): st.session_state["pending_ok"] = True
+    if st.session_state.get("pending_ok"):
+        reason = st.selectbox("왜 아닌가요?", [c for c, _ in s.REASON_CODES], format_func=lambda c: dict(s.REASON_CODES)[c])
+        memo = st.text_input("메모 (선택)")
+        if st.button("아님으로 저장", width='stretch'): decide("ok", reason, memo)
+    h1, h2 = st.columns(2)
+    if h1.button("보류", width='stretch', disabled=not reviewer): decide("hold", "need_evidence")
+    if h2.button("건너뛰기", width='stretch'):
+        nxt = s.next_unreviewed(tx_id, **F); st.session_state["tx_id"] = int(nxt) if nxt else None; st.rerun()
     rv = s.get_reviews(tx_id)
-    if len(rv): st.dataframe(rv, hide_index=True, width='stretch')
-    else: st.caption("없음")
+    if len(rv): st.caption("이력: " + " · ".join(f"{r.decision}({r.reviewer}, {r.created_at:%m-%d})" for r in rv.drop_duplicates("decision").itertuples()))
+
+# ---------- C. context, only on demand ----------
+ctx = None
+with st.expander("정황 보기 — 그날 동선 · 관련 거래 · 상태", expanded=False):
+    ctx = s.get_context(tx_id)
+    badges = [b for b in ["휴일" if ctx["holiday"] else "휴일 아님", f"휴가 {ctx['leave']['type']} {ctx['leave']['hours']}h" if ctx["leave"] else "휴가 아님",
+                          f"{ctx['trip']['type']} {ctx['trip']['start']}~{ctx['trip']['end']}" if ctx["trip"] else "출장 없음", f"증빙 {'있음' if t['has_attachment'] else '없음'}"]]
+    st.markdown("상태: " + " · ".join(badges))
+    a, b = st.columns([3, 2])
+    with a:
+        st.markdown("**그날 동선** (★ = 이 거래)")
+        tl = s.get_day_timeline(tx_id)
+        st.dataframe(pd.DataFrame({"": tl.focal.map({True: "★", False: ""}), "시각": tl.ts.dt.strftime("%H:%M"), "구분": tl.kind, "내용": tl.what, "장소": tl.place,
+                                   "금액": tl.amount.map(lambda v: f"{v:,.0f}" if pd.notna(v) else "")}), hide_index=True, width='stretch', height=min(40 + 36 * len(tl), 320))
+    with b:
+        st.markdown("**관련 거래**")
+        rel = [e["related_tx"].assign(규칙=e["rule_id"][:3]) for e in evs if len(e["related_tx"])]
+        if rel: st.dataframe(pd.concat(rel).drop_duplicates("tx_id"), hide_index=True, width='stretch')
+        else: st.caption("없음")
+with st.expander("배경 보기 — 이 사람 이력 · 동료 비교 · 규정 원문", expanded=False):
+    ctx = ctx or s.get_context(tx_id); h = ctx["history"]; p = ctx["peer"]; pol = s.get_policy(t["account_policy"])
+    st.markdown(f"**이 사람:** 걸림 {h['flagged_tx']}건 · 위반 {h['violations']}건 · 아님 {h['cleared']}건")
+    if p: st.markdown(f"**동료:** {p['account_policy']}×{p['mcc_name']} {p['n']:,}건 중앙값 {p['median']:,.0f}원 → 이 건은 상위 {100-p['percentile_of_this']:.0f}%")
+    if pol:
+        c1, c2 = st.columns(2)
+        c1.markdown("**규정 · 허용**  \n" + pol["dos"].replace("\n", "  \n")); c2.markdown("**규정 · 금지**  \n" + pol["donts"].replace("\n", "  \n"))
+    with st.expander("최근 거래 20건 · 원본 근거 JSON"):
+        r = ctx["recent_tx"]; st.dataframe(r.assign(규칙=r.rules.map(lambda l: " ".join(x[:3] for x in l))).drop(columns=["rules"]), hide_index=True, width='stretch')
+        st.json({e["rule_id"]: e["evidence"] for e in evs}, expanded=False)
