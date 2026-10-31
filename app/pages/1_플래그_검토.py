@@ -70,7 +70,7 @@ with left:
     pre = s.get_precedents(tx_id)
     if pre["cases"]:
         top = pre["cases"][0]
-        with st.popover(f"📁 비슷한 징계사례 {len(pre['cases'])}건 · 가장 가까운: “{top['title']}”"):
+        with st.expander(f"📁 비슷한 징계사례 {len(pre['cases'])}건 · 가장 가까운: “{top['title']}”", expanded=False):
             st.caption("규칙이 겹치는 사례입니다. 사례가 있다는 것이 위반을 뜻하지는 않습니다. 겹치는 점과 다른 점을 함께 보세요.")
             for c in pre["cases"]:
                 with st.container(border=True):
