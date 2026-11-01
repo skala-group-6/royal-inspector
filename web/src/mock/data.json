@@ -1,0 +1,3053 @@
+{
+ "period": {
+  "period_from": "2025-03-01",
+  "period_to": "2025-03-31"
+ },
+ "queue": [
+  {
+   "tx_id": 11012,
+   "queue_source": "rule",
+   "selection_prob": 1.0,
+   "rank_in_source": 1,
+   "tx_ts": "2025-03-20T22:57:35",
+   "emp_id": 47452,
+   "emp_name": "윤*송",
+   "dept": "CL-GLNQJ2",
+   "rank": "팀원",
+   "account_policy": "의욕관리비",
+   "merchant": "미르노래연습장",
+   "mcc_name": "노래방",
+   "total": 590000,
+   "is_synthetic": false,
+   "rules": [
+    "R02_leave_use",
+    "R08_banned_mcc",
+    "R11_account_mismatch",
+    "R18_approver_conflict"
+   ],
+   "n_rules": 4,
+   "sev": 2,
+   "review_status": "violation",
+   "score": 1.0,
+   "score_learned": 0.939658,
+   "one": 1
+  },
+  {
+   "tx_id": 27215,
+   "queue_source": "rule",
+   "selection_prob": 1.0,
+   "rank_in_source": 237,
+   "tx_ts": "2025-03-17T11:08:52",
+   "emp_id": 231355,
+   "emp_name": "똻*촿",
+   "dept": "YBUWT5",
+   "rank": "팀원",
+   "account_policy": "해외출장비",
+   "merchant": "HOTEL - HAPPY",
+   "mcc_name": "호텔리조트",
+   "total": 3699456,
+   "is_synthetic": false,
+   "rules": [
+    "R03_split_payment",
+    "R16_amount_outlier"
+   ],
+   "n_rules": 2,
+   "sev": 2,
+   "review_status": "unreviewed",
+   "score": 0.508729,
+   "score_learned": 0.056112,
+   "one": 1
+  },
+  {
+   "tx_id": 27214,
+   "queue_source": "rule",
+   "selection_prob": 1.0,
+   "rank_in_source": 257,
+   "tx_ts": "2025-03-17T11:06:11",
+   "emp_id": 231355,
+   "emp_name": "똻*촿",
+   "dept": "YBUWT5",
+   "rank": "팀원",
+   "account_policy": "해외출장비",
+   "merchant": "HOTEL - HAPPY",
+   "mcc_name": "호텔리조트",
+   "total": 2129450,
+   "is_synthetic": false,
+   "rules": [
+    "R03_split_payment",
+    "R16_amount_outlier"
+   ],
+   "n_rules": 2,
+   "sev": 2,
+   "review_status": "unreviewed",
+   "score": 0.49015,
+   "score_learned": 0.016392,
+   "one": 1
+  },
+  {
+   "tx_id": 1,
+   "queue_source": "rule",
+   "selection_prob": 1.0,
+   "rank_in_source": 6486,
+   "tx_ts": "2025-03-24T12:11:11",
+   "emp_id": 432034,
+   "emp_name": "경*아",
+   "dept": "LYQNZ9",
+   "rank": "팀원",
+   "account_policy": "국내출장비",
+   "merchant": "우아한갑순이",
+   "mcc_name": "일반음식점",
+   "total": 10500,
+   "is_synthetic": false,
+   "rules": [
+    "R14_trip_meal_double"
+   ],
+   "n_rules": 1,
+   "sev": 1,
+   "review_status": "unreviewed",
+   "score": 0.077865,
+   "score_learned": 0.504072,
+   "one": 1
+  },
+  {
+   "tx_id": 997,
+   "queue_source": "model",
+   "selection_prob": 1.0,
+   "rank_in_source": 1,
+   "tx_ts": "2025-03-04T14:09:35",
+   "emp_id": 353011,
+   "emp_name": "임*화",
+   "dept": "DF-LNGLN4",
+   "rank": "팀원",
+   "account_policy": "해외출장비",
+   "merchant": "SK pay(대표)_십일번가",
+   "mcc_name": "PG일반(비인증)",
+   "total": 59000,
+   "is_synthetic": false,
+   "rules": [],
+   "n_rules": 0,
+   "sev": 0,
+   "review_status": "unreviewed",
+   "score": 0.0,
+   "score_learned": 0.83406,
+   "one": 1
+  },
+  {
+   "tx_id": 21139,
+   "queue_source": "random",
+   "selection_prob": 0.04324256177508825,
+   "rank_in_source": 1,
+   "tx_ts": "2025-03-06T18:36:47",
+   "emp_id": 560665,
+   "emp_name": "판*서",
+   "dept": "XPRYP9",
+   "rank": "팀원",
+   "account_policy": "석식대",
+   "merchant": "할매순대국",
+   "mcc_name": "일반음식점",
+   "total": 18000,
+   "is_synthetic": false,
+   "rules": [],
+   "n_rules": 0,
+   "sev": 0,
+   "review_status": "unreviewed",
+   "score": 0.0,
+   "score_learned": 0.022033,
+   "one": 1
+  }
+ ],
+ "cases": {
+  "11012": {
+   "tx_id": 11012,
+   "transaction": {
+    "tx_id": 11012,
+    "sap_doc_no": "AD204719082",
+    "settle_type": "법인카드",
+    "account_raw": "의욕관리비",
+    "mid_account": "A-13",
+    "dept": "CL-GLNQJ2",
+    "emp_id": 47452,
+    "emp_name": "윤*송",
+    "reviewer": null,
+    "approver": "현바캬",
+    "approver_id": 701556,
+    "approval_no": 9902401,
+    "acquirer_no": "20250321KOVANDESC    00336860001",
+    "tx_date": "2025-03-20T00:00:00",
+    "tx_time": "22:57:35",
+    "created_date": "2025-03-26T00:00:00",
+    "approved_date": "2025-03-26T00:00:00",
+    "merchant": "미르노래연습장",
+    "merchant_addr": "경기 성남시 분당구 정자일로 192 306지.파크프라자 (정자동)",
+    "project_no": "CC-880957242",
+    "project_name": "(조직)CL-GLNQJ2",
+    "amount": 536364,
+    "vat": 53636,
+    "total": 590000,
+    "prepaid": 0,
+    "cost_center": "CL-GLNQJ2",
+    "memo": "혁혜호무마 제안팀 의욕관리, 오전 반차",
+    "mcc_code": 8402,
+    "mcc_name": "노래방",
+    "has_attachment": false,
+    "is_mobile": false,
+    "rank": "팀원",
+    "title": "Manager",
+    "main_dept": "CL-GLNQJ2",
+    "weekday": "목",
+    "is_holiday": false,
+    "is_remote": false,
+    "is_leave": true,
+    "work_start": "13:00",
+    "work_end": "18:00",
+    "work_hours": 4.0,
+    "night_start": "     ",
+    "night_end": "     ",
+    "night_hours": 0.0,
+    "trip_type": null,
+    "trip_start": "NaT",
+    "trip_end": "NaT",
+    "leave_type": "연차휴가 ",
+    "leave_hours": 4.0,
+    "home_addr": "경기도 용인시 기흥구 한보라로  ",
+    "approver_addr": "경기도 성남시 분당구내정로 (수내 파크타운대림아파트) ",
+    "work_site": "본사",
+    "work_site_addr": "경기도 성남시 분당구",
+    "tx_ts": "2025-03-20T22:57:35",
+    "time_is_dummy": false,
+    "exclude_reason": null,
+    "is_partial_cancel": false,
+    "cancel_of_tx_id": null,
+    "net_total": 590000,
+    "account_policy": "의욕관리비",
+    "is_synthetic": false,
+    "case_id": null
+   },
+   "evidences": [
+    {
+     "rule_id": "R02_leave_use",
+     "rule_name": "휴가 중 사용",
+     "rule_class": "위반 가능",
+     "severity": "violation",
+     "evidence": {
+      "leave_type": "연차휴가 ",
+      "leave_hours": 4.0,
+      "time": "22:57:35",
+      "mcc": "노래방",
+      "total": 590000
+     },
+     "evidence_text": "연차휴가  4.0시간 휴가일 22:57:35에 노래방 590,000원",
+     "related_tx": [],
+     "rule_version": 2,
+     "headline": "휴가일 22:57 사용",
+     "detail": "연차휴가  4.0h · 노래방",
+     "citation": "사적사용 시나리오 '휴가·휴일 사용'",
+     "explain": "HR 휴가 기록(연차·반차 등)이 있는 날의 거래. 휴가 중에는 업무 지출이 발생하기 어렵다."
+    },
+    {
+     "rule_id": "R08_banned_mcc",
+     "rule_name": "금지 업종",
+     "rule_class": "위반 가능",
+     "severity": "violation",
+     "evidence": {
+      "mcc": "노래방",
+      "account": "의욕관리비",
+      "weekday": "목",
+      "time": "22:57:35",
+      "total": 590000
+     },
+     "evidence_text": "금지 업종 노래방, 계정 의욕관리비, 목요일 22:57:35, 590,000원",
+     "related_tx": [],
+     "rule_version": 2,
+     "headline": "금지 업종 노래방",
+     "detail": "계정 의욕관리비 · 목 22:57 · 590,000원",
+     "citation": "의욕관리비 규정 Don'ts: “시내교통비, 유흥주점, 골프장, 스크린골프, 당구장, 스크린 야구, 탁구, 볼링, 방탈출 게임, 경조금, 고”",
+     "explain": "유흥주점·골프장 등 사용이 제한된 업종. 계정별 규정의 Don'ts에 명시되어 있고, 접대비라도 사전 품의와 상대방 정보가 필요."
+    },
+    {
+     "rule_id": "R11_account_mismatch",
+     "rule_name": "업종-계정 불일치",
+     "rule_class": "위반 가능",
+     "severity": "violation",
+     "evidence": {
+      "mcc": "노래방",
+      "account": "의욕관리비",
+      "trip_type": null,
+      "reason": "banned_mcc_not_entertainment_account",
+      "total": 590000
+     },
+     "evidence_text": "업종 노래방와 계정 의욕관리비 불일치 — 금지 업종을 접대비 외 계정으로",
+     "related_tx": [],
+     "rule_version": 2,
+     "headline": "노래방을 접대비 아닌 계정으로",
+     "detail": "계정 의욕관리비",
+     "citation": "의욕관리비 규정 Don'ts: “시내교통비, 유흥주점, 골프장, 스크린골프, 당구장, 스크린 야구, 탁구, 볼링, 방탈출 게임, 경조금, 고”",
+     "explain": "업종이 그 계정에서 허용되지 않음. 예: 주점·골프를 접대비가 아닌 의욕관리비로, 해외출장 중 식사를 출장비 외 계정으로."
+    },
+    {
+     "rule_id": "R18_approver_conflict",
+     "rule_name": "승인자 이해충돌",
+     "rule_class": "위반 가능",
+     "severity": "violation",
+     "evidence": {
+      "approver_sigungu": "성남시 분당구",
+      "merchant_sigungu": "성남시 분당구",
+      "work_sigungu": "성남시 분당구",
+      "mcc": "노래방",
+      "time": "22:57:35",
+      "total": 590000
+     },
+     "evidence_text": "승인자 주거지(성남시 분당구)와 가맹점 지역이 같음. 22:57:35 노래방 590,000원",
+     "related_tx": [],
+     "rule_version": 2,
+     "headline": "승인자 집 근처(성남시 분당구) 가맹점",
+     "detail": "22:57 · 노래방 · 590,000원",
+     "citation": "징계사례 5(팀장이 부하 결제를 승인)",
+     "explain": "저녁·휴일의 식당·주점 결제인데 가맹점이 승인자 주거지와 같은 시·군·구. 승인자가 동석했을 가능성이 있어 승인의 독립성이 의심됨."
+    }
+   ],
+   "context": {
+    "recent_tx": [
+     {
+      "tx_id": 11009,
+      "tx_ts": "2025-03-20T23:39:09",
+      "account_policy": "시내교통비",
+      "merchant": "카카오T일반택시(법인)_4",
+      "mcc_name": "택시",
+      "merchant_addr": "서울 중구 후암로 110 10층 (남대문로5가서울시티타워)",
+      "total": 5000,
+      "rules": [
+       "R02_leave_use"
+      ]
+     },
+     {
+      "tx_id": 11008,
+      "tx_ts": "2025-03-20T23:39:11",
+      "account_policy": "시내교통비",
+      "merchant": "카카오T일반택시_0",
+      "mcc_name": "택시",
+      "merchant_addr": "서울 중구 후암로 110 (남대문로5가서울시티타워10층)",
+      "total": 23000,
+      "rules": [
+       "R02_leave_use"
+      ]
+     },
+     {
+      "tx_id": 11013,
+      "tx_ts": "2025-03-20T20:20:23",
+      "account_policy": "의욕관리비",
+      "merchant": "(주)엠제이푸드씨",
+      "mcc_name": "일반음식점",
+      "merchant_addr": "경기 성남시 분당구 성남대로331번길 7 2층 203호 (정자동정자스",
+      "total": 282500,
+      "rules": [
+       "R02_leave_use",
+       "R18_approver_conflict",
+       "R16_amount_outlier"
+      ]
+     },
+     {
+      "tx_id": 11014,
+      "tx_ts": "2025-03-19T14:39:26",
+      "account_policy": "의욕관리비",
+      "merchant": "볼리커피(BOLLE COFFEE)",
+      "mcc_name": "커피전문점",
+      "merchant_addr": "서울 용산구 한강대로71길 4 1층 (갈월동갈월동 오피스)",
+      "total": 6000,
+      "rules": []
+     },
+     {
+      "tx_id": 11015,
+      "tx_ts": "2025-03-19T14:12:34",
+      "account_policy": "의욕관리비",
+      "merchant": "볼리커피(BOLLE COFFEE)",
+      "mcc_name": "커피전문점",
+      "merchant_addr": "서울 용산구 한강대로71길 4 1층 (갈월동갈월동 오피스)",
+      "total": 6800,
+      "rules": []
+     },
+     {
+      "tx_id": 11010,
+      "tx_ts": "2025-03-19T14:07:16",
+      "account_policy": "시내교통비",
+      "merchant": "카카오T일반택시_0",
+      "mcc_name": "택시",
+      "merchant_addr": "서울 중구 후암로 110 (남대문로5가서울시티타워10층)",
+      "total": 31200,
+      "rules": []
+     },
+     {
+      "tx_id": 11011,
+      "tx_ts": "2025-03-18T21:09:43",
+      "account_policy": "시내교통비",
+      "merchant": "이동의즐거움_택시_0",
+      "mcc_name": "택시",
+      "merchant_addr": "서울 중구 청계천로 24 10층 (다동케이스퀘어시티)",
+      "total": 17200,
+      "rules": []
+     },
+     {
+      "tx_id": 11017,
+      "tx_ts": "2025-03-18T20:37:38",
+      "account_policy": "의욕관리비",
+      "merchant": "모토이시 정자",
+      "mcc_name": "일반음식점",
+      "merchant_addr": "경기 성남시 분당구 성남대로331번길 13 111호 (정자동)",
+      "total": 162100,
+      "rules": [
+       "R18_approver_conflict",
+       "R16_amount_outlier"
+      ]
+     },
+     {
+      "tx_id": 11016,
+      "tx_ts": "2025-03-18T15:19:16",
+      "account_policy": "의욕관리비",
+      "merchant": "스타벅스코리아",
+      "mcc_name": "커피전문점",
+      "merchant_addr": "서울 중구 퇴계로 100 8~10층 (회현동2가)",
+      "total": 23200,
+      "rules": []
+     },
+     {
+      "tx_id": 11018,
+      "tx_ts": "2025-03-17T13:30:01",
+      "account_policy": "의욕관리비",
+      "merchant": "스타벅스코리아",
+      "mcc_name": "커피전문점",
+      "merchant_addr": "서울 중구 퇴계로 100 8~10층 (회현동2가)",
+      "total": 10600,
+      "rules": []
+     },
+     {
+      "tx_id": 7027,
+      "tx_ts": "2025-03-16T20:07:42",
+      "account_policy": "의욕관리비",
+      "merchant": "늘푸른목장 분당점",
+      "mcc_name": "일반음식점",
+      "merchant_addr": "경기 성남시 분당구 성남대로331번길 13 1층 119호120호 (정자동",
+      "total": 256000,
+      "rules": [
+       "R01_holiday_use",
+       "R16_amount_outlier"
+      ]
+     },
+     {
+      "tx_id": 7026,
+      "tx_ts": "2025-03-16T13:39:40",
+      "account_policy": "의욕관리비",
+      "merchant": "스타벅스코리아",
+      "mcc_name": "커피전문점",
+      "merchant_addr": "서울 중구 퇴계로 100 8~10층 (회현동2가)",
+      "total": 27300,
+      "rules": [
+       "R01_holiday_use"
+      ]
+     },
+     {
+      "tx_id": 11007,
+      "tx_ts": "2025-03-25T20:29:41",
+      "account_policy": "의욕관리비",
+      "merchant": "늘푸른목장 분당점",
+      "mcc_name": "일반음식점",
+      "merchant_addr": "경기 성남시 분당구 성남대로331번길 13 1층 119호120호 (정자동",
+      "total": 151000,
+      "rules": [
+       "R18_approver_conflict",
+       "R16_amount_outlier"
+      ]
+     },
+     {
+      "tx_id": 11006,
+      "tx_ts": "2025-03-25T21:25:49",
+      "account_policy": "시내교통비",
+      "merchant": "티머니개인택시1",
+      "mcc_name": "택시",
+      "merchant_addr": "서울 중구 후암로 110 10층 (남대문로5가서울시티타워)",
+      "total": 17700,
+      "rules": []
+     },
+     {
+      "tx_id": 7028,
+      "tx_ts": "2025-03-14T19:14:54",
+      "account_policy": "의욕관리비",
+      "merchant": "솔밭",
+      "mcc_name": "일반음식점",
+      "merchant_addr": "경기 성남시 분당구 성남대로331번길 11-15 (정자동봉우빌딩 1층",
+      "total": 206000,
+      "rules": [
+       "R16_amount_outlier"
+      ]
+     },
+     {
+      "tx_id": 11019,
+      "tx_ts": "2025-03-13T23:36:23",
+      "account_policy": "의욕관리비",
+      "merchant": "이자카야잔잔 정자점",
+      "mcc_name": "일식전문점",
+      "merchant_addr": "경기 성남시 분당구 정자일로 192 101호 (정자동지파크프라자)",
+      "total": 201000,
+      "rules": [
+       "R16_amount_outlier"
+      ]
+     },
+     {
+      "tx_id": 11020,
+      "tx_ts": "2025-03-09T19:02:02",
+      "account_policy": "의욕관리비",
+      "merchant": "솔밭",
+      "mcc_name": "일반음식점",
+      "merchant_addr": "경기 성남시 분당구 성남대로331번길 11-15 (정자동봉우빌딩 1층",
+      "total": 118500,
+      "rules": [
+       "R18_approver_conflict",
+       "R01_holiday_use",
+       "R16_amount_outlier"
+      ]
+     },
+     {
+      "tx_id": 11026,
+      "tx_ts": "2025-03-08T14:13:37",
+      "account_policy": "의욕관리비",
+      "merchant": "스타벅스코리아",
+      "mcc_name": "커피전문점",
+      "merchant_addr": "서울 중구 퇴계로 100 8~10층 (회현동2가)",
+      "total": 29600,
+      "rules": []
+     },
+     {
+      "tx_id": 11022,
+      "tx_ts": "2025-03-07T21:30:30",
+      "account_policy": "시내교통비",
+      "merchant": "티머니개인택시1",
+      "mcc_name": "택시",
+      "merchant_addr": "서울 중구 후암로 110 10층 (남대문로5가서울시티타워)",
+      "total": 13500,
+      "rules": []
+     },
+     {
+      "tx_id": 11027,
+      "tx_ts": "2025-03-07T13:19:46",
+      "account_policy": "의욕관리비",
+      "merchant": "이춘복참치",
+      "mcc_name": "일식전문점",
+      "merchant_addr": "서울 용산구 남영동 85-1 지상1층",
+      "total": 126000,
+      "rules": [
+       "R16_amount_outlier"
+      ]
+     }
+    ],
+    "peer": {
+     "account_policy": "의욕관리비",
+     "mcc_name": "노래방",
+     "n": 1,
+     "median": 35000.0,
+     "p90": 35000.0,
+     "percentile_of_this": 100.0,
+     "point_in_time": true
+    },
+    "access_same_day": [
+     {
+      "access_ts": "2025-03-20T13:52:52",
+      "gate": "본사-1F 고층부 S/G IN 2",
+      "event": "정상입문",
+      "direction": "in"
+     },
+     {
+      "access_ts": "2025-03-20T13:54:12",
+      "gate": "본사-25F 남측 고층부 E/V홀",
+      "event": "정상입문",
+      "direction": "in"
+     },
+     {
+      "access_ts": "2025-03-20T16:16:33",
+      "gate": "본사-25F 남측 고층부 E/V홀",
+      "event": "정상입문",
+      "direction": "in"
+     },
+     {
+      "access_ts": "2025-03-20T16:52:09",
+      "gate": "본사-1F 고층부 S/G OUT 2",
+      "event": "정상입문",
+      "direction": "in"
+     },
+     {
+      "access_ts": "2025-03-20T17:02:17",
+      "gate": "본사-1F 고층부 S/G IN 2",
+      "event": "정상입문",
+      "direction": "in"
+     },
+     {
+      "access_ts": "2025-03-20T17:05:08",
+      "gate": "본사-25F 남측 고층부 E/V홀",
+      "event": "정상입문",
+      "direction": "in"
+     },
+     {
+      "access_ts": "2025-03-20T17:34:25",
+      "gate": "본사-8F 남측 고층부 E/V홀",
+      "event": "정상입문",
+      "direction": "in"
+     },
+     {
+      "access_ts": "2025-03-20T17:42:08",
+      "gate": "본사-25F 남측 고층부 E/V홀",
+      "event": "정상입문",
+      "direction": "in"
+     },
+     {
+      "access_ts": "2025-03-20T18:16:26",
+      "gate": "본사-1F 고층부 S/G OUT 1",
+      "event": "정상입문",
+      "direction": "in"
+     }
+    ],
+    "trip": null,
+    "leave": {
+     "type": "연차휴가 ",
+     "hours": 4.0
+    },
+    "holiday": false,
+    "history": {
+     "flagged_tx": 15,
+     "violations": 1,
+     "cleared": 0
+    }
+   },
+   "timeline": [
+    {
+     "ts": "2025-03-20T13:52:52",
+     "kind": "출입",
+     "what": "본사-1F 고층부 S/G IN 2 · 정상입문",
+     "place": "본사",
+     "amount": null,
+     "focal": false
+    },
+    {
+     "ts": "2025-03-20T13:54:12",
+     "kind": "출입",
+     "what": "본사-25F 남측 고층부 E/V홀 · 정상입문",
+     "place": "본사",
+     "amount": null,
+     "focal": false
+    },
+    {
+     "ts": "2025-03-20T16:16:33",
+     "kind": "출입",
+     "what": "본사-25F 남측 고층부 E/V홀 · 정상입문",
+     "place": "본사",
+     "amount": null,
+     "focal": false
+    },
+    {
+     "ts": "2025-03-20T16:52:09",
+     "kind": "출입",
+     "what": "본사-1F 고층부 S/G OUT 2 · 정상입문",
+     "place": "본사",
+     "amount": null,
+     "focal": false
+    },
+    {
+     "ts": "2025-03-20T17:02:17",
+     "kind": "출입",
+     "what": "본사-1F 고층부 S/G IN 2 · 정상입문",
+     "place": "본사",
+     "amount": null,
+     "focal": false
+    },
+    {
+     "ts": "2025-03-20T17:05:08",
+     "kind": "출입",
+     "what": "본사-25F 남측 고층부 E/V홀 · 정상입문",
+     "place": "본사",
+     "amount": null,
+     "focal": false
+    },
+    {
+     "ts": "2025-03-20T17:34:25",
+     "kind": "출입",
+     "what": "본사-8F 남측 고층부 E/V홀 · 정상입문",
+     "place": "본사",
+     "amount": null,
+     "focal": false
+    },
+    {
+     "ts": "2025-03-20T17:42:08",
+     "kind": "출입",
+     "what": "본사-25F 남측 고층부 E/V홀 · 정상입문",
+     "place": "본사",
+     "amount": null,
+     "focal": false
+    },
+    {
+     "ts": "2025-03-20T18:16:26",
+     "kind": "출입",
+     "what": "본사-1F 고층부 S/G OUT 1 · 정상입문",
+     "place": "본사",
+     "amount": null,
+     "focal": false
+    },
+    {
+     "ts": "2025-03-20T20:20:23",
+     "kind": "카드",
+     "what": "(주)엠제이푸드씨 · 일반음식점",
+     "place": "성남시 분당구",
+     "amount": 282500,
+     "focal": false
+    },
+    {
+     "ts": "2025-03-20T22:57:35",
+     "kind": "카드",
+     "what": "미르노래연습장 · 노래방",
+     "place": "성남시 분당구",
+     "amount": 590000,
+     "focal": true
+    },
+    {
+     "ts": "2025-03-20T23:39:09",
+     "kind": "카드",
+     "what": "카카오T일반택시(법인)_4 · 택시",
+     "place": "중구",
+     "amount": 5000,
+     "focal": false
+    },
+    {
+     "ts": "2025-03-20T23:39:11",
+     "kind": "카드",
+     "what": "카카오T일반택시_0 · 택시",
+     "place": "중구",
+     "amount": 23000,
+     "focal": false
+    }
+   ],
+   "precedents": {
+    "cases": [
+     {
+      "precedent_id": "case:5",
+      "kind": "case",
+      "title": "팀장 집 근처 술집, 부하 결제·팀장 승인",
+      "summary": "팀장이 부하와 팀장 집 근처 고급 술집. 부하가 결제, 팀장이 승인",
+      "cues": [
+       "승인자 주거지와 가맹점 지역 일치",
+       "유흥 업종을 의욕관리비로",
+       "심야 결제"
+      ],
+      "outcome": null,
+      "source": "주요시나리오#5",
+      "score": 0.572,
+      "overlap": [
+       "R08_banned_mcc",
+       "R18_approver_conflict"
+      ],
+      "only_in_precedent": [],
+      "only_in_tx": [
+       "R02_leave_use",
+       "R11_account_mismatch"
+      ]
+     },
+     {
+      "precedent_id": "case:18",
+      "kind": "case",
+      "title": "골프·유흥을 접대비 아닌 계정으로",
+      "summary": "골프·유흥을 접대비 아닌 계정으로 승인 요청",
+      "cues": [
+       "골프장·주점 업종",
+       "접대비가 아닌 계정",
+       "팀장 승인"
+      ],
+      "outcome": null,
+      "source": "주요시나리오#18",
+      "score": 0.522,
+      "overlap": [
+       "R08_banned_mcc",
+       "R11_account_mismatch"
+      ],
+      "only_in_precedent": [],
+      "only_in_tx": [
+       "R02_leave_use",
+       "R18_approver_conflict"
+      ]
+     },
+     {
+      "precedent_id": "case:15",
+      "kind": "case",
+      "title": "해외출장 일당 받고 식사도 카드 결제",
+      "summary": "해외출장 일당 전불 받고 현지 식사를 카드로, 의욕관리비 정산",
+      "cues": [
+       "해외출장 기간 중 식당 결제",
+       "출장비가 아닌 의욕관리비 계정"
+      ],
+      "outcome": null,
+      "source": "주요시나리오#15",
+      "score": 0.234,
+      "overlap": [
+       "R11_account_mismatch"
+      ],
+      "only_in_precedent": [
+       "R14_trip_meal_double"
+      ],
+      "only_in_tx": [
+       "R02_leave_use",
+       "R08_banned_mcc",
+       "R18_approver_conflict"
+      ]
+     }
+    ],
+    "reviews": [],
+    "summary": {
+     "n": 0,
+     "violation": 0,
+     "ok": 0
+    }
+   },
+   "score": {
+    "score": 1.0,
+    "model_version": "v20261101-142910_weak",
+    "top_features": [
+     [
+      "n_violation_rules",
+      0.893951,
+      "걸린 위반등급 규칙 수 4 (↑)"
+     ],
+     [
+      "n_rules",
+      0.446976,
+      "걸린 규칙 수 4 (↑)"
+     ],
+     [
+      "total",
+      0.111744,
+      "금액 590,000 (↑)"
+     ]
+    ],
+    "score_learned": 0.939658,
+    "learned_name": "xgb",
+    "top_features_learned": [
+     [
+      "ctx__is_leave",
+      4.51271,
+      "휴가 1 (↑)"
+     ],
+     [
+      "acct_mcc__all__n_tx",
+      0.240004,
+      "같은 계정×업종 과거 거래 수 1 (↑)"
+     ],
+     [
+      "ctx__on_trip",
+      0.186569,
+      "출장 기간 중 0 (↑)"
+     ]
+    ],
+    "disclaimer": "이 점수는 윤리경영팀 판정이 없는 상태에서 규칙들의 합의로 만든 임시 정답으로 학습한 시연용입니다. 실제 성능은 판정이 쌓인 뒤 같은 스크립트로 재학습하여 단순 정렬 대비로 측정됩니다."
+   },
+   "policy": {
+    "account": "의욕관리비",
+    "description": "구성원이 자발적 의욕적으로 일할 수 있도록 사용되는 금액",
+    "dos": "식당, 주점, 영화관, 일반노래방",
+    "donts": "시내교통비, 유흥주점, 골프장, 스크린골프, 당구장, 스크린 야구, 탁구, 볼링, 방탈출 게임, 경조금, 고객접대, BP인력과 사용한 비용",
+    "required_evidence": ""
+   },
+   "reviews": [
+    {
+     "review_id": "f7fc59496237",
+     "rule_id": "R18_approver_conflict",
+     "decision": "violation",
+     "reason_code": "",
+     "memo": "",
+     "reviewer": "정민교",
+     "created_at": "2026-10-31T14:49:18.479990",
+     "superseded": false
+    },
+    {
+     "review_id": "03c3926521ed",
+     "rule_id": "R08_banned_mcc",
+     "decision": "violation",
+     "reason_code": "",
+     "memo": "",
+     "reviewer": "정민교",
+     "created_at": "2026-10-31T14:49:18.478785",
+     "superseded": false
+    },
+    {
+     "review_id": "2649a0a883c7",
+     "rule_id": "R02_leave_use",
+     "decision": "violation",
+     "reason_code": "",
+     "memo": "",
+     "reviewer": "정민교",
+     "created_at": "2026-10-31T14:49:18.477415",
+     "superseded": false
+    },
+    {
+     "review_id": "b4c309863650",
+     "rule_id": "R11_account_mismatch",
+     "decision": "violation",
+     "reason_code": "",
+     "memo": "",
+     "reviewer": "정민교",
+     "created_at": "2026-10-31T14:49:18.475504",
+     "superseded": false
+    }
+   ]
+  },
+  "27215": {
+   "tx_id": 27215,
+   "transaction": {
+    "tx_id": 27215,
+    "sap_doc_no": "XQ868220953",
+    "settle_type": "법인카드",
+    "account_raw": "해외출장비",
+    "mid_account": "A-8",
+    "dept": "YBUWT5",
+    "emp_id": 231355,
+    "emp_name": "똻*촿",
+    "reviewer": "퍕미사",
+    "approver": "국영진",
+    "approver_id": 25391,
+    "approval_no": 109715,
+    "acquirer_no": "0320250319HV100042786",
+    "tx_date": "2025-03-17T00:00:00",
+    "tx_time": "11:08:52",
+    "created_date": "2025-03-24T00:00:00",
+    "approved_date": "2025-03-27T00:00:00",
+    "merchant": "HOTEL - HAPPY",
+    "merchant_addr": null,
+    "project_no": "D001-753554191",
+    "project_name": "Appl_폴란드 원화천유유ET 23년 폴란드법인 Ph3,4 IT 시스템 구축_Appl서버",
+    "amount": 3699456,
+    "vat": 0,
+    "total": 3699456,
+    "prepaid": 0,
+    "cost_center": "YBUWT5",
+    "memo": " 폴란드 해외출장 숙박비, 2/27~3/20(21박)",
+    "mcc_code": 7011,
+    "mcc_name": "호텔리조트",
+    "has_attachment": true,
+    "is_mobile": false,
+    "rank": "팀원",
+    "title": "Manager",
+    "main_dept": "YBUWT5",
+    "weekday": "월",
+    "is_holiday": false,
+    "is_remote": false,
+    "is_leave": false,
+    "work_start": "08:00",
+    "work_end": "17:00",
+    "work_hours": 8.0,
+    "night_start": "     ",
+    "night_end": "     ",
+    "night_hours": 0.0,
+    "trip_type": "해외출장",
+    "trip_start": "2025-02-27T00:00:00",
+    "trip_end": "2025-03-21T00:00:00",
+    "leave_type": null,
+    "leave_hours": null,
+    "home_addr": null,
+    "approver_addr": "울산광역시 중구 종가로 (서 우정혁신도시 KCC스위첸) ",
+    "work_site": "A 대전",
+    "work_site_addr": "대전광역시 대덕구",
+    "tx_ts": "2025-03-17T11:08:52",
+    "time_is_dummy": false,
+    "exclude_reason": null,
+    "is_partial_cancel": false,
+    "cancel_of_tx_id": null,
+    "net_total": 3699456,
+    "account_policy": "해외출장비",
+    "is_synthetic": false,
+    "case_id": null
+   },
+   "evidences": [
+    {
+     "rule_id": "R03_split_payment",
+     "rule_name": "분할결제",
+     "rule_class": "위반 가능",
+     "severity": "violation",
+     "evidence": {
+      "count_in_window": 3,
+      "window_min": 60,
+      "group_total": 5968287,
+      "merchant": "HOTEL - HAPPY",
+      "near_limit": 500000
+     },
+     "evidence_text": "같은 가맹점(HOTEL - HAPPY)에서 60분 안에 3건, 합계 5,968,287원 (기준 500,000원)",
+     "related_tx": [
+      {
+       "tx_id": 27214,
+       "tx_ts": "2025-03-17T11:06:11",
+       "emp_name": "똻*촿",
+       "account_policy": "해외출장비",
+       "merchant": "HOTEL - HAPPY",
+       "mcc_name": "호텔리조트",
+       "total": 2129450
+      },
+      {
+       "tx_id": 27213,
+       "tx_ts": "2025-03-17T11:07:05",
+       "emp_name": "똻*촿",
+       "account_policy": "해외출장비",
+       "merchant": "HOTEL - HAPPY",
+       "mcc_name": "호텔리조트",
+       "total": 139381
+      }
+     ],
+     "rule_version": 2,
+     "headline": "같은 가게에서 60분 안에 3건 결제",
+     "detail": "합계 5,968,287원 · HOTEL - HAPPY",
+     "citation": "사적사용 시나리오 '선결제와 분할결제' / 징계사례 17(승인권자 회피 목적 2회 결제)",
+     "explain": "같은 사람이 같은 가맹점에서 짧은 시간 안에 여러 번 결제. 승인 한도(건당 50만원 등)를 피하려고 나눠 긁는 패턴. 합계가 기준에 가까울수록 의심."
+    },
+    {
+     "rule_id": "R16_amount_outlier",
+     "rule_name": "동료 대비 금액 과다",
+     "rule_class": "참고",
+     "severity": "advisory",
+     "evidence": {
+      "total": 3699456,
+      "peer_median": 911819.5,
+      "ratio": 4.06,
+      "peer_group": "해외출장비 × 호텔리조트",
+      "peer_n": 86
+     },
+     "evidence_text": "해외출장비 × 호텔리조트 동료 중앙값 911,820원의 4.06배인 3,699,456원 (비교 86건)",
+     "related_tx": [],
+     "rule_version": 2,
+     "headline": "동료 중앙값의 4.06배 금액",
+     "detail": "해외출장비 × 호텔리조트 중앙값 911,820원 vs 3,699,456원",
+     "citation": "징계사례 20(KTX 2배 청구)·22(일당 초과)",
+     "explain": "같은 계정·업종 조합에서 다른 사람들의 중앙값보다 2배 이상 큰 금액. 통계적 이상치이며 정당한 사유가 흔하므로 참고용."
+    }
+   ],
+   "context": {
+    "recent_tx": [
+     {
+      "tx_id": 27213,
+      "tx_ts": "2025-03-17T11:07:05",
+      "account_policy": "해외출장비",
+      "merchant": "HOTEL - HAPPY",
+      "mcc_name": "호텔리조트",
+      "merchant_addr": null,
+      "total": 139381,
+      "rules": [
+       "R03_split_payment"
+      ]
+     },
+     {
+      "tx_id": 27214,
+      "tx_ts": "2025-03-17T11:06:11",
+      "account_policy": "해외출장비",
+      "merchant": "HOTEL - HAPPY",
+      "mcc_name": "호텔리조트",
+      "merchant_addr": null,
+      "total": 2129450,
+      "rules": [
+       "R16_amount_outlier",
+       "R03_split_payment"
+      ]
+     },
+     {
+      "tx_id": 27216,
+      "tx_ts": "2025-03-14T06:41:52",
+      "account_policy": "해외출장비",
+      "merchant": "PHU DAGAS",
+      "mcc_name": "주유소",
+      "merchant_addr": null,
+      "total": 93833,
+      "rules": [
+       "R09_excess_fuel"
+      ]
+     },
+     {
+      "tx_id": 27217,
+      "tx_ts": "2025-03-12T10:57:56",
+      "account_policy": "PJT운영비",
+      "merchant": "JMP S.A. BIEDRONKA 1970",
+      "mcc_name": "슈퍼마켓",
+      "merchant_addr": null,
+      "total": 5331,
+      "rules": []
+     },
+     {
+      "tx_id": 27212,
+      "tx_ts": "2025-03-24T08:36:01",
+      "account_policy": "자택방문교통비",
+      "merchant": "(주)한영동부지점",
+      "mcc_name": "주유소",
+      "merchant_addr": "전북 전주시 덕진구 과학로 198 (전미동1가)",
+      "total": 25744,
+      "rules": [
+       "R17_route_mismatch",
+       "R09_excess_fuel"
+      ]
+     },
+     {
+      "tx_id": 27211,
+      "tx_ts": "2025-03-25T12:37:04",
+      "account_policy": "국내출장비",
+      "merchant": "교동짬뽕",
+      "mcc_name": "중식전문점",
+      "merchant_addr": "충북 증평군 증평읍 초중로 57 1층 (초중리)",
+      "total": 50000,
+      "rules": [
+       "R16_amount_outlier"
+      ]
+     },
+     {
+      "tx_id": 27210,
+      "tx_ts": "2025-03-25T18:30:06",
+      "account_policy": "국내출장비",
+      "merchant": "에스엠하이플러스 주식회사",
+      "mcc_name": "고속도로통행카드",
+      "merchant_addr": "서울 강서구 마곡중앙8로 78 (마곡동)",
+      "total": 6000,
+      "rules": [
+       "R06_same_time_diff_place"
+      ]
+     },
+     {
+      "tx_id": 27209,
+      "tx_ts": "2025-03-25T18:34:39",
+      "account_policy": "국내출장비",
+      "merchant": "오창(통영방향)휴게소 주유소 ㈜바이오시스",
+      "mcc_name": "주유소",
+      "merchant_addr": "충북 청주시 청원구 오창읍 중부고속도로 19 오창주유소(통영방",
+      "total": 19368,
+      "rules": [
+       "R09_excess_fuel"
+      ]
+     },
+     {
+      "tx_id": 27220,
+      "tx_ts": "2025-03-03T19:30:11",
+      "account_policy": "PJT운영비",
+      "merchant": "THALI HOUSE",
+      "mcc_name": "식당",
+      "merchant_addr": null,
+      "total": 226366,
+      "rules": []
+     },
+     {
+      "tx_id": 27219,
+      "tx_ts": "2025-02-27T06:05:37",
+      "account_policy": "해외출장비",
+      "merchant": "카카오_택시_0",
+      "mcc_name": "택시",
+      "merchant_addr": "서울 중구 청계천로 24 10층 (다동케이스퀘어시티)",
+      "total": 8200,
+      "rules": []
+     },
+     {
+      "tx_id": 27218,
+      "tx_ts": "2025-02-27T06:05:35",
+      "account_policy": "해외출장비",
+      "merchant": "카카오_택시9",
+      "mcc_name": "택시",
+      "merchant_addr": "서울 중구 청계천로 24 10층 (다동케이스퀘어시티)",
+      "total": 500,
+      "rules": []
+     },
+     {
+      "tx_id": 27221,
+      "tx_ts": "2025-02-25T13:44:25",
+      "account_policy": "국내출장비",
+      "merchant": "오창(통영방향)휴게소 주유소 ㈜바이오시스",
+      "mcc_name": "주유소",
+      "merchant_addr": "충북 청주시 청원구 오창읍 중부고속도로 19 오창주유소(통영방",
+      "total": 18304,
+      "rules": []
+     },
+     {
+      "tx_id": 27222,
+      "tx_ts": "2025-02-25T13:07:30",
+      "account_policy": "국내출장비",
+      "merchant": "송원칼국수",
+      "mcc_name": "일반음식점",
+      "merchant_addr": "충북 증평군 증평읍 초중로 38 (초중리)",
+      "total": 72000,
+      "rules": [
+       "R14_trip_meal_double",
+       "R16_amount_outlier"
+      ]
+     },
+     {
+      "tx_id": 27223,
+      "tx_ts": "2025-02-24T08:48:26",
+      "account_policy": "자택방문교통비",
+      "merchant": "싼2주유소(주)3공단주유소",
+      "mcc_name": "주유소",
+      "merchant_addr": "전북 완주군 봉동읍 과학로 842 (용암리)",
+      "total": 27120,
+      "rules": [
+       "R17_route_mismatch"
+      ]
+     }
+    ],
+    "peer": {
+     "account_policy": "해외출장비",
+     "mcc_name": "호텔리조트",
+     "n": 67,
+     "median": 912098.0,
+     "p90": 2613185.8,
+     "percentile_of_this": 94.029851,
+     "point_in_time": true
+    },
+    "access_same_day": [],
+    "trip": {
+     "type": "해외출장",
+     "start": "2025-02-27T00:00:00",
+     "end": "2025-03-21T00:00:00"
+    },
+    "leave": null,
+    "holiday": false,
+    "history": {
+     "flagged_tx": 10,
+     "violations": 0,
+     "cleared": 0
+    }
+   },
+   "timeline": [
+    {
+     "ts": "2025-03-17T11:06:11",
+     "kind": "카드",
+     "what": "HOTEL - HAPPY · 호텔리조트",
+     "place": null,
+     "amount": 2129450,
+     "focal": false
+    },
+    {
+     "ts": "2025-03-17T11:07:05",
+     "kind": "카드",
+     "what": "HOTEL - HAPPY · 호텔리조트",
+     "place": null,
+     "amount": 139381,
+     "focal": false
+    },
+    {
+     "ts": "2025-03-17T11:08:52",
+     "kind": "카드",
+     "what": "HOTEL - HAPPY · 호텔리조트",
+     "place": null,
+     "amount": 3699456,
+     "focal": true
+    }
+   ],
+   "precedents": {
+    "cases": [
+     {
+      "precedent_id": "case:17",
+      "kind": "case",
+      "title": "승인권자 회피 목적 2회 분할 결제",
+      "summary": "술집 금액이 커서 승인권자 낮추려 2번 나눠 결제",
+      "cues": [
+       "같은 술집에서 짧은 간격 2건",
+       "합계가 승인 한도 초과",
+       "유흥 업종"
+      ],
+      "outcome": null,
+      "source": "주요시나리오#17",
+      "score": 0.427,
+      "overlap": [
+       "R03_split_payment"
+      ],
+      "only_in_precedent": [
+       "R08_banned_mcc"
+      ],
+      "only_in_tx": [
+       "R16_amount_outlier"
+      ]
+     },
+     {
+      "precedent_id": "case:20",
+      "kind": "case",
+      "title": "KTX 왕복 금액 2배 청구",
+      "summary": "KTX 왕복 금액이 실제의 2배",
+      "cues": [
+       "같은 구간 동료 중앙값의 2배 이상",
+       "반복"
+      ],
+      "outcome": null,
+      "source": "주요시나리오#20",
+      "score": 0.238,
+      "overlap": [
+       "R16_amount_outlier"
+      ],
+      "only_in_precedent": [],
+      "only_in_tx": [
+       "R03_split_payment"
+      ]
+     },
+     {
+      "precedent_id": "case:22",
+      "kind": "case",
+      "title": "장기 출장 일당 기준 초과",
+      "summary": "장기 출장 일당 사후실비가 기준 초과",
+      "cues": [
+       "출장 중 식대 실비가 일비 한도 초과",
+       "반복"
+      ],
+      "outcome": null,
+      "source": "주요시나리오#22",
+      "score": 0.166,
+      "overlap": [
+       "R16_amount_outlier"
+      ],
+      "only_in_precedent": [
+       "R14_trip_meal_double"
+      ],
+      "only_in_tx": [
+       "R03_split_payment"
+      ]
+     }
+    ],
+    "reviews": [],
+    "summary": {
+     "n": 0,
+     "violation": 0,
+     "ok": 0
+    }
+   },
+   "score": {
+    "score": 0.508729,
+    "model_version": "v20261101-142910_weak",
+    "top_features": [
+     [
+      "n_violation_rules",
+      0.254364,
+      "걸린 위반등급 규칙 수 1 (↑)"
+     ],
+     [
+      "n_rules",
+      0.254364,
+      "걸린 규칙 수 2 (↑)"
+     ],
+     [
+      "total",
+      0.127182,
+      "금액 3,699,456 (↑)"
+     ]
+    ],
+    "score_learned": 0.056112,
+    "learned_name": "xgb",
+    "top_features_learned": [
+     [
+      "ctx__on_trip",
+      -1.66628,
+      "출장 기간 중 1 (↓)"
+     ],
+     [
+      "user__all__since_last_min",
+      1.254137,
+      "본인 직전 거래와의 간격(분) 1 (↑)"
+     ],
+     [
+      "acct_mcc__all__p90_total",
+      0.460914,
+      "같은 계정×업종 과거 상위 10% 경계 2,613,185.8 (↑)"
+     ]
+    ],
+    "disclaimer": "이 점수는 윤리경영팀 판정이 없는 상태에서 규칙들의 합의로 만든 임시 정답으로 학습한 시연용입니다. 실제 성능은 판정이 쌓인 뒤 같은 스크립트로 재학습하여 단순 정렬 대비로 측정됩니다."
+   },
+   "policy": {
+    "account": "해외출장비",
+    "description": "임직원의 해외출장에 소요된 비용",
+    "dos": "일비, 교통비, 숙박비, 항공료, 로밍비용, 현지 USIM 구입비용",
+    "donts": "고객사 및 협력사 출장비",
+    "required_evidence": "해외출장품의서\n상세설명(p.33~34)\n교통비 실물티켓"
+   },
+   "reviews": []
+  },
+  "27214": {
+   "tx_id": 27214,
+   "transaction": {
+    "tx_id": 27214,
+    "sap_doc_no": "IQ126896126",
+    "settle_type": "법인카드",
+    "account_raw": "해외출장비",
+    "mid_account": "A-8",
+    "dept": "YBUWT5",
+    "emp_id": 231355,
+    "emp_name": "똻*촿",
+    "reviewer": "퍕미사",
+    "approver": "국영진",
+    "approver_id": 25391,
+    "approval_no": 108795,
+    "acquirer_no": "0320250319HV100042778",
+    "tx_date": "2025-03-17T00:00:00",
+    "tx_time": "11:06:11",
+    "created_date": "2025-03-24T00:00:00",
+    "approved_date": "2025-03-27T00:00:00",
+    "merchant": "HOTEL - HAPPY",
+    "merchant_addr": null,
+    "project_no": "D001-753554191",
+    "project_name": "Appl_폴란드 원화천유유ET 23년 폴란드법인 Ph3,4 IT 시스템 구축_Appl서버",
+    "amount": 2129450,
+    "vat": 0,
+    "total": 2129450,
+    "prepaid": 0,
+    "cost_center": "YBUWT5",
+    "memo": " 폴란드 해외출장 렌트비, 2/27~3/20",
+    "mcc_code": 7011,
+    "mcc_name": "호텔리조트",
+    "has_attachment": true,
+    "is_mobile": false,
+    "rank": "팀원",
+    "title": "Manager",
+    "main_dept": "YBUWT5",
+    "weekday": "월",
+    "is_holiday": false,
+    "is_remote": false,
+    "is_leave": false,
+    "work_start": "08:00",
+    "work_end": "17:00",
+    "work_hours": 8.0,
+    "night_start": "     ",
+    "night_end": "     ",
+    "night_hours": 0.0,
+    "trip_type": "해외출장",
+    "trip_start": "2025-02-27T00:00:00",
+    "trip_end": "2025-03-21T00:00:00",
+    "leave_type": null,
+    "leave_hours": null,
+    "home_addr": null,
+    "approver_addr": "울산광역시 중구 종가로 (서 우정혁신도시 KCC스위첸) ",
+    "work_site": "A 대전",
+    "work_site_addr": "대전광역시 대덕구",
+    "tx_ts": "2025-03-17T11:06:11",
+    "time_is_dummy": false,
+    "exclude_reason": null,
+    "is_partial_cancel": false,
+    "cancel_of_tx_id": null,
+    "net_total": 2129450,
+    "account_policy": "해외출장비",
+    "is_synthetic": false,
+    "case_id": null
+   },
+   "evidences": [
+    {
+     "rule_id": "R03_split_payment",
+     "rule_name": "분할결제",
+     "rule_class": "위반 가능",
+     "severity": "violation",
+     "evidence": {
+      "count_in_window": 3,
+      "window_min": 60,
+      "group_total": 5968287,
+      "merchant": "HOTEL - HAPPY",
+      "near_limit": 500000
+     },
+     "evidence_text": "같은 가맹점(HOTEL - HAPPY)에서 60분 안에 3건, 합계 5,968,287원 (기준 500,000원)",
+     "related_tx": [
+      {
+       "tx_id": 27213,
+       "tx_ts": "2025-03-17T11:07:05",
+       "emp_name": "똻*촿",
+       "account_policy": "해외출장비",
+       "merchant": "HOTEL - HAPPY",
+       "mcc_name": "호텔리조트",
+       "total": 139381
+      },
+      {
+       "tx_id": 27215,
+       "tx_ts": "2025-03-17T11:08:52",
+       "emp_name": "똻*촿",
+       "account_policy": "해외출장비",
+       "merchant": "HOTEL - HAPPY",
+       "mcc_name": "호텔리조트",
+       "total": 3699456
+      }
+     ],
+     "rule_version": 2,
+     "headline": "같은 가게에서 60분 안에 3건 결제",
+     "detail": "합계 5,968,287원 · HOTEL - HAPPY",
+     "citation": "사적사용 시나리오 '선결제와 분할결제' / 징계사례 17(승인권자 회피 목적 2회 결제)",
+     "explain": "같은 사람이 같은 가맹점에서 짧은 시간 안에 여러 번 결제. 승인 한도(건당 50만원 등)를 피하려고 나눠 긁는 패턴. 합계가 기준에 가까울수록 의심."
+    },
+    {
+     "rule_id": "R16_amount_outlier",
+     "rule_name": "동료 대비 금액 과다",
+     "rule_class": "참고",
+     "severity": "advisory",
+     "evidence": {
+      "total": 2129450,
+      "peer_median": 911819.5,
+      "ratio": 2.34,
+      "peer_group": "해외출장비 × 호텔리조트",
+      "peer_n": 86
+     },
+     "evidence_text": "해외출장비 × 호텔리조트 동료 중앙값 911,820원의 2.34배인 2,129,450원 (비교 86건)",
+     "related_tx": [],
+     "rule_version": 2,
+     "headline": "동료 중앙값의 2.34배 금액",
+     "detail": "해외출장비 × 호텔리조트 중앙값 911,820원 vs 2,129,450원",
+     "citation": "징계사례 20(KTX 2배 청구)·22(일당 초과)",
+     "explain": "같은 계정·업종 조합에서 다른 사람들의 중앙값보다 2배 이상 큰 금액. 통계적 이상치이며 정당한 사유가 흔하므로 참고용."
+    }
+   ],
+   "context": {
+    "recent_tx": [
+     {
+      "tx_id": 27213,
+      "tx_ts": "2025-03-17T11:07:05",
+      "account_policy": "해외출장비",
+      "merchant": "HOTEL - HAPPY",
+      "mcc_name": "호텔리조트",
+      "merchant_addr": null,
+      "total": 139381,
+      "rules": [
+       "R03_split_payment"
+      ]
+     },
+     {
+      "tx_id": 27215,
+      "tx_ts": "2025-03-17T11:08:52",
+      "account_policy": "해외출장비",
+      "merchant": "HOTEL - HAPPY",
+      "mcc_name": "호텔리조트",
+      "merchant_addr": null,
+      "total": 3699456,
+      "rules": [
+       "R03_split_payment",
+       "R16_amount_outlier"
+      ]
+     },
+     {
+      "tx_id": 27216,
+      "tx_ts": "2025-03-14T06:41:52",
+      "account_policy": "해외출장비",
+      "merchant": "PHU DAGAS",
+      "mcc_name": "주유소",
+      "merchant_addr": null,
+      "total": 93833,
+      "rules": [
+       "R09_excess_fuel"
+      ]
+     },
+     {
+      "tx_id": 27217,
+      "tx_ts": "2025-03-12T10:57:56",
+      "account_policy": "PJT운영비",
+      "merchant": "JMP S.A. BIEDRONKA 1970",
+      "mcc_name": "슈퍼마켓",
+      "merchant_addr": null,
+      "total": 5331,
+      "rules": []
+     },
+     {
+      "tx_id": 27212,
+      "tx_ts": "2025-03-24T08:36:01",
+      "account_policy": "자택방문교통비",
+      "merchant": "(주)한영동부지점",
+      "mcc_name": "주유소",
+      "merchant_addr": "전북 전주시 덕진구 과학로 198 (전미동1가)",
+      "total": 25744,
+      "rules": [
+       "R09_excess_fuel",
+       "R17_route_mismatch"
+      ]
+     },
+     {
+      "tx_id": 27211,
+      "tx_ts": "2025-03-25T12:37:04",
+      "account_policy": "국내출장비",
+      "merchant": "교동짬뽕",
+      "mcc_name": "중식전문점",
+      "merchant_addr": "충북 증평군 증평읍 초중로 57 1층 (초중리)",
+      "total": 50000,
+      "rules": [
+       "R16_amount_outlier"
+      ]
+     },
+     {
+      "tx_id": 27210,
+      "tx_ts": "2025-03-25T18:30:06",
+      "account_policy": "국내출장비",
+      "merchant": "에스엠하이플러스 주식회사",
+      "mcc_name": "고속도로통행카드",
+      "merchant_addr": "서울 강서구 마곡중앙8로 78 (마곡동)",
+      "total": 6000,
+      "rules": [
+       "R06_same_time_diff_place"
+      ]
+     },
+     {
+      "tx_id": 27209,
+      "tx_ts": "2025-03-25T18:34:39",
+      "account_policy": "국내출장비",
+      "merchant": "오창(통영방향)휴게소 주유소 ㈜바이오시스",
+      "mcc_name": "주유소",
+      "merchant_addr": "충북 청주시 청원구 오창읍 중부고속도로 19 오창주유소(통영방",
+      "total": 19368,
+      "rules": [
+       "R09_excess_fuel"
+      ]
+     },
+     {
+      "tx_id": 27220,
+      "tx_ts": "2025-03-03T19:30:11",
+      "account_policy": "PJT운영비",
+      "merchant": "THALI HOUSE",
+      "mcc_name": "식당",
+      "merchant_addr": null,
+      "total": 226366,
+      "rules": []
+     },
+     {
+      "tx_id": 27219,
+      "tx_ts": "2025-02-27T06:05:37",
+      "account_policy": "해외출장비",
+      "merchant": "카카오_택시_0",
+      "mcc_name": "택시",
+      "merchant_addr": "서울 중구 청계천로 24 10층 (다동케이스퀘어시티)",
+      "total": 8200,
+      "rules": []
+     },
+     {
+      "tx_id": 27218,
+      "tx_ts": "2025-02-27T06:05:35",
+      "account_policy": "해외출장비",
+      "merchant": "카카오_택시9",
+      "mcc_name": "택시",
+      "merchant_addr": "서울 중구 청계천로 24 10층 (다동케이스퀘어시티)",
+      "total": 500,
+      "rules": []
+     },
+     {
+      "tx_id": 27221,
+      "tx_ts": "2025-02-25T13:44:25",
+      "account_policy": "국내출장비",
+      "merchant": "오창(통영방향)휴게소 주유소 ㈜바이오시스",
+      "mcc_name": "주유소",
+      "merchant_addr": "충북 청주시 청원구 오창읍 중부고속도로 19 오창주유소(통영방",
+      "total": 18304,
+      "rules": []
+     },
+     {
+      "tx_id": 27222,
+      "tx_ts": "2025-02-25T13:07:30",
+      "account_policy": "국내출장비",
+      "merchant": "송원칼국수",
+      "mcc_name": "일반음식점",
+      "merchant_addr": "충북 증평군 증평읍 초중로 38 (초중리)",
+      "total": 72000,
+      "rules": [
+       "R16_amount_outlier",
+       "R14_trip_meal_double"
+      ]
+     },
+     {
+      "tx_id": 27223,
+      "tx_ts": "2025-02-24T08:48:26",
+      "account_policy": "자택방문교통비",
+      "merchant": "싼2주유소(주)3공단주유소",
+      "mcc_name": "주유소",
+      "merchant_addr": "전북 완주군 봉동읍 과학로 842 (용암리)",
+      "total": 27120,
+      "rules": [
+       "R17_route_mismatch"
+      ]
+     }
+    ],
+    "peer": {
+     "account_policy": "해외출장비",
+     "mcc_name": "호텔리조트",
+     "n": 65,
+     "median": 912098.0,
+     "p90": 2766899.2,
+     "percentile_of_this": 83.076923,
+     "point_in_time": true
+    },
+    "access_same_day": [],
+    "trip": {
+     "type": "해외출장",
+     "start": "2025-02-27T00:00:00",
+     "end": "2025-03-21T00:00:00"
+    },
+    "leave": null,
+    "holiday": false,
+    "history": {
+     "flagged_tx": 10,
+     "violations": 0,
+     "cleared": 0
+    }
+   },
+   "timeline": [
+    {
+     "ts": "2025-03-17T11:06:11",
+     "kind": "카드",
+     "what": "HOTEL - HAPPY · 호텔리조트",
+     "place": null,
+     "amount": 2129450,
+     "focal": true
+    },
+    {
+     "ts": "2025-03-17T11:07:05",
+     "kind": "카드",
+     "what": "HOTEL - HAPPY · 호텔리조트",
+     "place": null,
+     "amount": 139381,
+     "focal": false
+    },
+    {
+     "ts": "2025-03-17T11:08:52",
+     "kind": "카드",
+     "what": "HOTEL - HAPPY · 호텔리조트",
+     "place": null,
+     "amount": 3699456,
+     "focal": false
+    }
+   ],
+   "precedents": {
+    "cases": [
+     {
+      "precedent_id": "case:17",
+      "kind": "case",
+      "title": "승인권자 회피 목적 2회 분할 결제",
+      "summary": "술집 금액이 커서 승인권자 낮추려 2번 나눠 결제",
+      "cues": [
+       "같은 술집에서 짧은 간격 2건",
+       "합계가 승인 한도 초과",
+       "유흥 업종"
+      ],
+      "outcome": null,
+      "source": "주요시나리오#17",
+      "score": 0.427,
+      "overlap": [
+       "R03_split_payment"
+      ],
+      "only_in_precedent": [
+       "R08_banned_mcc"
+      ],
+      "only_in_tx": [
+       "R16_amount_outlier"
+      ]
+     },
+     {
+      "precedent_id": "case:20",
+      "kind": "case",
+      "title": "KTX 왕복 금액 2배 청구",
+      "summary": "KTX 왕복 금액이 실제의 2배",
+      "cues": [
+       "같은 구간 동료 중앙값의 2배 이상",
+       "반복"
+      ],
+      "outcome": null,
+      "source": "주요시나리오#20",
+      "score": 0.238,
+      "overlap": [
+       "R16_amount_outlier"
+      ],
+      "only_in_precedent": [],
+      "only_in_tx": [
+       "R03_split_payment"
+      ]
+     },
+     {
+      "precedent_id": "case:22",
+      "kind": "case",
+      "title": "장기 출장 일당 기준 초과",
+      "summary": "장기 출장 일당 사후실비가 기준 초과",
+      "cues": [
+       "출장 중 식대 실비가 일비 한도 초과",
+       "반복"
+      ],
+      "outcome": null,
+      "source": "주요시나리오#22",
+      "score": 0.166,
+      "overlap": [
+       "R16_amount_outlier"
+      ],
+      "only_in_precedent": [
+       "R14_trip_meal_double"
+      ],
+      "only_in_tx": [
+       "R03_split_payment"
+      ]
+     }
+    ],
+    "reviews": [],
+    "summary": {
+     "n": 0,
+     "violation": 0,
+     "ok": 0
+    }
+   },
+   "score": {
+    "score": 0.49015,
+    "model_version": "v20261101-142910_weak",
+    "top_features": [
+     [
+      "n_violation_rules",
+      0.245075,
+      "걸린 위반등급 규칙 수 1 (↑)"
+     ],
+     [
+      "n_rules",
+      0.245075,
+      "걸린 규칙 수 2 (↑)"
+     ],
+     [
+      "total",
+      0.122537,
+      "금액 2,129,450 (↑)"
+     ]
+    ],
+    "score_learned": 0.016392,
+    "learned_name": "xgb",
+    "top_features_learned": [
+     [
+      "ctx__on_trip",
+      -1.575381,
+      "출장 기간 중 1 (↓)"
+     ],
+     [
+      "acct_mcc__all__p90_total",
+      0.490173,
+      "같은 계정×업종 과거 상위 10% 경계 2,766,899.2 (↑)"
+     ],
+     [
+      "ctx__is_leave",
+      -0.420218,
+      "휴가 0 (↓)"
+     ]
+    ],
+    "disclaimer": "이 점수는 윤리경영팀 판정이 없는 상태에서 규칙들의 합의로 만든 임시 정답으로 학습한 시연용입니다. 실제 성능은 판정이 쌓인 뒤 같은 스크립트로 재학습하여 단순 정렬 대비로 측정됩니다."
+   },
+   "policy": {
+    "account": "해외출장비",
+    "description": "임직원의 해외출장에 소요된 비용",
+    "dos": "일비, 교통비, 숙박비, 항공료, 로밍비용, 현지 USIM 구입비용",
+    "donts": "고객사 및 협력사 출장비",
+    "required_evidence": "해외출장품의서\n상세설명(p.33~34)\n교통비 실물티켓"
+   },
+   "reviews": []
+  },
+  "1": {
+   "tx_id": 1,
+   "transaction": {
+    "tx_id": 1,
+    "sap_doc_no": "MM807927185",
+    "settle_type": "법인카드",
+    "account_raw": "국내출장비",
+    "mid_account": "A-8",
+    "dept": "LYQNZ9",
+    "emp_id": 432034,
+    "emp_name": "경*아",
+    "reviewer": null,
+    "approver": "뼹마경",
+    "approver_id": 141157,
+    "approval_no": 23875604,
+    "acquirer_no": "20250325KFTCDESC     00001810008",
+    "tx_date": "2025-03-24T00:00:00",
+    "tx_time": "12:11:11",
+    "created_date": "2025-03-28T00:00:00",
+    "approved_date": "2025-03-31T00:00:00",
+    "merchant": "우아한갑순이",
+    "merchant_addr": "서울 종로구 인사동5길 14 지하1층 (관훈동)",
+    "project_no": "CC-911570203",
+    "project_name": "(조직)LYQNZ9",
+    "amount": 9547,
+    "vat": 953,
+    "total": 10500,
+    "prepaid": 0,
+    "cost_center": "LYQNZ9",
+    "memo": "Refresh3.5(오후), 계태남안라 차세대 MES 구축 제안서 작성 중 커피",
+    "mcc_code": 2301,
+    "mcc_name": "일반음식점",
+    "has_attachment": false,
+    "is_mobile": false,
+    "rank": "팀원",
+    "title": "Manager",
+    "main_dept": "LYQNZ9",
+    "weekday": "월",
+    "is_holiday": false,
+    "is_remote": false,
+    "is_leave": true,
+    "work_start": "09:00",
+    "work_end": "18:00",
+    "work_hours": 4.5,
+    "night_start": "     ",
+    "night_end": "     ",
+    "night_hours": 0.0,
+    "trip_type": "국내출장",
+    "trip_start": "2025-03-24T00:00:00",
+    "trip_end": "2025-03-28T00:00:00",
+    "leave_type": "Refresh ",
+    "leave_hours": 3.5,
+    "home_addr": "경기도 수원시 영통구 영통로 (망포 LG수원자이아파트) ",
+    "approver_addr": "충청남도 천안시 서북구 성성로 레이크타운푸르지오 차 ",
+    "work_site": "판교 1동",
+    "work_site_addr": "경기도 성남시 분당구",
+    "tx_ts": "2025-03-24T12:11:11",
+    "time_is_dummy": false,
+    "exclude_reason": null,
+    "is_partial_cancel": false,
+    "cancel_of_tx_id": null,
+    "net_total": 10500,
+    "account_policy": "국내출장비",
+    "is_synthetic": false,
+    "case_id": null
+   },
+   "evidences": [
+    {
+     "rule_id": "R14_trip_meal_double",
+     "rule_name": "출장 중 식사 카드 결제",
+     "rule_class": "참고",
+     "severity": "advisory",
+     "evidence": {
+      "trip_type": "국내출장",
+      "trip": "2025-03-24~2025-03-28",
+      "mcc": "일반음식점",
+      "account": "국내출장비",
+      "total": 10500
+     },
+     "evidence_text": "국내출장(2025-03-24~2025-03-28) 중 일반음식점 10,500원을 국내출장비로 결제",
+     "related_tx": [],
+     "rule_version": 2,
+     "headline": "국내출장 중 식사를 카드로 결제",
+     "detail": "출장 2025-03-24~2025-03-28 · 계정 국내출장비 · 10,500원",
+     "citation": "리더 점검 시나리오 / 징계사례 15·22",
+     "explain": "출장 기간 중 식당·카페 결제. 일당(식비 포함)을 받으면서 식사를 카드로도 결제하면 이중 지급. 일당 지급 방식에 따라 정상일 수 있어 참고용."
+    }
+   ],
+   "context": {
+    "recent_tx": [
+     {
+      "tx_id": 3,
+      "tx_ts": "2025-03-20T20:55:29",
+      "account_policy": "석식대",
+      "merchant": "본가광양불고기",
+      "mcc_name": "일반음식점",
+      "merchant_addr": "경기 성남시 분당구 판교로255번길 9-22 2층 227호 (삼평동판교",
+      "total": 52000,
+      "rules": [
+       "R14_trip_meal_double",
+       "R16_amount_outlier"
+      ]
+     },
+     {
+      "tx_id": 2,
+      "tx_ts": "2025-03-20T12:24:08",
+      "account_policy": "의욕관리비",
+      "merchant": "엠엠티에이치074",
+      "mcc_name": "일반주점",
+      "merchant_addr": "경기 성남시 분당구 판교로255번길 9-22 1층 123호 (삼평동판교",
+      "total": 12800,
+      "rules": [
+       "R08_banned_mcc",
+       "R11_account_mismatch"
+      ]
+     },
+     {
+      "tx_id": 1160,
+      "tx_ts": "2025-03-20T12:20:59",
+      "account_policy": "조직관리비",
+      "merchant": "칭따오",
+      "mcc_name": "중식전문점",
+      "merchant_addr": "경기 성남시 분당구 판교로255번길 9-22 지하1층 B105호 (삼평동",
+      "total": 89000,
+      "rules": []
+     },
+     {
+      "tx_id": 4,
+      "tx_ts": "2025-03-19T23:26:36",
+      "account_policy": "시내교통비",
+      "merchant": "이동의즐거움_택시_0",
+      "mcc_name": "택시",
+      "merchant_addr": "서울 중구 청계천로 24 10층 (다동케이스퀘어시티)",
+      "total": 53100,
+      "rules": [
+       "R16_amount_outlier"
+      ]
+     },
+     {
+      "tx_id": 5,
+      "tx_ts": "2025-03-18T12:14:52",
+      "account_policy": "국내출장비",
+      "merchant": "(주)그레이프",
+      "mcc_name": "일반음식점",
+      "merchant_addr": "서울 종로구 우정국로 26 3층 (공평동)",
+      "total": 18500,
+      "rules": [
+       "R14_trip_meal_double"
+      ]
+     },
+     {
+      "tx_id": 6,
+      "tx_ts": "2025-03-17T12:21:13",
+      "account_policy": "국내출장비",
+      "merchant": "더카페",
+      "mcc_name": "커피전문점",
+      "merchant_addr": "서울 종로구 종로9길 18 103호 (인사동)",
+      "total": 10900,
+      "rules": [
+       "R14_trip_meal_double"
+      ]
+     },
+     {
+      "tx_id": 7,
+      "tx_ts": "2025-03-14T12:43:55",
+      "account_policy": "국내출장비",
+      "merchant": "브루다인사동(주)하나원컴퍼니",
+      "mcc_name": "커피전문점",
+      "merchant_addr": "서울 종로구 우정국로 36 1층 (공평동)",
+      "total": 4800,
+      "rules": [
+       "R14_trip_meal_double"
+      ]
+     },
+     {
+      "tx_id": 8,
+      "tx_ts": "2025-03-14T09:13:29",
+      "account_policy": "국내출장비",
+      "merchant": "브루다인사동(주)하나원컴퍼니",
+      "mcc_name": "커피전문점",
+      "merchant_addr": "서울 종로구 우정국로 36 1층 (공평동)",
+      "total": 8700,
+      "rules": [
+       "R14_trip_meal_double"
+      ]
+     },
+     {
+      "tx_id": 9,
+      "tx_ts": "2025-03-13T12:20:23",
+      "account_policy": "국내출장비",
+      "merchant": "더카페",
+      "mcc_name": "커피전문점",
+      "merchant_addr": "서울 종로구 종로9길 18 103호 (인사동)",
+      "total": 19300,
+      "rules": [
+       "R14_trip_meal_double"
+      ]
+     },
+     {
+      "tx_id": 10,
+      "tx_ts": "2025-03-12T19:48:41",
+      "account_policy": "국내출장비",
+      "merchant": "태성골뱅이",
+      "mcc_name": "일반음식점",
+      "merchant_addr": "서울 중구 을지로3길 35 1층 지하1층지상1층 (다동태성빌딩)",
+      "total": 102000,
+      "rules": [
+       "R14_trip_meal_double",
+       "R16_amount_outlier"
+      ]
+     },
+     {
+      "tx_id": 11,
+      "tx_ts": "2025-03-12T12:38:10",
+      "account_policy": "국내출장비",
+      "merchant": "더카페",
+      "mcc_name": "커피전문점",
+      "merchant_addr": "서울 종로구 종로9길 18 103호 (인사동)",
+      "total": 18300,
+      "rules": [
+       "R14_trip_meal_double"
+      ]
+     },
+     {
+      "tx_id": 12,
+      "tx_ts": "2025-03-11T12:25:46",
+      "account_policy": "국내출장비",
+      "merchant": "더카페",
+      "mcc_name": "커피전문점",
+      "merchant_addr": "서울 종로구 종로9길 18 103호 (인사동)",
+      "total": 17800,
+      "rules": [
+       "R14_trip_meal_double"
+      ]
+     },
+     {
+      "tx_id": 13,
+      "tx_ts": "2025-03-10T15:45:06",
+      "account_policy": "국내출장비",
+      "merchant": "더카페",
+      "mcc_name": "커피전문점",
+      "merchant_addr": "서울 종로구 종로9길 18 103호 (인사동)",
+      "total": 18000,
+      "rules": [
+       "R14_trip_meal_double"
+      ]
+     },
+     {
+      "tx_id": 14,
+      "tx_ts": "2025-03-06T12:35:52",
+      "account_policy": "국내출장비",
+      "merchant": "라인업커피",
+      "mcc_name": "커피전문점",
+      "merchant_addr": "서울 종로구 인사동5길 41 1층 (공평동하나빌딩)",
+      "total": 10000,
+      "rules": [
+       "R14_trip_meal_double"
+      ]
+     },
+     {
+      "tx_id": 15,
+      "tx_ts": "2025-03-05T12:38:44",
+      "account_policy": "국내출장비",
+      "merchant": "(주)그레이프",
+      "mcc_name": "일반음식점",
+      "merchant_addr": "서울 종로구 우정국로 26 3층 (공평동)",
+      "total": 16500,
+      "rules": [
+       "R14_trip_meal_double"
+      ]
+     },
+     {
+      "tx_id": 16,
+      "tx_ts": "2025-02-25T12:21:22",
+      "account_policy": "국내출장비",
+      "merchant": "파인애드에셋(주)",
+      "mcc_name": "일반음식점",
+      "merchant_addr": "서울 중구 을지로3길 30-4 (다동)",
+      "total": 70000,
+      "rules": [
+       "R16_amount_outlier",
+       "R14_trip_meal_double"
+      ]
+     },
+     {
+      "tx_id": 17,
+      "tx_ts": "2025-02-25T09:36:39",
+      "account_policy": "국내출장비",
+      "merchant": "더카페",
+      "mcc_name": "커피전문점",
+      "merchant_addr": "서울 종로구 종로9길 18 103호 (인사동)",
+      "total": 18000,
+      "rules": [
+       "R14_trip_meal_double"
+      ]
+     }
+    ],
+    "peer": {
+     "account_policy": "국내출장비",
+     "mcc_name": "일반음식점",
+     "n": 614,
+     "median": 14100.0,
+     "p90": 39000.0,
+     "percentile_of_this": 33.876221,
+     "point_in_time": true
+    },
+    "access_same_day": [],
+    "trip": {
+     "type": "국내출장",
+     "start": "2025-03-24T00:00:00",
+     "end": "2025-03-28T00:00:00"
+    },
+    "leave": {
+     "type": "Refresh ",
+     "hours": 3.5
+    },
+    "holiday": false,
+    "history": {
+     "flagged_tx": 17,
+     "violations": 0,
+     "cleared": 0
+    }
+   },
+   "timeline": [
+    {
+     "ts": "2025-03-24T12:11:11",
+     "kind": "카드",
+     "what": "우아한갑순이 · 일반음식점",
+     "place": "종로구",
+     "amount": 10500,
+     "focal": true
+    }
+   ],
+   "precedents": {
+    "cases": [
+     {
+      "precedent_id": "case:22",
+      "kind": "case",
+      "title": "장기 출장 일당 기준 초과",
+      "summary": "장기 출장 일당 사후실비가 기준 초과",
+      "cues": [
+       "출장 중 식대 실비가 일비 한도 초과",
+       "반복"
+      ],
+      "outcome": null,
+      "source": "주요시나리오#22",
+      "score": 0.645,
+      "overlap": [
+       "R14_trip_meal_double"
+      ],
+      "only_in_precedent": [
+       "R16_amount_outlier"
+      ],
+      "only_in_tx": []
+     },
+     {
+      "precedent_id": "case:15",
+      "kind": "case",
+      "title": "해외출장 일당 받고 식사도 카드 결제",
+      "summary": "해외출장 일당 전불 받고 현지 식사를 카드로, 의욕관리비 정산",
+      "cues": [
+       "해외출장 기간 중 식당 결제",
+       "출장비가 아닌 의욕관리비 계정"
+      ],
+      "outcome": null,
+      "source": "주요시나리오#15",
+      "score": 0.345,
+      "overlap": [
+       "R14_trip_meal_double"
+      ],
+      "only_in_precedent": [
+       "R11_account_mismatch"
+      ],
+      "only_in_tx": []
+     }
+    ],
+    "reviews": [],
+    "summary": {
+     "n": 0,
+     "violation": 0,
+     "ok": 0
+    }
+   },
+   "score": {
+    "score": 0.077865,
+    "model_version": "v20261101-142910_weak",
+    "top_features": [
+     [
+      "n_violation_rules",
+      0.0,
+      "걸린 위반등급 규칙 수 0 (↓)"
+     ],
+     [
+      "n_rules",
+      0.077865,
+      "걸린 규칙 수 1 (↑)"
+     ],
+     [
+      "total",
+      0.077865,
+      "금액 10,500 (↑)"
+     ]
+    ],
+    "score_learned": 0.504072,
+    "learned_name": "xgb",
+    "top_features_learned": [
+     [
+      "ctx__is_leave",
+      4.616461,
+      "휴가 1 (↑)"
+     ],
+     [
+      "ctx__on_trip",
+      -1.119599,
+      "출장 기간 중 1 (↓)"
+     ],
+     [
+      "approver__all__n_tx",
+      -0.256077,
+      "이 승인자가 과거에 승인한 거래 수 188 (↓)"
+     ]
+    ],
+    "disclaimer": "이 점수는 윤리경영팀 판정이 없는 상태에서 규칙들의 합의로 만든 임시 정답으로 학습한 시연용입니다. 실제 성능은 판정이 쌓인 뒤 같은 스크립트로 재학습하여 단순 정렬 대비로 측정됩니다."
+   },
+   "policy": {
+    "account": "국내출장비",
+    "description": "임직원의 Business Trip (회사 업무 수행을 위해 주 근무지를 벗어나 타 지역으로 일시적으로 이동하여 근무) 시 사용하는 출장 여비",
+    "dos": "교통비(차량 렌트비용 포함),\n숙박비(일 10만원 한도 내 실비),\n일비(일 2.5만원 한도 내 실비)",
+    "donts": "※ 본 프로젝트 수행을 위해 근무 장소가 변경된 파견의 경우는 주근무지 변경에 해당되어 국내출장비 정산 불가, 프로젝트 파견 기준을 따름\n※ 인력관리규정 > 국내출장 참고",
+    "required_evidence": "근태승인서,\n인터넷 숙박 예약 시\n구매 상세내역\n교통비 실물티켓"
+   },
+   "reviews": []
+  },
+  "997": {
+   "tx_id": 997,
+   "transaction": {
+    "tx_id": 997,
+    "sap_doc_no": "OT462458428",
+    "settle_type": "법인카드",
+    "account_raw": "해외출장비",
+    "mid_account": "A-8",
+    "dept": "DF-LNGLN4",
+    "emp_id": 353011,
+    "emp_name": "임*화",
+    "reviewer": "월파카",
+    "approver": "박원규",
+    "approver_id": 605008,
+    "approval_no": 7963304,
+    "acquirer_no": "20250305KICCEDI      00018880023",
+    "tx_date": "2025-03-04T00:00:00",
+    "tx_time": "14:09:35",
+    "created_date": "2025-03-27T00:00:00",
+    "approved_date": "2025-03-28T00:00:00",
+    "merchant": "SK pay(대표)_십일번가",
+    "merchant_addr": "서울 중구 한강대로 416 (남대문로5가)",
+    "project_no": "D001-696074312",
+    "project_name": "계태남안라 22년 반송물류자동화 구축사업_계태남안라H2",
+    "amount": 53637,
+    "vat": 5363,
+    "total": 59000,
+    "prepaid": 0,
+    "cost_center": "DF-LNGLN4",
+    "memo": "계태남안라H2 자동화물류_헝가리 현지출장 통신비 (로밍비)",
+    "mcc_code": 4076,
+    "mcc_name": "PG일반(비인증)",
+    "has_attachment": true,
+    "is_mobile": false,
+    "rank": "팀원",
+    "title": "Manager",
+    "main_dept": "DF-LNGLN4",
+    "weekday": "화",
+    "is_holiday": false,
+    "is_remote": false,
+    "is_leave": true,
+    "work_start": "00:00",
+    "work_end": "00:00",
+    "work_hours": 0.0,
+    "night_start": "     ",
+    "night_end": "     ",
+    "night_hours": 0.0,
+    "trip_type": "해외출장",
+    "trip_start": "2023-11-10T00:00:00",
+    "trip_end": "2025-03-31T00:00:00",
+    "leave_type": "이월연차 ",
+    "leave_hours": 8.0,
+    "home_addr": "서울특별시 성북구 화랑로 래미안 석관 ",
+    "approver_addr": "경기도 성남시 분당구 불정로 효자촌 삼환 아파트 ",
+    "work_site": "판교 1동",
+    "work_site_addr": "경기도 성남시 분당구",
+    "tx_ts": "2025-03-04T14:09:35",
+    "time_is_dummy": false,
+    "exclude_reason": null,
+    "is_partial_cancel": false,
+    "cancel_of_tx_id": null,
+    "net_total": 59000,
+    "account_policy": "해외출장비",
+    "is_synthetic": false,
+    "case_id": null
+   },
+   "evidences": [],
+   "context": {
+    "recent_tx": [
+     {
+      "tx_id": 29125,
+      "tx_ts": "2025-03-04T16:00:00",
+      "account_policy": "해외출장비",
+      "merchant": null,
+      "mcc_name": null,
+      "merchant_addr": null,
+      "total": 2756338,
+      "rules": []
+     },
+     {
+      "tx_id": 994,
+      "tx_ts": "2025-03-06T08:27:38",
+      "account_policy": "해외출장비",
+      "merchant": "카카오T일반택시_0",
+      "mcc_name": "택시",
+      "merchant_addr": "서울 중구 후암로 110 (남대문로5가서울시티타워10층)",
+      "total": 8400,
+      "rules": []
+     },
+     {
+      "tx_id": 993,
+      "tx_ts": "2025-03-06T10:19:24",
+      "account_policy": "소모품비-기타",
+      "merchant": "스카이팜약국",
+      "mcc_name": "약국",
+      "merchant_addr": "인천 중구 공항로 272 제2여객터미널 3층 출국장 (운서동인천공",
+      "total": 28000,
+      "rules": [
+       "R07_outside_trip_area"
+      ]
+     },
+     {
+      "tx_id": 996,
+      "tx_ts": "2025-03-06T17:10:24",
+      "account_policy": "해외출장비",
+      "merchant": "Lender Tamas e.v.",
+      "mcc_name": "택시/버스",
+      "merchant_addr": null,
+      "total": 37445,
+      "rules": []
+     },
+     {
+      "tx_id": 995,
+      "tx_ts": "2025-03-06T17:17:43",
+      "account_policy": "해외출장비",
+      "merchant": "STELLAR MANAGEMENT",
+      "mcc_name": "부동산임대",
+      "merchant_addr": null,
+      "total": 3391222,
+      "rules": []
+     },
+     {
+      "tx_id": 992,
+      "tx_ts": "2025-03-20T06:48:10",
+      "account_policy": "해외출장비",
+      "merchant": "MOL 18350 sz. toltoall",
+      "mcc_name": "주유소",
+      "merchant_addr": null,
+      "total": 110062,
+      "rules": []
+     }
+    ],
+    "peer": {
+     "account_policy": "해외출장비",
+     "mcc_name": "PG일반(비인증)",
+     "n": 17,
+     "median": 59000.0,
+     "p90": 1355010.0,
+     "percentile_of_this": 29.411765,
+     "point_in_time": true
+    },
+    "access_same_day": [],
+    "trip": {
+     "type": "해외출장",
+     "start": "2023-11-10T00:00:00",
+     "end": "2025-03-31T00:00:00"
+    },
+    "leave": {
+     "type": "이월연차 ",
+     "hours": 8.0
+    },
+    "holiday": false,
+    "history": {
+     "flagged_tx": 1,
+     "violations": 0,
+     "cleared": 0
+    }
+   },
+   "timeline": [
+    {
+     "ts": "2025-03-04T14:09:35",
+     "kind": "카드",
+     "what": "SK pay(대표)_십일번가 · PG일반(비인증)",
+     "place": "중구",
+     "amount": 59000,
+     "focal": true
+    },
+    {
+     "ts": "2025-03-04T16:00:00",
+     "kind": "카드",
+     "what": null,
+     "place": null,
+     "amount": 2756338,
+     "focal": false
+    }
+   ],
+   "precedents": {
+    "cases": [],
+    "reviews": [],
+    "summary": {
+     "n": 0,
+     "violation": 0,
+     "ok": 0
+    }
+   },
+   "score": {
+    "score": 0.0,
+    "model_version": "v20261101-142910_weak",
+    "top_features": [
+     [
+      "n_violation_rules",
+      0.0,
+      "걸린 위반등급 규칙 수 0 (↓)"
+     ],
+     [
+      "n_rules",
+      0.0,
+      "걸린 규칙 수 0 (↓)"
+     ],
+     [
+      "total",
+      0.092381,
+      "금액 59,000 (↑)"
+     ]
+    ],
+    "score_learned": 0.83406,
+    "learned_name": "xgb",
+    "top_features_learned": [
+     [
+      "ctx__is_leave",
+      4.413759,
+      "휴가 1 (↑)"
+     ],
+     [
+      "ctx__on_trip",
+      -1.365888,
+      "출장 기간 중 1 (↓)"
+     ],
+     [
+      "acct_mcc__all__p90_total",
+      0.421445,
+      "같은 계정×업종 과거 상위 10% 경계 1,355,010 (↑)"
+     ]
+    ],
+    "disclaimer": "이 점수는 윤리경영팀 판정이 없는 상태에서 규칙들의 합의로 만든 임시 정답으로 학습한 시연용입니다. 실제 성능은 판정이 쌓인 뒤 같은 스크립트로 재학습하여 단순 정렬 대비로 측정됩니다."
+   },
+   "policy": {
+    "account": "해외출장비",
+    "description": "임직원의 해외출장에 소요된 비용",
+    "dos": "일비, 교통비, 숙박비, 항공료, 로밍비용, 현지 USIM 구입비용",
+    "donts": "고객사 및 협력사 출장비",
+    "required_evidence": "해외출장품의서\n상세설명(p.33~34)\n교통비 실물티켓"
+   },
+   "reviews": []
+  },
+  "21139": {
+   "tx_id": 21139,
+   "transaction": {
+    "tx_id": 21139,
+    "sap_doc_no": "EX075240290",
+    "settle_type": "법인카드",
+    "account_raw": "석식대",
+    "mid_account": "A-2",
+    "dept": "XPRYP9",
+    "emp_id": 560665,
+    "emp_name": "판*서",
+    "reviewer": "교쀼진",
+    "approver": "석유석",
+    "approver_id": 765457,
+    "approval_no": 15531906,
+    "acquirer_no": "20250307NICEDESC     40232670002",
+    "tx_date": "2025-03-06T00:00:00",
+    "tx_time": "18:36:47",
+    "created_date": "2025-03-10T00:00:00",
+    "approved_date": "2025-03-11T00:00:00",
+    "merchant": "할매순대국",
+    "merchant_addr": "서울 송파구 백제고분로48길 13 1층 (방이동)",
+    "project_no": "D001-287221008",
+    "project_name": "스포츠토토 체육진흥투표권 차세대 구축사업",
+    "amount": 16364,
+    "vat": 1636,
+    "total": 18000,
+    "prepaid": 0,
+    "cost_center": "KY-CUNEU1",
+    "memo": "판최서 외 1명 석식대",
+    "mcc_code": 2301,
+    "mcc_name": "일반음식점",
+    "has_attachment": false,
+    "is_mobile": false,
+    "rank": "팀원",
+    "title": "Manager",
+    "main_dept": "XPRYP9",
+    "weekday": "목",
+    "is_holiday": false,
+    "is_remote": false,
+    "is_leave": false,
+    "work_start": "08:00",
+    "work_end": "17:00",
+    "work_hours": 8.0,
+    "night_start": "     ",
+    "night_end": "     ",
+    "night_hours": 0.0,
+    "trip_type": null,
+    "trip_start": "NaT",
+    "trip_end": "NaT",
+    "leave_type": null,
+    "leave_hours": null,
+    "home_addr": "서울특별시 양천구 중앙로 길 목 힐스테이트 ",
+    "approver_addr": null,
+    "work_site": "기타(외부)",
+    "work_site_addr": "서울특별시 송파구",
+    "tx_ts": "2025-03-06T18:36:47",
+    "time_is_dummy": false,
+    "exclude_reason": null,
+    "is_partial_cancel": false,
+    "cancel_of_tx_id": null,
+    "net_total": 18000,
+    "account_policy": "석식대",
+    "is_synthetic": false,
+    "case_id": null
+   },
+   "evidences": [],
+   "context": {
+    "recent_tx": [
+     {
+      "tx_id": 21140,
+      "tx_ts": "2025-03-05T12:09:38",
+      "account_policy": "의욕관리비",
+      "merchant": "설악골추어탕",
+      "mcc_name": "일반음식점",
+      "merchant_addr": "서울 송파구 백제고분로 492 (방이동)",
+      "total": 36000,
+      "rules": []
+     },
+     {
+      "tx_id": 21138,
+      "tx_ts": "2025-03-08T04:07:15",
+      "account_policy": "시내교통비",
+      "merchant": "티머니택시(법인)_4",
+      "mcc_name": "택시",
+      "merchant_addr": "서울 중구 후암로 110 10층 (남대문로5가서울시티타워빌딩)",
+      "total": 11900,
+      "rules": []
+     },
+     {
+      "tx_id": 21141,
+      "tx_ts": "2025-03-04T18:46:04",
+      "account_policy": "석식대",
+      "merchant": "방이손칼국수",
+      "mcc_name": "일반음식점",
+      "merchant_addr": "서울 송파구 백제고분로48길 10 1층 6호 (방이동우성빌딩)",
+      "total": 9000,
+      "rules": []
+     },
+     {
+      "tx_id": 21137,
+      "tx_ts": "2025-03-10T18:52:51",
+      "account_policy": "석식대",
+      "merchant": "자연구이가",
+      "mcc_name": "일반음식점",
+      "merchant_addr": "서울 송파구 백제고분로48길 13 2층 (방이동)",
+      "total": 35000,
+      "rules": []
+     },
+     {
+      "tx_id": 21135,
+      "tx_ts": "2025-03-13T13:33:32",
+      "account_policy": "의욕관리비",
+      "merchant": "컴포즈커피 송파몽촌토성점",
+      "mcc_name": "커피전문점",
+      "merchant_addr": "서울 송파구 백제고분로50길 8 1층 1호 (방이동)",
+      "total": 3300,
+      "rules": []
+     },
+     {
+      "tx_id": 21136,
+      "tx_ts": "2025-03-13T18:37:21",
+      "account_policy": "석식대",
+      "merchant": "방이손칼국수",
+      "mcc_name": "일반음식점",
+      "merchant_addr": "서울 송파구 백제고분로48길 10 2층 02호 (방이동우성빌딩)",
+      "total": 9000,
+      "rules": []
+     },
+     {
+      "tx_id": 15674,
+      "tx_ts": "2025-02-24T18:42:05",
+      "account_policy": "석식대",
+      "merchant": "할매순대국",
+      "mcc_name": "일반음식점",
+      "merchant_addr": "서울 송파구 백제고분로48길 13 1층 (방이동)",
+      "total": 9000,
+      "rules": []
+     },
+     {
+      "tx_id": 21134,
+      "tx_ts": "2025-03-17T18:22:17",
+      "account_policy": "석식대",
+      "merchant": "본죽",
+      "mcc_name": "일반음식점",
+      "merchant_addr": "서울 송파구 백제고분로48길 12 1층 (방이동)",
+      "total": 11000,
+      "rules": []
+     },
+     {
+      "tx_id": 21133,
+      "tx_ts": "2025-03-19T18:44:26",
+      "account_policy": "석식대",
+      "merchant": "할매순대국",
+      "mcc_name": "일반음식점",
+      "merchant_addr": "서울 송파구 백제고분로48길 13 1층 (방이동)",
+      "total": 9000,
+      "rules": []
+     },
+     {
+      "tx_id": 21132,
+      "tx_ts": "2025-03-20T18:48:32",
+      "account_policy": "석식대",
+      "merchant": "설악골추어탕",
+      "mcc_name": "일반음식점",
+      "merchant_addr": "서울 송파구 백제고분로 492 (방이동)",
+      "total": 24000,
+      "rules": []
+     },
+     {
+      "tx_id": 21131,
+      "tx_ts": "2025-03-24T18:43:14",
+      "account_policy": "석식대",
+      "merchant": "방이손칼국수",
+      "mcc_name": "일반음식점",
+      "merchant_addr": "서울 송파구 백제고분로48길 10 2층 02호 (방이동우성빌딩)",
+      "total": 9000,
+      "rules": []
+     },
+     {
+      "tx_id": 21130,
+      "tx_ts": "2025-03-25T21:56:02",
+      "account_policy": "의욕관리비",
+      "merchant": "부자치맥",
+      "mcc_name": "치킨전문점",
+      "merchant_addr": "서울 송파구 오금로 175 지상1층 (방이동)",
+      "total": 39000,
+      "rules": []
+     }
+    ],
+    "peer": {
+     "account_policy": "석식대",
+     "mcc_name": "일반음식점",
+     "n": 966,
+     "median": 26750.0,
+     "p90": 90500.0,
+     "percentile_of_this": 34.161491,
+     "point_in_time": true
+    },
+    "access_same_day": [],
+    "trip": null,
+    "leave": null,
+    "holiday": false,
+    "history": {
+     "flagged_tx": 0,
+     "violations": 0,
+     "cleared": 0
+    }
+   },
+   "timeline": [
+    {
+     "ts": "2025-03-06T18:36:47",
+     "kind": "카드",
+     "what": "할매순대국 · 일반음식점",
+     "place": "송파구",
+     "amount": 18000,
+     "focal": true
+    }
+   ],
+   "precedents": {
+    "cases": [],
+    "reviews": [],
+    "summary": {
+     "n": 0,
+     "violation": 0,
+     "ok": 0
+    }
+   },
+   "score": {
+    "score": 0.0,
+    "model_version": "v20261101-142910_weak",
+    "top_features": [
+     [
+      "n_violation_rules",
+      0.0,
+      "걸린 위반등급 규칙 수 0 (↓)"
+     ],
+     [
+      "n_rules",
+      0.0,
+      "걸린 규칙 수 0 (↓)"
+     ],
+     [
+      "total",
+      0.082397,
+      "금액 18,000 (↑)"
+     ]
+    ],
+    "score_learned": 0.022033,
+    "learned_name": "xgb",
+    "top_features_learned": [
+     [
+      "ctx__is_leave",
+      -0.433211,
+      "휴가 0 (↓)"
+     ],
+     [
+      "user__all__since_last_min",
+      -0.252701,
+      "본인 직전 거래와의 간격(분) 1,827 (↓)"
+     ],
+     [
+      "acct_mcc__all__median_total",
+      -0.227983,
+      "같은 계정×업종 과거 중앙값 (화면 동료 비교용) 26,750 (↓)"
+     ]
+    ],
+    "disclaimer": "이 점수는 윤리경영팀 판정이 없는 상태에서 규칙들의 합의로 만든 임시 정답으로 학습한 시연용입니다. 실제 성능은 판정이 쌓인 뒤 같은 스크립트로 재학습하여 단순 정렬 대비로 측정됩니다."
+   },
+   "policy": {
+    "account": "석식대",
+    "description": "야근 시 식대 정산을 위해 사용",
+    "dos": "야근 식대, 주말근무식대",
+    "donts": "고객사/협력업체 식대 및 접대성 비용",
+    "required_evidence": ""
+   },
+   "reviews": []
+  }
+ },
+ "rules": [
+  {
+   "rule_id": "R01_holiday_use",
+   "name": "휴일 사용",
+   "tier": "violation",
+   "rule_class": "위반 가능",
+   "data_ready": "now",
+   "params": "{}",
+   "explain": "거래일이 토·일·공휴일이고 출장 기록이 없는 거래. 휴일 사용은 사전 승인 또는 소명이 필요한 사적 사용 의심 시나리오.",
+   "policy_ref": "사적사용 시나리오 '휴가·휴일 사용' / 공공기관 업무추진비 지침의 공휴일 사용 소명 의무"
+  },
+  {
+   "rule_id": "R02_leave_use",
+   "name": "휴가 중 사용",
+   "tier": "violation",
+   "rule_class": "위반 가능",
+   "data_ready": "now",
+   "params": "{}",
+   "explain": "HR 휴가 기록(연차·반차 등)이 있는 날의 거래. 휴가 중에는 업무 지출이 발생하기 어렵다.",
+   "policy_ref": "사적사용 시나리오 '휴가·휴일 사용'"
+  },
+  {
+   "rule_id": "R03_split_payment",
+   "name": "분할결제",
+   "tier": "violation",
+   "rule_class": "위반 가능",
+   "data_ready": "now",
+   "params": "{\"window_min\": 60, \"min_count\": 2, \"min_sum\": 100000, \"near_limit\": 500000}",
+   "explain": "같은 사람이 같은 가맹점에서 짧은 시간 안에 여러 번 결제. 승인 한도(건당 50만원 등)를 피하려고 나눠 긁는 패턴. 합계가 기준에 가까울수록 의심.",
+   "policy_ref": "사적사용 시나리오 '선결제와 분할결제' / 징계사례 17(승인권자 회피 목적 2회 결제)"
+  },
+  {
+   "rule_id": "R04_prepayment",
+   "name": "선결제",
+   "tier": "violation",
+   "rule_class": "위반 가능",
+   "data_ready": "now",
+   "params": "{\"min_amount\": 200000, \"round_to\": 50000}",
+   "explain": "식당·카페에 30만, 50만원처럼 딱 떨어지는 큰 금액을 결제. 장부를 달아 두고 쓰는 선결제 의심.",
+   "policy_ref": "사적사용 시나리오 '선결제와 분할결제' / 징계사례 10"
+  },
+  {
+   "rule_id": "R05_near_home",
+   "name": "거주지 인근 사용",
+   "tier": "violation",
+   "rule_class": "위반 가능",
+   "data_ready": "geo",
+   "params": "{\"match_level\": \"sigungu\"}",
+   "explain": "가맹점이 사용자 주거지와 같은 시·군·구에 있고 근무지와는 다른 곳. 지오코딩 전까지는 주소 문자열의 시·군·구 일치로 판정.",
+   "policy_ref": "사적사용 시나리오 '거주지 인근 사용' / 징계사례 1·5"
+  },
+  {
+   "rule_id": "R06_same_time_diff_place",
+   "name": "동일인 동시간 다른 장소",
+   "tier": "violation",
+   "rule_class": "위반 가능",
+   "data_ready": "geo",
+   "params": "{\"window_min\": 15, \"level\": \"sigungu\"}",
+   "explain": "같은 카드가 15분 안에 서로 다른 시·군·구에서 결제되거나, 적요에 적힌 동석자가 같은 시각 다른 지역에서 결제. 물리적으로 한 사람이 있을 수 없는 조합.",
+   "policy_ref": "사적사용 시나리오 '동일인이 같은 시간 다른 장소에서 사용' / 징계사례 8"
+  },
+  {
+   "rule_id": "R07_outside_trip_area",
+   "name": "출장 중 출장지 밖 사용",
+   "tier": "advisory",
+   "rule_class": "참고",
+   "data_ready": "geo",
+   "params": "{\"level\": \"sido\"}",
+   "explain": "출장 기간 중 거래인데 가맹점이 출장지가 아닌 곳(해외출장 중 국내, 국내출장 중 자택 인근). 출장이 실제로 이루어졌는지, 카드를 다른 사람이 썼는지 확인 대상.",
+   "policy_ref": "리더 점검 시나리오 '출장 기간 중 출장지 밖 사용' / 징계사례 1·9"
+  },
+  {
+   "rule_id": "R08_banned_mcc",
+   "name": "금지 업종",
+   "tier": "violation",
+   "rule_class": "위반 가능",
+   "data_ready": "now",
+   "params": "{\"mcc_names\": [\"일반주점\", \"주점\", \"유흥주점\", \"단란주점\", \"노래방\", \"골프장\", \"골프연습장\", \"안마\"]}",
+   "explain": "유흥주점·골프장 등 사용이 제한된 업종. 계정별 규정의 Don'ts에 명시되어 있고, 접대비라도 사전 품의와 상대방 정보가 필요.",
+   "policy_ref": "계정별 비용정산지침 Don'ts(유흥주점, 골프 등) / 클린카드 제한 업종"
+  },
+  {
+   "rule_id": "R09_excess_fuel",
+   "name": "과다 주유",
+   "tier": "advisory",
+   "rule_class": "참고",
+   "data_ready": "now",
+   "params": "{\"per_day\": 2, \"window_days\": 14, \"per_window\": 3}",
+   "explain": "같은 날 주유 2회 이상, 또는 14일 안에 3회 이상. 차량 한 대가 쓰기 어려운 빈도로, 타인 차량 주유 의심.",
+   "policy_ref": "리더 점검 시나리오 '과다주유' / 징계사례 2·9"
+  },
+  {
+   "rule_id": "R10_missing_evidence",
+   "name": "증빙 필수 업종 증빙 누락",
+   "tier": "violation",
+   "rule_class": "위반 가능",
+   "data_ready": "now",
+   "params": "{}",
+   "explain": "마트·백화점·인터넷쇼핑처럼 구매 품목을 알 수 없는 업종인데 세부 영수증이 첨부되지 않음.",
+   "policy_ref": "절차 위반 시나리오 '증빙 누락' / 징계사례 13·14(증빙 필수 업종에 전표만 첨부)"
+  },
+  {
+   "rule_id": "R11_account_mismatch",
+   "name": "업종-계정 불일치",
+   "tier": "violation",
+   "rule_class": "위반 가능",
+   "data_ready": "now",
+   "params": "{}",
+   "explain": "업종이 그 계정에서 허용되지 않음. 예: 주점·골프를 접대비가 아닌 의욕관리비로, 해외출장 중 식사를 출장비 외 계정으로.",
+   "policy_ref": "계정별 비용정산지침 Don'ts / 징계사례 15·18"
+  },
+  {
+   "rule_id": "R12_card_lending",
+   "name": "타인 카드 대여 의심",
+   "tier": "advisory",
+   "rule_class": "참고",
+   "data_ready": "partial",
+   "params": "{\"lookback_min\": 45, \"min_repeat\": 3}",
+   "explain": "카드 주인이 사옥에 입문한 직후(45분 내)에 멀리 떨어진 시도에서 결제가 반복됨. 본인이 결제했을 수 없는 위치 모순. 3회 이상 반복될 때만 표시.",
+   "policy_ref": "절차 위반 시나리오 '타인 법인카드 대여' / 징계사례 1·14"
+  },
+  {
+   "rule_id": "R13_personal_item",
+   "name": "개인 귀속 물품 의심",
+   "tier": "advisory",
+   "rule_class": "참고",
+   "data_ready": "partial",
+   "params": "{\"accounts\": [\"잡비\", \"사무용품비\", \"전산소모품비\", \"소모품비-기타\", \"기념행사비\"], \"keywords\": [\"케이블\", \"선풍기\", \"화장품\", \"배터리\", \"밧데리\", \"이어폰\", \"텀블러\", \"슬리퍼\", \"마우스\", \"키보드\", \"충전\"]}",
+   "explain": "소모품 계정에서 쇼핑성 업종 결제이면서 적요에 개인물품 키워드, 심야·휴일, 증빙 없음 중 신호가 겹침. 점수가 높을수록 의심.",
+   "policy_ref": "사적사용 시나리오 '개인 귀속 물품' / 징계사례 6·11"
+  },
+  {
+   "rule_id": "R14_trip_meal_double",
+   "name": "출장 중 식사 카드 결제",
+   "tier": "advisory",
+   "rule_class": "참고",
+   "data_ready": "now",
+   "params": "{}",
+   "explain": "출장 기간 중 식당·카페 결제. 일당(식비 포함)을 받으면서 식사를 카드로도 결제하면 이중 지급. 일당 지급 방식에 따라 정상일 수 있어 참고용.",
+   "policy_ref": "리더 점검 시나리오 / 징계사례 15·22"
+  },
+  {
+   "rule_id": "R15_trip_period_mismatch",
+   "name": "출장 기간-복귀 교통편 불일치",
+   "tier": "advisory",
+   "rule_class": "참고",
+   "data_ready": "now",
+   "params": "{\"min_days_early\": 3}",
+   "explain": "출장 종료일보다 3일 이상 전에 복귀 교통편(철도·항공)을 결제했고 이후 출장지 소비가 없음. 조기 복귀 후 일당을 그대로 받았을 가능성.",
+   "policy_ref": "징계사례 4"
+  },
+  {
+   "rule_id": "R16_amount_outlier",
+   "name": "동료 대비 금액 과다",
+   "tier": "advisory",
+   "rule_class": "참고",
+   "data_ready": "now",
+   "params": "{\"ratio\": 2.0, \"min_group\": 30, \"min_amount\": 30000}",
+   "explain": "같은 계정·업종 조합에서 다른 사람들의 중앙값보다 2배 이상 큰 금액. 통계적 이상치이며 정당한 사유가 흔하므로 참고용.",
+   "policy_ref": "징계사례 20(KTX 2배 청구)·22(일당 초과)"
+  },
+  {
+   "rule_id": "R17_route_mismatch",
+   "name": "자택방문교통비 경로 밖 사용",
+   "tier": "violation",
+   "rule_class": "위반 가능",
+   "data_ready": "geo",
+   "params": "{}",
+   "explain": "자택방문교통비로 정산했는데 톨게이트·주유소 위치가 자택과 근무지 어느 시도에도 속하지 않음.",
+   "policy_ref": "계정별 비용정산지침 '자택방문교통비' / 징계사례 19"
+  },
+  {
+   "rule_id": "R18_approver_conflict",
+   "name": "승인자 이해충돌",
+   "tier": "violation",
+   "rule_class": "위반 가능",
+   "data_ready": "now",
+   "params": "{\"min_amount\": 100000}",
+   "explain": "저녁·휴일의 식당·주점 결제인데 가맹점이 승인자 주거지와 같은 시·군·구. 승인자가 동석했을 가능성이 있어 승인의 독립성이 의심됨.",
+   "policy_ref": "징계사례 5(팀장이 부하 결제를 승인)"
+  },
+  {
+   "rule_id": "R19_duplicate_evidence",
+   "name": "증빙 중복 첨부",
+   "tier": "violation",
+   "rule_class": "위반 가능",
+   "data_ready": false,
+   "params": "{}",
+   "explain": "같은 증빙 파일이 여러 정산에 첨부됨. 영수증 파일이 있어야 판정 가능.",
+   "policy_ref": "절차 위반 시나리오 '허위 증빙' / 징계사례 16"
+  },
+  {
+   "rule_id": "R20_evidence_forgery",
+   "name": "증빙 위변조",
+   "tier": "violation",
+   "rule_class": "위반 가능",
+   "data_ready": false,
+   "params": "{}",
+   "explain": "증빙 파일의 수정 흔적(해시·메타데이터·픽셀). 영수증 파일이 있어야 판정 가능.",
+   "policy_ref": "절차 위반 시나리오 '허위 증빙' / 징계사례 3·7"
+  },
+  {
+   "rule_id": "R21_kickback_candidate",
+   "name": "고액 식사 페이백 후보",
+   "tier": "advisory",
+   "rule_class": "참고",
+   "data_ready": "partial",
+   "params": "{\"min_amount\": 400000, \"max_attendees\": 3}",
+   "explain": "소수 인원 식사에 40만원 이상. 결제 후 현금을 돌려받는 페이백은 거래 데이터만으로 확정할 수 없어 후보만 표시.",
+   "policy_ref": "징계사례 21"
+  }
+ ],
+ "reason_codes": [
+  {
+   "code": "preapproved",
+   "label": "사전 승인·품의 있음"
+  },
+  {
+   "code": "trip_extended",
+   "label": "출장 일정 변경·연장"
+  },
+  {
+   "code": "business_confirmed",
+   "label": "업무 관련성 확인됨"
+  },
+  {
+   "code": "data_error",
+   "label": "데이터 오류(주소·시간·계정)"
+  },
+  {
+   "code": "legit_mismatch",
+   "label": "정당한 불일치(환율·매입일·부분취소)"
+  },
+  {
+   "code": "duplicate_flag",
+   "label": "다른 플래그와 중복"
+  },
+  {
+   "code": "need_evidence",
+   "label": "증빙 요청 필요"
+  },
+  {
+   "code": "other",
+   "label": "기타"
+  }
+ ],
+ "summary": [
+  {
+   "source": "rule",
+   "n": 6857,
+   "reviewed": 1,
+   "violation": 1.0,
+   "ok": 0.0,
+   "hold": 0.0,
+   "hit_rate_pct": 100.0,
+   "selection_prob": 1.0,
+   "est_missed": null
+  },
+  {
+   "source": "model",
+   "n": 20,
+   "reviewed": 0,
+   "violation": 0.0,
+   "ok": 0.0,
+   "hold": 0.0,
+   "hit_rate_pct": null,
+   "selection_prob": 1.0,
+   "est_missed": null
+  },
+  {
+   "source": "random",
+   "n": 686,
+   "reviewed": 0,
+   "violation": 0.0,
+   "ok": 0.0,
+   "hold": 0.0,
+   "hit_rate_pct": null,
+   "selection_prob": 0.04324256177508825,
+   "est_missed": null
+  }
+ ]
+}
