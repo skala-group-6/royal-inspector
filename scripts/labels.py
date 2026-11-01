@@ -56,7 +56,7 @@ DECISION = {"violation": 1.0, "위반": 1.0, "부적정": 1.0, "ok": 0.0, "적�
 def import_labels(con, path: str) -> tuple[pd.DataFrame, dict]:
     p = Path(path); raw = pd.read_excel(p) if p.suffix.lower() in (".xlsx", ".xls") else pd.read_csv(p)
     raw.columns = [str(c).strip().lower() for c in raw.columns]
-    raw["_y"] = raw["decision"].astype(str).str.strip().str.lower().map(lambda v: DECISION.get(v, DECISION.get(v.upper() if False else v)))
+    raw["_y"] = raw["decision"].astype(str).str.strip().str.lower().map(DECISION.get)
     raw = raw[raw["_y"].notna()]
     if "decided_at" in raw: raw = raw.sort_values("decided_at")
     stats = dict(rows=len(raw), by_tx_id=0, by_key=0, ambiguous=0, unmatched=0)
@@ -68,11 +68,12 @@ def import_labels(con, path: str) -> tuple[pd.DataFrame, dict]:
         out.append(pd.DataFrame(dict(tx_id=ok.tx_id.astype(int), prob=ok._y.astype(float))))
         raw = raw[~raw.index.isin(m.index)] if "emp_id" in raw else raw.iloc[0:0]
     if len(raw) and {"emp_id", "total"} <= set(raw.columns) and ("tx_date" in raw or "tx_ts" in raw):
-        raw = raw.assign(_d=pd.to_datetime(raw["tx_ts"] if "tx_ts" in raw else raw["tx_date"]).dt.date)
-        key = tx.assign(_d=pd.to_datetime(tx.tx_date).dt.date)
-        j = raw.merge(key, left_on=["emp_id", "_d", "total"], right_on=["emp_id", "_d", "total"], how="left")
-        cnt = j.groupby(j.index).tx_id.transform("count")
-        stats["unmatched"] = int(j.tx_id.isna().sum()); stats["ambiguous"] = int(((cnt > 1) & j.tx_id.notna()).sum())
+        r2 = raw.dropna(subset=["emp_id", "total"]).drop(columns=[c for c in ("tx_id",) if c in raw.columns]).reset_index(drop=True).reset_index().rename(columns={"index": "_src"})
+        r2 = r2.assign(emp_id=r2.emp_id.astype(int), total=r2.total.astype(float), _d=pd.to_datetime(r2["tx_ts"] if "tx_ts" in r2 else r2["tx_date"]).dt.date)
+        key = tx.assign(_d=pd.to_datetime(tx.tx_date).dt.date, emp_id=tx.emp_id.astype(int), total=tx.total.astype(float))[["tx_id", "emp_id", "_d", "total"]]
+        j = r2.merge(key, on=["emp_id", "_d", "total"], how="left")
+        cnt = j.groupby("_src").tx_id.transform("count")
+        stats["unmatched"] = int(j.tx_id.isna().sum()); stats["ambiguous"] = int(j[(cnt > 1) & j.tx_id.notna()]._src.nunique())
         good = j[(cnt == 1) & j.tx_id.notna()]; stats["by_key"] = len(good)
         out.append(pd.DataFrame(dict(tx_id=good.tx_id.astype(int), prob=good._y.astype(float))))
     df = pd.concat(out, ignore_index=True) if out else pd.DataFrame(columns=["tx_id", "prob"])
