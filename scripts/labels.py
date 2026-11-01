@@ -77,7 +77,7 @@ def import_labels(con, path: str) -> tuple[pd.DataFrame, dict]:
         good = j[(cnt == 1) & j.tx_id.notna()]; stats["by_key"] = len(good)
         out.append(pd.DataFrame(dict(tx_id=good.tx_id.astype(int), prob=good._y.astype(float))))
     df = pd.concat(out, ignore_index=True) if out else pd.DataFrame(columns=["tx_id", "prob"])
-    df = df.drop_duplicates("tx_id", keep="last").sort_values("tx_id")
+    df = df.drop_duplicates("tx_id", keep="first").sort_values("tx_id")  # explicit tx_id match (appended first) beats key-inferred match
     ver = "import:" + hashlib.sha256(p.read_bytes()).hexdigest()[:12]
     df["label_source"] = "import"; df["source_version"] = ver; df["n_votes"] = 1; df["clusters_hit"] = [[] for _ in range(len(df))]
     return df.reset_index(drop=True), stats
