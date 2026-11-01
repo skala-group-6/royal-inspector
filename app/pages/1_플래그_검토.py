@@ -13,7 +13,9 @@ st.sidebar.header("필터")
 sel_rules = st.sidebar.multiselect("규칙", rules.rule_id.tolist(), format_func=lambda r: f"{DOT[s.rule_tier(r)]} {r[:3]} {s.RULE_NAME[r]}")
 status = st.sidebar.selectbox("검토 상태", ["unreviewed", None, "reviewed", "violation"], format_func=lambda v: {None: "전체", "unreviewed": "미검토", "reviewed": "검토됨", "violation": "위반 확정"}[v])
 min_total = st.sidebar.number_input("금액 이상", min_value=0, value=0, step=10000)
-sort = st.sidebar.selectbox("정렬", ["rules", "total", "date"], format_func=lambda v: {"rules": "걸린 규칙 수", "total": "금액", "date": "날짜"}[v])
+SORTS = {"rules": "걸린 규칙 수", "total": "금액", "date": "날짜"}
+if s._has_table("tx_score"): SORTS.update({"score": "기준선 점수(규칙 수×금액)", "learned": "학습 모델 점수 (시연용)"})
+sort = st.sidebar.selectbox("정렬", list(SORTS), format_func=lambda v: SORTS[v])
 syn = st.sidebar.selectbox("데이터", [None, False, True], format_func=lambda v: {None: "전체", False: "실데이터만", True: "합성(테스트)만"}[v])
 page = st.sidebar.number_input("페이지 (100건씩)", min_value=1, value=1)
 F = dict(rule_ids=sel_rules or None, min_total=min_total or None, sort=sort, synthetic_only=syn)
@@ -24,6 +26,7 @@ c1, c2 = st.columns([4, 1]); c1.title("플래그 검토")
 c2.markdown(f"<p class='sub' style='text-align:right;padding-top:1.4rem'>이 목록 {len(df)}건 · 오늘 처리 {s.today_count(reviewer) if reviewer else 0}건</p>", unsafe_allow_html=True)
 show = pd.DataFrame({"": [("🔴" if r.sev == 2 else "⚪") + f" ×{r.n_rules}" for r in df.itertuples()], "일시": df.tx_ts.dt.strftime("%m-%d %H:%M"), "사용자": df.emp_name, "직급": df["rank"],
                      "가맹점": df.merchant, "업종": df.mcc_name, "금액": df.total.map(lambda v: f"{v:,.0f}"), "계정": df.account_policy,
+                     **({"학습점수": df.score_learned.map(lambda v: f"{v:.2f}" if pd.notna(v) else "")} if "score_learned" in df and df.score_learned.notna().any() else {}),
                      "상태": df.review_status.map({"unreviewed": "", "violation": "위반", "ok": "아님", "hold": "보류"}), "T": df.is_synthetic.map({True: "T", False: ""})})
 st.caption("🔴 규정 근거가 있는 규칙에 걸림 (확인 대상) · ⚪ 통계·가설 규칙만 걸림 (참고) · ×n 걸린 규칙 수")
 ev = st.dataframe(show, width='stretch', hide_index=True, on_select="rerun", selection_mode="single-row", height=280, key="flags_table")
@@ -48,6 +51,9 @@ def decide(decision, reason="", memo=""):
 st.divider()
 st.markdown(f"#### #{tx_id} · {t['tx_ts']:%m-%d(%a) %H:%M} · {t['emp_name']} ({t['dept']} {t['rank']}) · {t['merchant']} [{t['mcc_name']}]")
 st.markdown(f"<p class='sub'>{t['total']:,.0f}원 · {t['account_policy']}" + (f" · 적요 “{t['memo']}”" if t.get("memo") else "") + f" · 증빙 {'있음' if t['has_attachment'] else '없음'}</p>", unsafe_allow_html=True)
+sc = s.get_score(tx_id)
+if sc and sc.get("score_learned") is not None and not pd.isna(sc["score_learned"]):
+    st.markdown(f"<p class='sub'>학습 모델({sc['learned_name']}) 점수 <b>{sc['score_learned']:.2f}</b> · 이유: " + " · ".join(h for _, _, h in sc["top_features_learned"]) + f"<br><span style='color:#999'>{sc['disclaimer']}</span></p>", unsafe_allow_html=True)
 left, right = st.columns([3, 1.3])
 with left:
     st.markdown("**왜 걸렸나**")

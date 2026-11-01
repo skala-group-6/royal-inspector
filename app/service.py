@@ -62,14 +62,18 @@ def list_flags(rule_ids=None, depts=None, date_from=None, date_to=None, min_tota
     if depts: where += f" and t.dept in ({','.join('?'*len(depts))})"; p += list(depts)
     if min_total: where += " and t.total >= ?"; p.append(min_total)
     if synthetic_only is not None: where += " and t.is_synthetic = ?"; p.append(synthetic_only)
-    order = {"total": "t.total desc, t.tx_id", "rules": "n_rules desc, t.total desc, t.tx_id", "date": "t.tx_ts desc, t.tx_id"}[sort]  # tx_id tiebreak: order must be deterministic across reruns
+    has_score = _has_table("tx_score")
+    order = {"total": "t.total desc, t.tx_id", "rules": "n_rules desc, t.total desc, t.tx_id", "date": "t.tx_ts desc, t.tx_id",
+             "score": "score desc nulls last, t.total desc, t.tx_id", "learned": "score_learned desc nulls last, t.total desc, t.tx_id"}[sort if has_score or sort in ("total","rules","date") else "rules"]  # tx_id tiebreak: deterministic
+    score_sel = "max(sc.score) score, max(sc.score_learned) score_learned," if has_score else "null::double score, null::double score_learned,"
+    score_join = "left join tx_score sc on sc.tx_id = t.tx_id" if has_score else ""
     status_filter = {"unreviewed": "having count(l.decision)=0", "reviewed": "having count(l.decision)>0", "violation": "having bool_or(l.decision='violation')", None: ""}[review_status]
     df = q(f"""with {_LATEST}
       select t.tx_id, t.tx_ts, t.emp_id, t.emp_name, t.dept, t.rank, t.account_policy, t.merchant, t.mcc_name, t.total, t.is_synthetic,
              list(distinct f.rule_id order by f.rule_id) rules, count(distinct f.rule_id) n_rules,
              max(case f.severity when 'violation' then 2 else 1 end) sev,  -- 2 = at least one rule with written-policy basis
-             coalesce(max(l.decision), 'unreviewed') review_status
-      from flags f join tx_active t using(tx_id) left join latest l on l.tx_id=f.tx_id and l.rule_id=f.rule_id
+             coalesce(max(l.decision), 'unreviewed') review_status, {score_sel} 1 one
+      from flags f join tx_active t using(tx_id) left join latest l on l.tx_id=f.tx_id and l.rule_id=f.rule_id {score_join}
       where {where} group by all {status_filter} order by {order} limit ? offset ?""", p + [page_size, (page - 1) * page_size])
     df["emp_name"] = df.emp_name.map(mask); return df
 
@@ -277,3 +281,21 @@ def peer_from_features(tx_id):
 def get_features(tx_id) -> dict | None:
     if not _has_table("tx_features"): return None
     df = q("select * from tx_features where tx_id=?", [tx_id]); return df.iloc[0].to_dict() if len(df) else None
+
+
+# ---------- model score hooks ----------
+def get_score(tx_id) -> dict | None:
+    if not _has_table("tx_score"): return None
+    df = q("select score, model_version, top_features, score_learned, learned_name, top_features_learned from tx_score where tx_id=?", [tx_id])
+    if not len(df): return None
+    r = df.iloc[0].to_dict()
+    r["top_features"] = json.loads(r["top_features"] or "[]"); r["top_features_learned"] = json.loads(r["top_features_learned"] or "[]")
+    from models.base import DEMO_DISCLAIMER; r["disclaimer"] = DEMO_DISCLAIMER; return r
+
+def top_unflagged_by_score(n=50) -> pd.DataFrame:
+    """Transactions no rule caught but the learned model scores high: the third queue entrance and discovery input."""
+    if not _has_table("tx_score"): return pd.DataFrame()
+    df = q("""select t.tx_id, t.tx_ts, t.emp_name, t.dept, t.account_policy, t.merchant, t.mcc_name, t.total, s.score_learned, s.top_features_learned
+              from tx_score s join tx_active t using(tx_id) where t.tx_id not in (select tx_id from flags) and not t.is_synthetic and s.score_learned is not null
+              order by s.score_learned desc, t.tx_id limit ?""", [n])
+    df["emp_name"] = df.emp_name.map(mask); return df

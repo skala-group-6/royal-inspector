@@ -20,3 +20,8 @@ description = "The rule engine no longer catches every planted violation in the 
 name = "features"
 command = "cp data/warehouse.duckdb /tmp/royal_feat.duckdb && ROYAL_DB=/tmp/royal_feat.duckdb .venv/bin/python -I scripts/build_features.py --quiet && ROYAL_DB=/tmp/royal_feat.duckdb .venv/bin/python -I scripts/validate_features.py"
 description = "The feature table failed a validation check: schema/catalog mismatch, a rule-derived column, point-in-time leakage (static, dual-strategy, or perturbation), undeclared redundancy, a direction expectation contradicted by the weak signal, or a non-reproducible rebuild."
+
+[[scripts.check]]
+name = "model"
+command = "cp data/warehouse.duckdb /tmp/royal_model.duckdb && ROYAL_DB=/tmp/royal_model.duckdb .venv/bin/python -I scripts/train.py --label-source weak --out /tmp/royal_models | grep -qE 'chosen: (baseline|logistic|xgb|hgb)'"
+description = "Model training failed or produced no chosen model: the feature matrix, weak labels, time split, or one of the candidate scorers broke."

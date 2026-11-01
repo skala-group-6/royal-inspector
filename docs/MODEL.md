@@ -53,3 +53,13 @@
 - reviews: `--reviewers` 필수, superseded 제외, hold 제외, tx 단위 "위반 하나라도 1". import: xlsx/csv, tx_id 또는 (emp_id, 날짜, total) 매칭, 모호 건 제외·보고. 둘 다 인메모리 테스트로 검증.
 - p_rule 교체 경로: reviews ≥20건인 규칙은 `(violations+1)/(reviewed+2)`를 `p_rule`에 기록하고 weak.yaml 버전↑. prior는 무작위 표본 위반율로 교체.
 - 학습 시 합성 행 제외는 모델 단계에서 `JOIN tx_active … WHERE NOT is_synthetic`으로 강제한다.
+
+## 구현 기록 — models v1 (2026-11-01)
+- 파일: `models/base.py`(Scorer 규격 fit/predict/explain, DEMO_DISCLAIMER, ablation_explain), `baseline.py`(규칙 수×log금액, aux만 사용), `logistic.py`, `xgb.py`(xgboost, 실패 시 sklearn HGB 폴백), `dnn.py`(빈 자리), `scripts/train.py`, `scripts/score_tx.py`, `tests/test_models.py`(27개 전체 통과).
+- 시험: train 1~2월 6,836건(양성 579) / test 3월 22,597건(양성 2,801), weak 라벨 ≥0.5 이진화, 합성 제외, lookahead 4열 제외, 규칙 열은 aux로만.
+- 결과: 기준선 p@100 1.00 · PR-AUC 0.999 / 로지스틱 0.88 · 0.660 / XGBoost 1.00 · 0.812. 기준선과 top-100 겹침: 로지스틱 4%, XGBoost 3%.
+- **해석.** weak 라벨은 규칙 투표의 함수이므로 "규칙 수×금액" 기준선은 답지를 재현한다(PR-AUC 0.999). 이 시험에서 기준선은 구조적으로 질 수 없다 → 선택 규칙대로 `chosen=baseline`. 의미 있는 결과는 **규칙을 못 보는 XGBoost가 행동 피처만으로 규칙 합의를 PR-AUC 0.81로 복원했고 상위 100건은 기준선과 3%만 겹친다**는 것(다른 눈으로 같은 결론). 그래서 `best_learned`를 `model_learned.pkl`로 함께 저장하고 `tx_score`에 `score`(채택 모델)와 `score_learned`(학습 모델)를 둘 다 둔다. 화면 기본 정렬은 기준선, "학습 모델 점수 (시연용)"는 명시적 옵션, 규칙 밖 고점수(`service.top_unflagged_by_score`)는 학습 점수로.
+- 규칙 밖 고점수 상위 예: PG(11번가) 59,000 / 해외 전기요금 69,857 / 해외 게스트하우스 203,660 — 발굴 루프 입구 2의 첫 후보들.
+- #11012 학습 점수 0.94, 이유: 휴가 1 · 같은 계정×업종 과거 거래 1건 · 출장 아님.
+- 진짜 승부는 reviews 라벨에서: `train.py --label-source reviews --reviewers …`로 같은 시험을 다시 치르면 그때 기준선 대비가 의미를 가진다.
+- 거부한 대안: weak prob 회귀/가중(규칙 수 베끼기로 회귀), 무작위 분할(사람 누수), 기준선 없는 선택.
