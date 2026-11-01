@@ -34,10 +34,10 @@
 | 6 | 피처·모델 | | | | | | |
 | 6.1 | 피처 카탈로그·실행기 | 엔티티×시간창×집계, 시점 기준, 34열 | features/, tx_features | 2.2 | 3 | [TBD] | ✅ |
 | 6.2 | 피처 검증 | 누수 3종·중복·단조성·재실행 | scripts/validate_features.py | 6.1 | 3 | [TBD] | ✅ |
-| 6.3 | 임시 정답 | 규칙 투표 확률 라벨, 출처 인자 | labels.py | 3.1 | 3 | [TBD] | ⬜ |
+| 6.3 | 임시 정답 | 규칙 투표 noisy-OR, 출처 인자 강제 | labels/weak.yaml, scripts/labels.py | 3.1 | 3 | [TBD] | ✅ |
 | 6.4 | 모델 규격·후보 | base, baseline, logistic, xgb, train | models/ | 6.1, 6.3 | 3~4 | [TBD] | ⬜ |
 | 6.5 | 점수·화면 | tx_score, 정렬, 이유 3개, 시연 문구 | score_tx, app | 6.4 | 4 | [TBD] | ⬜ |
-| 6.6 | 라벨 입력구 | 과거 점검 결과 엑셀 → labels | labels.py import | 윤경팀 | 4 | [TBD] | ⬜ |
+| 6.6 | 라벨 입력구 | 과거 점검 결과 엑셀 → labels | labels.py --label-source import | 윤경팀 | 4 | [TBD] | 🔧 경로 구현 |
 | 6.7 | 텍스트 임베딩 피처 | 적요·가맹점명 | features 2차 | 6.5 | 후반 | [TBD] | ⬜ |
 | 7 | 개선 루프 | | | | | | |
 | 7.1 | 후보 생성 | 무작위 표본 위반 → LLM 초안 → 소급 실행 | candidate_patterns | 4.4, 3.1 | 5 | [TBD] | ⬜ |

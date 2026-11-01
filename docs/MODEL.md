@@ -46,3 +46,10 @@
 
 ## 시연 시 반드시 붙이는 문구
 "이 점수는 윤리경영팀 판정이 없는 상태에서 규칙들의 합의로 만든 임시 정답으로 학습한 시연용입니다. 실제 성능은 판정이 쌓인 뒤 같은 스크립트로 재학습하여 단순 정렬 대비로 측정됩니다."
+
+## 구현 기록 — labels v1 (2026-11-01)
+- 파일: `labels/weak.yaml`, `scripts/labels.py`, `tests/test_labels.py`. 테이블 `labels(tx_id, prob, label_source, source_version, n_votes, clusters_hit, created_at)`, 출처별 교체 저장.
+- weak: 규칙별 p = p_rule 또는 p_tier(violation 0.6 / advisory 0.2), 군집 10개 안에서는 max, 군집 사이는 noisy-OR `1−(1−prior)·Π(1−p_c)`, prior 0.02. 결과(실데이터 29,433건): 평균 0.126, >0.5 비율 11.5%, prior 그대로 70.9%. 합성 위반 평균 0.535 vs 합성 정상 0.084(PASS). LORO 최대 비중 R16 0.229, R01 0.214, R02 0.166(지배 없음, 임계 0.5). #11012 = 0.843(entertain+time). 재실행 해시 동일.
+- reviews: `--reviewers` 필수, superseded 제외, hold 제외, tx 단위 "위반 하나라도 1". import: xlsx/csv, tx_id 또는 (emp_id, 날짜, total) 매칭, 모호 건 제외·보고. 둘 다 인메모리 테스트로 검증.
+- p_rule 교체 경로: reviews ≥20건인 규칙은 `(violations+1)/(reviewed+2)`를 `p_rule`에 기록하고 weak.yaml 버전↑. prior는 무작위 표본 위반율로 교체.
+- 학습 시 합성 행 제외는 모델 단계에서 `JOIN tx_active … WHERE NOT is_synthetic`으로 강제한다.

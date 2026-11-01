@@ -1,0 +1,24 @@
+# 임시 정답(weak label) 선언 — 규칙 플래그를 확률로 합치는 방법은 이 파일 한 곳에만 둔다.
+# p_tier: "이 등급 규칙 하나가 걸렸을 때 위반으로 확정될 확률"의 초기 추정. 윤경팀 판정이 쌓이면 p_rule(규칙별 경험 정밀도)로 덮어쓴다.
+# clusters: 같은 상황에서 함께 걸리는 규칙 묶음. 묶음 안에서는 한 번만(max), 묶음 사이는 noisy-OR: prob = 1 - (1-prior)·Π(1-p_c)
+version: 1
+changelog:
+  - {version: 1, date: 2026-11-01, change: "초기값 p_v 0.6 / p_a 0.2 / prior 0.02, 군집 10개. 판정 0건 상태의 선언값"}
+prior: 0.02
+p_tier: {violation: 0.6, advisory: 0.2}
+p_rule: {}          # 예) R16_amount_outlier: 0.08  ← reviews에서 계산된 정밀도(n>=20)만 적는다. 경로: docs/MODEL.md
+clusters:
+  time:          [R01_holiday_use, R02_leave_use]
+  split_prepay:  [R03_split_payment, R04_prepayment]
+  location:      [R05_near_home, R06_same_time_diff_place, R12_card_lending]
+  trip:          [R07_outside_trip_area, R14_trip_meal_double, R15_trip_period_mismatch]
+  entertain:     [R08_banned_mcc, R11_account_mismatch, R18_approver_conflict]
+  fuel:          [R09_excess_fuel, R17_route_mismatch]
+  evidence:      [R10_missing_evidence, R13_personal_item]
+  amount:        [R16_amount_outlier]
+  kickback:      [R21_kickback_candidate]
+  evidence_file: [R19_duplicate_evidence, R20_evidence_forgery]
+validation:
+  planted_min_mean: 0.5
+  planted_over_normal_min: 3.0
+  max_single_rule_share: 0.5
