@@ -13,7 +13,7 @@ description = "A service-layer or precedents test fails: list/evidence/context/r
 
 [[scripts.check]]
 name = "rules"
-command = ".venv/bin/python -I scripts/run_rules.py | grep -q 'OVERALL recall 114/114'"
+command = "cp data/warehouse.duckdb /tmp/royal_rules.duckdb && ROYAL_DB=/tmp/royal_rules.duckdb .venv/bin/python -I scripts/run_rules.py | grep -q 'OVERALL recall 114/114'"
 description = "The rule engine no longer catches every planted violation in the synthetic ground truth: a rule or threshold change regressed recall."
 
 [[scripts.check]]
