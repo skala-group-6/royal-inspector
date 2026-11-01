@@ -24,6 +24,8 @@ def con() -> duckdb.DuckDBPyConnection:
         _con.execute("""CREATE TABLE IF NOT EXISTS reviews(review_id VARCHAR, tx_id BIGINT, rule_id VARCHAR, decision VARCHAR, reason_code VARCHAR,
                         memo VARCHAR, reviewer VARCHAR, created_at TIMESTAMP, superseded_by VARCHAR)""").fetchall()
         _con.execute("CREATE TABLE IF NOT EXISTS ui_events(ts TIMESTAMP, reviewer VARCHAR, event VARCHAR, payload VARCHAR)").fetchall()
+        _con.execute("""CREATE TABLE IF NOT EXISTS queue(queue_id VARCHAR, period_from DATE, period_to DATE, tx_id BIGINT, queue_source VARCHAR,
+                        selection_prob DOUBLE, rank_in_source INTEGER, built_at TIMESTAMP, seed INTEGER, params VARCHAR)""").fetchall()
     return _con
 def q(sql, params=None) -> pd.DataFrame: return con().execute(sql, params or []).df()
 def mask(name): return name if not isinstance(name, str) or len(name) < 2 else name[0] + "*" * (len(name) - 2) + name[-1]
@@ -200,11 +202,16 @@ def get_day_timeline(tx_id) -> pd.DataFrame:
 def review_transaction(tx_id, decision, reason_code, memo, reviewer) -> int:
     """Transaction-level verdict: recorded once per flagged rule so per-rule hit rates stay computable."""
     rules = q("select distinct rule_id from flags where tx_id=?", [tx_id]).rule_id.tolist()
+    if not rules:  # unflagged tx (random / model queue rows): one transaction-level review with rule_id NULL
+        create_review(tx_id, None, decision, reason_code, memo, reviewer); return 1
     for r in rules: create_review(tx_id, r, decision, reason_code, memo, reviewer)
     return len(rules)
 
-def next_unreviewed(after_tx_id, **filters):
-    ids = list_flags(review_status="unreviewed", page_size=500, **filters).tx_id.tolist()
+def next_unreviewed(after_tx_id, queue_period=None, **filters):
+    if queue_period:
+        ids = list_queue(queue_period[0], queue_period[1], review_status="unreviewed", page_size=500, **{k: v for k, v in filters.items() if k in ("sources", "rule_ids", "depts", "min_total", "sort", "synthetic_only")}).tx_id.tolist()
+    else:
+        ids = list_flags(review_status="unreviewed", page_size=500, **filters).tx_id.tolist()
     if after_tx_id in ids:
         i = ids.index(after_tx_id); return ids[i + 1] if i + 1 < len(ids) else None
     return ids[0] if ids else None
@@ -299,3 +306,82 @@ def top_unflagged_by_score(n=50) -> pd.DataFrame:
               from tx_score s join tx_active t using(tx_id) where t.tx_id not in (select tx_id from flags) and not t.is_synthetic and s.score_learned is not null
               order by s.score_learned desc, t.tx_id limit ?""", [n])
     df["emp_name"] = df.emp_name.map(mask); return df
+
+
+# ---------- review queue: rule rows + model top-M + random sample, with provenance ----------
+def build_queue(period_from, period_to, p_random=0.10, m_model=20, seed=42, min_random=10, force=False) -> dict:
+    """Build the list auditors work from for one period. Replaces the period's rows. Refuses to rebuild over existing reviews unless force
+    (then reviewed rows are kept with their original source/prob and excluded from the new pools)."""
+    import duckdb as _d
+    c = con(); pf, pt = str(period_from), str(period_to)
+    kept = q("""select qu.* from queue qu where qu.period_from=? and qu.period_to=? and qu.tx_id in (select tx_id from reviews where superseded_by is null)""", [pf, pt])
+    if len(kept) and not force: raise ValueError(f"{len(kept)} queued tx already have reviews in {pf}~{pt}; pass force=True to rebuild (reviewed rows are kept)")
+    kept_ids = [int(x) for x in kept.tx_id] if len(kept) else [-1]
+    ph = ",".join(str(i) for i in kept_ids)
+    has_score = _has_table("tx_score")
+    rule_order = "coalesce(sc.score, 0) desc, n_rules desc, t.total desc, t.tx_id" if has_score else "n_rules desc, t.total desc, t.tx_id"
+    score_join = "left join tx_score sc on sc.tx_id = t.tx_id" if has_score else ""
+    rule = q(f"""select t.tx_id, row_number() over (order by {rule_order}) rk from tx_active t join (select tx_id, count(distinct rule_id) n_rules from flags group by 1) f using(tx_id) {score_join}
+                 where t.tx_date between ? and ? and t.tx_id not in ({ph})""", [pf, pt])
+    model = q(f"""select t.tx_id, row_number() over (order by sc.score_learned desc, t.tx_id) rk from tx_active t join tx_score sc on sc.tx_id=t.tx_id
+                  where t.tx_date between ? and ? and not t.is_synthetic and sc.score_learned is not null and t.tx_id not in (select tx_id from flags) and t.tx_id not in ({ph})
+                  order by rk limit ?""", [pf, pt, int(m_model)]) if has_score and m_model > 0 else pd.DataFrame(columns=["tx_id", "rk"])
+    excl = ",".join(str(int(x)) for x in list(model.tx_id) + kept_ids) or "-1"
+    pool_n = q(f"""select count(*) from tx_active t where t.tx_date between ? and ? and not t.is_synthetic and t.tx_id not in (select tx_id from flags) and t.tx_id not in ({excl})""", [pf, pt]).iloc[0, 0]
+    n_kept_random = int((kept.queue_source == "random").sum()) if len(kept) else 0
+    n_random = int(min(pool_n, max(round(p_random * (len(rule) + int((kept.queue_source == "rule").sum() if len(kept) else 0))), min_random) - n_kept_random)); n_random = max(n_random, 0)
+    rnd = q(f"""select t.tx_id, row_number() over (order by hash(cast(t.tx_id as varchar) || '|' || ?), t.tx_id) rk from tx_active t
+                where t.tx_date between ? and ? and not t.is_synthetic and t.tx_id not in (select tx_id from flags) and t.tx_id not in ({excl})
+                order by rk limit ?""", [str(seed), pf, pt, n_random])
+    qid = uuid.uuid4().hex[:12]; now = dt.datetime.now()
+    params = dict(p_random=p_random, m_model=m_model, seed=seed, min_random=min_random, n_rule=len(rule), n_model=len(model), n_random=len(rnd), n_pool_unflagged=int(pool_n),
+                  order_by="score" if has_score else "n_rules", duckdb_version=_d.__version__, kept_reviewed=int(len(kept)))
+    rows = [dict(queue_id=qid, period_from=pf, period_to=pt, tx_id=int(r.tx_id), queue_source="rule", selection_prob=1.0, rank_in_source=int(r.rk), built_at=now, seed=seed, params=json.dumps(params)) for r in rule.itertuples()]
+    rows += [dict(queue_id=qid, period_from=pf, period_to=pt, tx_id=int(r.tx_id), queue_source="model", selection_prob=1.0, rank_in_source=int(r.rk), built_at=now, seed=seed, params=json.dumps(params)) for r in model.itertuples()]
+    prob = (len(rnd) / pool_n) if pool_n else 1.0
+    rows += [dict(queue_id=qid, period_from=pf, period_to=pt, tx_id=int(r.tx_id), queue_source="random", selection_prob=float(prob), rank_in_source=int(r.rk), built_at=now, seed=seed, params=json.dumps(params)) for r in rnd.itertuples()]
+    c.execute("delete from queue where period_from=? and period_to=? and tx_id not in (" + ph + ")", [pf, pt]).fetchall()
+    if rows:
+        df = pd.DataFrame(rows); c.register("qdf", df); c.execute("insert into queue select * from qdf").fetchall(); c.unregister("qdf")
+    return dict(queue_id=qid, period_from=pf, period_to=pt, n_rule=len(rule), n_model=len(model), n_random=len(rnd), n_pool_unflagged=int(pool_n), kept_reviewed=int(len(kept)))
+
+def list_queue_periods() -> pd.DataFrame:
+    if not _has_table("queue"): return pd.DataFrame(columns=["period_from", "period_to", "n", "built_at"])
+    return q("select period_from, period_to, count(*) n, max(built_at) built_at from queue group by 1,2 order by 1 desc")
+
+def list_queue(period_from, period_to, sources=None, rule_ids=None, depts=None, min_total=None, review_status=None, sort="source", page=1, page_size=100, synthetic_only=None) -> pd.DataFrame:
+    has_score = _has_table("tx_score")
+    score_sel = "sc.score, sc.score_learned," if has_score else "null::double score, null::double score_learned,"
+    score_join = "left join tx_score sc on sc.tx_id = t.tx_id" if has_score else ""
+    where, p = ["qu.period_from=? and qu.period_to=?"], [str(period_from), str(period_to)]
+    if sources: where.append(f"qu.queue_source in ({','.join('?'*len(sources))})"); p += list(sources)
+    if rule_ids: where.append(f"list_has_any(coalesce(fl.rules, []), [{','.join('?'*len(rule_ids))}])"); p += list(rule_ids)
+    if depts: where.append(f"t.dept in ({','.join('?'*len(depts))})"); p += list(depts)
+    if min_total: where.append("t.total >= ?"); p.append(min_total)
+    if synthetic_only is not None: where.append("t.is_synthetic = ?"); p.append(synthetic_only)
+    if review_status == "unreviewed": where.append("rv.decision is null")
+    elif review_status == "reviewed": where.append("rv.decision is not null")
+    elif review_status == "violation": where.append("rv.decision = 'violation'")
+    order = {"source": "case qu.queue_source when 'rule' then 0 when 'model' then 1 else 2 end, qu.rank_in_source, t.tx_id", "total": "t.total desc, t.tx_id",
+             "rules": "n_rules desc, t.total desc, t.tx_id", "date": "t.tx_ts desc, t.tx_id", "score": "score desc nulls last, t.tx_id", "learned": "score_learned desc nulls last, t.tx_id"}[sort]
+    df = q(f"""with {_LATEST},
+      fl as (select tx_id, list(distinct rule_id order by rule_id) rules, count(distinct rule_id) n_rules, max(case severity when 'violation' then 2 else 1 end) sev from flags group by 1),
+      rv as (select tx_id, max(decision) decision from latest group by 1)
+      select qu.queue_source, qu.selection_prob, qu.rank_in_source, t.tx_id, t.tx_ts, t.emp_id, t.emp_name, t.dept, t.rank, t.account_policy, t.merchant, t.mcc_name, t.total, t.is_synthetic,
+             coalesce(fl.rules, []) rules, coalesce(fl.n_rules, 0) n_rules, coalesce(fl.sev, 0) sev, coalesce(rv.decision, 'unreviewed') review_status, {score_sel} 1 one
+      from queue qu join tx_active t using(tx_id) left join fl using(tx_id) left join rv using(tx_id) {score_join}
+      where {' and '.join(where)} order by {order} limit ? offset ?""", p + [page_size, (page - 1) * page_size])
+    df["emp_name"] = df.emp_name.map(mask); return df
+
+def get_queue_summary(period_from, period_to) -> pd.DataFrame:
+    """Per-source counts and hit rates. For random rows est_missed = violation rate × unflagged pool size — the first measurement of what rules miss."""
+    df = q(f"""with {_LATEST}, rv as (select tx_id, max(decision) decision from latest group by 1)
+      select qu.queue_source source, count(*) n, count(rv.decision) reviewed,
+             sum(case when rv.decision='violation' then 1 else 0 end) violation, sum(case when rv.decision='ok' then 1 else 0 end) ok, sum(case when rv.decision='hold' then 1 else 0 end) hold,
+             round(100.0*sum(case when rv.decision='violation' then 1 else 0 end)/nullif(sum(case when rv.decision in ('violation','ok') then 1 else 0 end),0),1) hit_rate_pct,
+             min(qu.selection_prob) selection_prob, max(qu.params) params
+      from queue qu left join rv using(tx_id) where qu.period_from=? and qu.period_to=? group by 1 order by case qu.queue_source when 'rule' then 0 when 'model' then 1 else 2 end""", [str(period_from), str(period_to)])
+    if len(df):
+        pool = json.loads(df.params.iloc[0]).get("n_pool_unflagged", 0)
+        df["est_missed"] = [round(pool * (r.violation / r.reviewed)) if r.source == "random" and r.reviewed else None for r in df.itertuples()]
+    return df.drop(columns=["params"]) if len(df) else df

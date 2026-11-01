@@ -9,11 +9,19 @@ rules = s.list_rules()
 reviewer = st.sidebar.text_input("검토자 이름", value=st.session_state.get("reviewer", ""))
 st.session_state["reviewer"] = reviewer
 
+# ---- queue mode: the list auditors work from (rule rows + model top-M + random sample), when a queue has been built ----
+periods = s.list_queue_periods()
+queue_mode = st.sidebar.toggle("큐 모드 (규칙 + 모델 + 무작위 표본)", value=True) if len(periods) else False
+qp = None; q_sources = None
+if queue_mode:
+    labels_p = [f"{r.period_from}~{r.period_to} · {r.n:,}건" for r in periods.itertuples()]
+    pick = st.sidebar.selectbox("큐 기간", range(len(labels_p)), format_func=lambda i: labels_p[i]); qp = (str(periods.period_from.iloc[pick]), str(periods.period_to.iloc[pick]))
+    q_sources = st.sidebar.multiselect("출처", ["rule", "model", "random"], default=["rule", "model", "random"], format_func=lambda v: {"rule": "규칙에 걸림", "model": "🧠 모델 추천(규칙 밖)", "random": "🎲 무작위 표본"}[v])
 st.sidebar.header("필터")
 sel_rules = st.sidebar.multiselect("규칙", rules.rule_id.tolist(), format_func=lambda r: f"{DOT[s.rule_tier(r)]} {r[:3]} {s.RULE_NAME[r]}")
 status = st.sidebar.selectbox("검토 상태", ["unreviewed", None, "reviewed", "violation"], format_func=lambda v: {None: "전체", "unreviewed": "미검토", "reviewed": "검토됨", "violation": "위반 확정"}[v])
 min_total = st.sidebar.number_input("금액 이상", min_value=0, value=0, step=10000)
-SORTS = {"rules": "걸린 규칙 수", "total": "금액", "date": "날짜"}
+SORTS = ({"source": "큐 순서(규칙→모델→무작위)"} if queue_mode else {}) | {"rules": "걸린 규칙 수", "total": "금액", "date": "날짜"}
 if s._has_table("tx_score"): SORTS.update({"score": "기준선 점수(규칙 수×금액)", "learned": "학습 모델 점수 (시연용)"})
 sort = st.sidebar.selectbox("정렬", list(SORTS), format_func=lambda v: SORTS[v])
 syn = st.sidebar.selectbox("데이터", [None, False, True], format_func=lambda v: {None: "전체", False: "실데이터만", True: "합성(테스트)만"}[v])
@@ -21,14 +29,19 @@ page = st.sidebar.number_input("페이지 (100건씩)", min_value=1, value=1)
 F = dict(rule_ids=sel_rules or None, min_total=min_total or None, sort=sort, synthetic_only=syn)
 
 # ---------- A. list ----------
-df = s.list_flags(review_status=status, page=page, page_size=100, **F)
+df = s.list_queue(qp[0], qp[1], sources=q_sources or None, review_status=status, page=page, page_size=100, **F) if queue_mode else s.list_flags(review_status=status, page=page, page_size=100, **F)
 c1, c2 = st.columns([4, 1]); c1.title("플래그 검토")
 c2.markdown(f"<p class='sub' style='text-align:right;padding-top:1.4rem'>이 목록 {len(df)}건 · 오늘 처리 {s.today_count(reviewer) if reviewer else 0}건</p>", unsafe_allow_html=True)
-show = pd.DataFrame({"": [("🔴" if r.sev == 2 else "⚪") + f" ×{r.n_rules}" for r in df.itertuples()], "일시": df.tx_ts.dt.strftime("%m-%d %H:%M"), "사용자": df.emp_name, "직급": df["rank"],
+def badge(r):
+    src = getattr(r, "queue_source", "rule")
+    if src == "random": return "🎲 무작위"
+    if src == "model": return "🧠 모델"
+    return ("🔴" if r.sev == 2 else "⚪") + f" ×{r.n_rules}"
+show = pd.DataFrame({"": [badge(r) for r in df.itertuples()], "일시": df.tx_ts.dt.strftime("%m-%d %H:%M"), "사용자": df.emp_name, "직급": df["rank"],
                      "가맹점": df.merchant, "업종": df.mcc_name, "금액": df.total.map(lambda v: f"{v:,.0f}"), "계정": df.account_policy,
                      **({"학습점수": df.score_learned.map(lambda v: f"{v:.2f}" if pd.notna(v) else "")} if "score_learned" in df and df.score_learned.notna().any() else {}),
                      "상태": df.review_status.map({"unreviewed": "", "violation": "위반", "ok": "아님", "hold": "보류"}), "T": df.is_synthetic.map({True: "T", False: ""})})
-st.caption("🔴 규정 근거가 있는 규칙에 걸림 (확인 대상) · ⚪ 통계·가설 규칙만 걸림 (참고) · ×n 걸린 규칙 수")
+st.caption("🔴 규정 근거가 있는 규칙에 걸림 (확인 대상) · ⚪ 통계·가설 규칙만 걸림 (참고) · ×n 걸린 규칙 수" + (" · 🧠 모델: 규칙엔 안 걸렸지만 학습 점수 상위 · 🎲 무작위: 안 걸린 거래의 제비뽑기 표본 — 대부분 '아님'이 정상이며, 여기서 나오는 '위반'이 규칙이 놓친 것을 알려줍니다. 규칙 필터는 규칙 행에만 적용됩니다." if queue_mode else ""))
 ev = st.dataframe(show, width='stretch', hide_index=True, on_select="rerun", selection_mode="single-row", height=280, key="flags_table")
 sel = ev.selection.rows if ev and ev.selection else []
 if sel:
@@ -41,11 +54,11 @@ if tx_id is None:
 t = s.get_transaction(tx_id); evs = s.get_evidence(tx_id)
 
 def go_next():
-    nxt = s.next_unreviewed(tx_id, **F); st.session_state["tx_id"] = int(nxt) if nxt else None
+    nxt = s.next_unreviewed(tx_id, queue_period=qp, sources=q_sources or None, **F) if queue_mode else s.next_unreviewed(tx_id, **F); st.session_state["tx_id"] = int(nxt) if nxt else None
     st.session_state.pop("pending_ok", None); st.session_state.pop("saved_msg", None); st.rerun()
 def decide(decision, reason="", memo=""):
     n = s.review_transaction(tx_id, decision, reason, memo, reviewer); s.log_event(reviewer, "review", {"tx_id": tx_id, "decision": decision})
-    st.session_state["saved_msg"] = f"저장됨: {dict(violation='위반', ok='아님', hold='보류')[decision]} (규칙 {n}개에 기록)"; st.session_state.pop("pending_ok", None); st.rerun()
+    st.session_state["saved_msg"] = f"저장됨: {dict(violation='위반', ok='아님', hold='보류')[decision]} " + (f"(규칙 {n}개에 기록)" if evs else "(거래 단위 기록 — 걸린 규칙 없음)"); st.session_state.pop("pending_ok", None); st.rerun()
 
 # ---------- B. one case ----------
 st.divider()
@@ -58,6 +71,7 @@ left, right = st.columns([3, 1.3])
 with left:
     st.markdown("**왜 걸렸나**")
     ctx = s.get_context(tx_id); p = ctx["peer"]
+    if not evs: st.info("걸린 규칙 없음. 이 거래는 큐 출처(모델 추천 또는 무작위 표본)로 올라왔습니다. 거래 자체와 아래 정황을 보고 판단하세요.")
     for e in evs:
         head, detail = s.evidence_headline(e["rule_id"], e["evidence"], t); cite = s.policy_citation(e["rule_id"], t)
         a, b, c = st.columns([6, 1, 1])
