@@ -1,3 +1,4 @@
-import { Gallery } from "@/gallery/Gallery"
-export function App() { return <Gallery /> }
+import { RouterProvider } from "@tanstack/react-router"
+import { router } from "@/routes/router"
+export function App() { return <RouterProvider router={router} /> }
 export default App
