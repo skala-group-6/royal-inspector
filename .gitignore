@@ -2,3 +2,5 @@
 data/
 research_notes/
 reports/
+__pycache__/
+*.pyc
