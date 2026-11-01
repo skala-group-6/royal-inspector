@@ -62,3 +62,11 @@
 
 ## 확장
 새 소스(출입기록, 영수증)는 엔티티·집계 한 줄 추가. LangGraph에서는 실행기가 노드 하나.
+
+## 구현 기록 (2026-11-01, catalog v1)
+- 파일: `features/catalog.yaml`(선언 35개 = agg 25 + column 9 + history 1), `features/executor.py`, `scripts/build_features.py`, `scripts/validate_features.py`, `tests/test_features.py`. 결과 `tx_features` 30,284행 × 34열(0.8초), `entity_stats` 뷰.
+- DuckDB 2.0 프로브: 윈도 `quantile_cont`, `count(distinct)`, `RANGE BETWEEN … AND INTERVAL 1 MICROSECOND PRECEDING`, 30d RANGE 하한 모두 지원. 윈도 vs 상관 서브쿼리 3만 행 불일치 0.
+- 시점 기준 구현: 윈도 프레임 상한 `INTERVAL 1 MICROSECOND PRECEDING`(자신·동시각 제외). `since_last_min`은 두 전략 모두 상관 서브쿼리(동시각 제외 일관성). 상관 전략은 큰 파티션(직급)에서 O(n²)라 검증용 표본 500건에만 사용.
+- 설계 조정: 직급 백분위 → 중앙값 배수(비용). `lookahead: true` 명시(same_day 4개, until_next). 이력 그룹(`hist__`)은 기본 제외, `--with-history`에서만(약한 라벨 누설). 선례 유사도는 제외(자기 규칙 집합의 함수).
+- 검증 7종 전부 통과. 발견: `user__30d__n_tx`≈`user__all__n_tx`(r=0.997, 3개월 데이터) → known_redundant로 유지. `merchant__all__n_distinct_users`는 "적을수록 의심" 가정이 약한 신호와 반대(+0.36): 금지 업종 규칙이 걸리는 술집이 인기 가맹점이라서. 방향 기대 제거, 실제 판정 후 재검토.
+- #11012 시점 기준 값: 본인 중앙값 대비 14.53배(전 기간 18.15), 심야 비율 25%, 부서 18.09배, 의욕관리비×노래방 과거 1건(백분위 100), 이 가맹점 과거 사용자 0, 직전 간격 157분, 같은 날 지역 2. 화면 동료 비교가 이제 이 값을 읽는다(`service.peer_from_features`, `point_in_time=True`).

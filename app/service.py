@@ -119,12 +119,14 @@ def get_context(tx_id, n=20) -> dict:
     t = q("select * from transactions where tx_id=?", [tx_id]).iloc[0]
     recent = q("""select t.tx_id, t.tx_ts, t.account_policy, t.merchant, t.mcc_name, t.merchant_addr, t.total, coalesce((select list(distinct rule_id) from flags f where f.tx_id=t.tx_id), []) rules
                   from tx_active t where emp_id=? and tx_id<>? order by abs(epoch(tx_ts)-epoch(?)) limit ?""", [int(t.emp_id), tx_id, t.tx_ts, n])
+    peer_pit = peer_from_features(tx_id)  # same point-in-time numbers the model sees; fall back to full-period SQL if the table is missing
     peer = q("""select account_policy, mcc_name, count(*) n, median(total) median, quantile_cont(total,0.9) p90, round(100.0*sum(case when total < ? then 1 else 0 end)/count(*),1) percentile_of_this
-                from tx_active where account_policy=? and mcc_name=? and total>0 group by 1,2""", [float(t.total), t.account_policy, t.mcc_name])
+                from tx_active where account_policy=? and mcc_name=? and total>0 group by 1,2""", [float(t.total), t.account_policy, t.mcc_name]) if peer_pit is None else None
     access = q("select access_ts, gate, event, direction from access_logs where emp_id=? and cast(access_ts as date)=? order by access_ts", [int(t.emp_id), t.tx_date])
     hist = q(f"""with {_LATEST} select count(distinct f.tx_id) flagged_tx, count(distinct case when l.decision='violation' then f.tx_id end) violations, count(distinct case when l.decision='ok' then f.tx_id end) cleared
                  from flags f join transactions t using(tx_id) left join latest l on l.tx_id=f.tx_id and l.rule_id=f.rule_id where t.emp_id=?""", [int(t.emp_id)]).iloc[0].to_dict()
-    return dict(recent_tx=recent, peer=(peer.iloc[0].to_dict() if len(peer) else None), access_same_day=access,
+    peer_out = peer_pit if peer_pit is not None else (dict(peer.iloc[0].to_dict(), point_in_time=False) if len(peer) else None)
+    return dict(recent_tx=recent, peer=peer_out, access_same_day=access,
                 trip=dict(type=t.trip_type, start=t.trip_start, end=t.trip_end) if t.trip_type else None,
                 leave=dict(type=t.leave_type, hours=t.leave_hours) if t.is_leave else None, holiday=bool(t.is_holiday), history=hist)
 
@@ -258,3 +260,20 @@ def get_precedents(tx_id, k=3) -> dict:
     rv = out["review"]
     return dict(cases=out["case"][:k], reviews=rv[:k],
                 summary=dict(n=len(rv), violation=sum(r["outcome"] == "violation" for r in rv), ok=sum(r["outcome"] == "ok" for r in rv)))
+
+
+# ---------- feature table hooks ----------
+def _has_table(name) -> bool:
+    return con().execute("select count(*) from information_schema.tables where table_name=?", [name]).fetchall()[0][0] > 0
+
+def peer_from_features(tx_id):
+    """Peer comparison from tx_features (point-in-time, excludes this tx). None if table/row missing or no prior peers."""
+    if not _has_table("tx_features"): return None
+    df = q("""select t.account_policy, t.mcc_name, f.acct_mcc__all__n_tx n, f.acct_mcc__all__median_total median, f.acct_mcc__all__p90_total p90, f.acct_mcc__all__amount_pctile percentile_of_this
+              from tx_features f join transactions t using(tx_id) where f.tx_id=?""", [tx_id])
+    if not len(df) or pd.isna(df.n.iloc[0]) or df.n.iloc[0] == 0: return None
+    r = df.iloc[0].to_dict(); r["n"] = int(r["n"]); r["point_in_time"] = True; return r
+
+def get_features(tx_id) -> dict | None:
+    if not _has_table("tx_features"): return None
+    df = q("select * from tx_features where tx_id=?", [tx_id]); return df.iloc[0].to_dict() if len(df) else None

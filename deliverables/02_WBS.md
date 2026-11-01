@@ -15,7 +15,7 @@
 | 2.2 | 표준 적재 | 금액·취소·계정 매핑·출입 연결, DuckDB | scripts/load.py | 2.1 | 1 | [TBD] | ✅ |
 | 2.3 | 지오코딩 | 주소 8,189개 좌표화 | geocode 채움 | API 키 | — | [TBD] | ⬜ |
 | 2.4 | 합성 정답셋 | 징계사례 22건 → 가짜 사용자 24명, 위반 79건 | scripts/synth.py, ground_truth | 2.2 | 1 | [TBD] | ✅ |
-| 2.5 | 회피 변형 | 사례별 변형, 합성 주입, 커버리지 측정 | cases.yaml variants, 커버리지 표 | 2.4, 3.1 | 3 | [TBD] | ⬜ |
+| 2.5 | 회피 변형 | 사례별 변형, 합성 주입, 커버리지 측정 | cases.yaml variants, 커버리지 표 | 2.4, 3.1 | 팀 논의 후 | [TBD] | ⏸ 선택 |
 | 3 | 규칙 엔진 | | | | | | |
 | 3.1 | 규칙 21개 작성 | SQL 1파일/규칙, 출력 계약, 카탈로그 | rules/ | 2.2, 2.4 | 2 | [TBD] | ✅ |
 | 3.2 | 채점·민감도 | 합성 재현율, 임계치별 건수 | score.py, sweep.py | 3.1 | 2 | [TBD] | ✅ |
@@ -32,8 +32,8 @@
 | 5.2 | 유사도·테스트 | 희소도 가중 겹침, 출처 1위 95% | get_precedents | 5.1 | 2 | [TBD] | ✅ |
 | 5.3 | 판정 선례 승격 | reviews → precedents(kind=review) | load_precedents | 판정 축적 | 후반 | [TBD] | 🔧 |
 | 6 | 피처·모델 | | | | | | |
-| 6.1 | 피처 카탈로그·실행기 | 엔티티×시간창×집계, 시점 기준, 25열 | features/, tx_features | 2.2, 2.5 | 3 | [TBD] | ⬜ |
-| 6.2 | 피처 검증 | 누수·중복·단조성 | 리포트 | 6.1 | 3 | [TBD] | ⬜ |
+| 6.1 | 피처 카탈로그·실행기 | 엔티티×시간창×집계, 시점 기준, 34열 | features/, tx_features | 2.2 | 3 | [TBD] | ✅ |
+| 6.2 | 피처 검증 | 누수 3종·중복·단조성·재실행 | scripts/validate_features.py | 6.1 | 3 | [TBD] | ✅ |
 | 6.3 | 임시 정답 | 규칙 투표 확률 라벨, 출처 인자 | labels.py | 3.1 | 3 | [TBD] | ⬜ |
 | 6.4 | 모델 규격·후보 | base, baseline, logistic, xgb, train | models/ | 6.1, 6.3 | 3~4 | [TBD] | ⬜ |
 | 6.5 | 점수·화면 | tx_score, 정렬, 이유 3개, 시연 문구 | score_tx, app | 6.4 | 4 | [TBD] | ⬜ |

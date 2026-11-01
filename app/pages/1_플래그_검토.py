@@ -58,7 +58,7 @@ with left:
         a.markdown(f"{DOT[e['severity']]} **{head}**  \n<span class='sub'>{detail} · {e['rule_id'][:3]} {e['rule_name']}</span>" + (f"  \n<span class='cite'>근거: {cite}</span>" if cite else ""), unsafe_allow_html=True)
         with b.popover("왜?", help="이 규칙이 무엇을 보는지"): st.write(s.rule_explain(e["rule_id"]))
         with c.popover("동료", help="같은 계정·업종에서 남들은 얼마 쓰나"):
-            if p: st.write(f"{p['account_policy']} × {p['mcc_name']} {p['n']:,}건 · 중앙값 {p['median']:,.0f}원 · 상위 10% 경계 {p['p90']:,.0f}원 · 이 건 {t['total']:,.0f}원은 상위 {100-p['percentile_of_this']:.0f}% 지점")
+            if p: st.write(f"{p['account_policy']} × {p['mcc_name']} {p['n']:,}건 · 중앙값 {p['median']:,.0f}원 · 상위 10% 경계 {p['p90']:,.0f}원 · 이 건 {t['total']:,.0f}원은 상위 {100-p['percentile_of_this']:.0f}% 지점" + (" (이 거래 이전 거래 기준, 모델과 같은 숫자)" if p.get("point_in_time") else " (전 기간 기준)"))
             else: st.write("비교할 집단이 없음 (같은 계정·업종 거래 30건 미만)")
     rel = [e["related_tx"].assign(규칙=e["rule_id"][:3]) for e in evs if len(e["related_tx"])]
     if rel:

@@ -1,0 +1,68 @@
+# 피처 카탈로그 — 피처에 관한 선언은 이 파일 한 곳에만 둔다. 실행기(features/executor.py)는 이 선언으로 SQL을 만든다.
+# 이름 규약 {entity}__{window}__{what}. ctx__* 는 거래 자체의 열(집계 없음). hist__* 는 규칙 결과 기반(기본 제외, --with-history).
+# 모든 집계는 시점 기준: 이 거래보다 앞선(tx_ts <) 행만, 자신과 동시각 행 제외. lookahead: true 로 표시된 것만 예외.
+version: 1
+changelog:
+  - {version: 1, date: 2026-11-01, change: "1차 피처 29개 + 동반 n_obs 4개. docs/FEATURES.md 1차 목록. rank 백분위→중앙값 배수, 이력은 opt-in"}
+source: tx_active
+forbidden_name: "(^|_)(r\\d{2}|rule|flag|sever|review|decision|verdict|score|precedent)"
+forbidden_sql: "(?i)\\b(select|flags|reviews|precedents|ground_truth|flags_subset|tx_score|labels)\\b"
+known_redundant:
+  - [user__all__n_tx, user__30d__n_tx]
+entities:
+  user: [emp_id]
+  dept: [dept]
+  rank: [rank]
+  acct_mcc: [account_policy, mcc_name]
+  merchant: [merchant]
+  user_merchant: [emp_id, merchant]
+  approver: [approver_id]
+windows:
+  all:      {kind: prior, lo: null}
+  30d:      {kind: prior, lo: "interval 30 days"}
+  7d:       {kind: prior, lo: "interval 7 days"}
+  same_day: {kind: calendar_day, lookahead: true}
+
+features:
+  # ---- user: 이 사람의 평소 ----
+  user__all__n_tx:                 {group: user, entity: user, window: all, agg: count, where: "total > 0", describe: "이 거래 이전 본인 거래 수 (평소 비율의 관측 수)"}
+  user__all__amount_ratio_median:  {group: user, entity: user, window: all, agg: ratio_to_quantile, p: 0.5, of: total, where: "total > 0", n_obs: user__all__n_tx, expect_direction: "+", describe: "금액 / 본인 과거 중앙값"}
+  user__all__night_ratio:          {group: user, entity: user, window: all, agg: ratio_predicate, predicate: "hour(tx_ts) >= 21 or hour(tx_ts) < 6", where: "not time_is_dummy", n_obs: user__all__n_tx, describe: "본인 과거 거래 중 심야(21~06시) 비율"}
+  user__all__holiday_ratio:        {group: user, entity: user, window: all, agg: ratio_predicate, predicate: "is_holiday", n_obs: user__all__n_tx, describe: "본인 과거 거래 중 휴일 비율"}
+  user__30d__n_tx:                 {group: user, entity: user, window: 30d, agg: count, where: "total > 0", describe: "최근 30일 본인 거래 수"}
+  user__all__n_distinct_mcc:       {group: user, entity: user, window: all, agg: count_distinct, of: mcc_name, describe: "본인이 과거에 쓴 업종 가짓수"}
+  # ---- peer: 동료 비교 ----
+  dept__all__n_tx:                 {group: peer, entity: dept, window: all, agg: count, where: "total > 0", describe: "같은 부서 과거 거래 수"}
+  dept__all__amount_ratio_median:  {group: peer, entity: dept, window: all, agg: ratio_to_quantile, p: 0.5, of: total, where: "total > 0", n_obs: dept__all__n_tx, expect_direction: "+", describe: "금액 / 같은 부서 과거 중앙값"}
+  acct_mcc__all__n_tx:             {group: peer, entity: acct_mcc, window: all, agg: count, where: "total > 0", describe: "같은 계정×업종 과거 거래 수"}
+  acct_mcc__all__median_total:     {group: peer, entity: acct_mcc, window: all, agg: quantile, p: 0.5, of: total, where: "total > 0", describe: "같은 계정×업종 과거 중앙값 (화면 동료 비교용)"}
+  acct_mcc__all__p90_total:        {group: peer, entity: acct_mcc, window: all, agg: quantile, p: 0.9, of: total, where: "total > 0", describe: "같은 계정×업종 과거 상위 10% 경계"}
+  acct_mcc__all__amount_pctile:    {group: peer, entity: acct_mcc, window: all, agg: percentile_of_value, of: total, where: "total > 0", n_obs: acct_mcc__all__n_tx, expect_direction: "+", describe: "같은 계정×업종 과거 거래 중 이 금액보다 작은 비율(%)"}
+  rank__all__n_tx:                 {group: peer, entity: rank, window: all, agg: count, where: "total > 0", describe: "같은 직급 과거 거래 수"}
+  rank__all__amount_ratio_median:  {group: peer, entity: rank, window: all, agg: ratio_to_quantile, p: 0.5, of: total, where: "total > 0", n_obs: rank__all__n_tx, expect_direction: "+", describe: "금액 / 같은 직급 과거 중앙값"}
+  # ---- merchant: 가맹점 ----
+  merchant__all__n_tx:             {group: merchant, entity: merchant, window: all, agg: count, where: "total > 0", describe: "이 가맹점의 과거 전사 거래 수"}
+  merchant__all__n_distinct_users: {group: merchant, entity: merchant, window: all, agg: count_distinct, of: emp_id, describe: "이 가맹점을 과거에 쓴 직원 수 (혼자만 가는 가게). 방향 기대 없음: 약한 신호(규칙 플래그)와는 +0.36 — 금지 업종 규칙이 걸리는 술집이 인기 가맹점이라서. 실제 판정이 쌓이면 재검토"}
+  merchant__all__amount_ratio_median: {group: merchant, entity: merchant, window: all, agg: ratio_to_quantile, p: 0.5, of: total, where: "total > 0", n_obs: merchant__all__n_tx, describe: "금액 / 이 가맹점 과거 중앙값"}
+  user_merchant__all__n_tx:        {group: merchant, entity: user_merchant, window: all, agg: count, where: "total > 0", describe: "본인이 이 가맹점을 과거에 쓴 횟수 (단골)"}
+  # ---- sequence: 앞뒤 거래 ----
+  user__all__since_last_min:       {group: sequence, entity: user, window: all, agg: since_last_minutes, describe: "본인 직전 거래와의 간격(분)"}
+  user__all__until_next_min:       {group: sequence, entity: user, window: all, agg: until_next_minutes, lookahead: true, describe: "본인 직후 거래까지 간격(분)"}
+  user__same_day__n_tx:            {group: sequence, entity: user, window: same_day, agg: count, where: "total > 0", describe: "같은 날 본인의 다른 거래 수"}
+  user__same_day__n_distinct_sigungu: {group: sequence, entity: user, window: same_day, agg: count_distinct, of: "sigungu_of(merchant_addr)", describe: "같은 날 본인이 결제한 시군구 수 (자신 포함)"}
+  user_merchant__same_day__n_tx:   {group: sequence, entity: user_merchant, window: same_day, agg: count, where: "total > 0", describe: "같은 날 같은 가맹점 다른 결제 수 (분할 의심)"}
+  # ---- approver: 승인 구조 ----
+  approver__all__n_tx:             {group: approver, entity: approver, window: all, agg: count, describe: "이 승인자가 과거에 승인한 거래 수"}
+  approver__all__user_share:       {group: approver, entity: approver, window: all, agg: ratio_predicate, predicate: "h.emp_id = t.emp_id", n_obs: approver__all__n_tx, describe: "승인자의 과거 승인 중 이 사용자 비율"}
+  ctx__approver_user_same_sido:    {group: approver, kind: column, expr: "(sido_of(approver_addr) is not null and sido_of(approver_addr) = sido_of(home_addr))::int", describe: "승인자와 사용자 주거지 시도 일치"}
+  # ---- ctx: 거래 자체 ----
+  ctx__hour:                       {group: ctx, kind: column, expr: "case when time_is_dummy then null else hour(tx_ts) end", describe: "거래 시각(시)"}
+  ctx__dow:                        {group: ctx, kind: column, expr: "dayofweek(tx_date)", describe: "요일(0=일)"}
+  ctx__log_total:                  {group: ctx, kind: column, expr: "case when total > 0 then log(total) end", describe: "금액 log10"}
+  ctx__has_attachment:             {group: ctx, kind: column, expr: "has_attachment::int", describe: "증빙 첨부"}
+  ctx__is_holiday:                 {group: ctx, kind: column, expr: "is_holiday::int", describe: "휴일"}
+  ctx__is_leave:                   {group: ctx, kind: column, expr: "is_leave::int", describe: "휴가"}
+  ctx__on_trip:                    {group: ctx, kind: column, expr: "(trip_type is not null and tx_date between trip_start and trip_end)::int", describe: "출장 기간 중"}
+  ctx__trip_outside_area:          {group: ctx, kind: column, expr: "case when trip_type is not null and tx_date between trip_start and trip_end and merchant_addr is not null then (case when trip_type='해외출장' then (sido_of(merchant_addr) <> '해외')::int else (sigungu_of(merchant_addr) = sigungu_of(home_addr))::int end) end", describe: "출장 중 출장지 밖(해외출장 중 국내 / 국내출장 중 자택 시군구)"}
+  # ---- history: 규칙 결과 기반 (opt-in, 약한 라벨 학습에는 사용 금지) ----
+  hist__all__n_prior_flagged_tx:   {group: history, kind: history, describe: "이 거래 이전에 규칙에 걸린 본인 거래 수 (--with-history 에서만)"}

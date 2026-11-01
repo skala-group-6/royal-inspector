@@ -15,3 +15,8 @@ description = "A service-layer or precedents test fails: list/evidence/context/r
 name = "rules"
 command = ".venv/bin/python -I scripts/run_rules.py | grep -q 'OVERALL recall 114/114'"
 description = "The rule engine no longer catches every planted violation in the synthetic ground truth: a rule or threshold change regressed recall."
+
+[[scripts.check]]
+name = "features"
+command = "cp data/warehouse.duckdb /tmp/royal_feat.duckdb && ROYAL_DB=/tmp/royal_feat.duckdb .venv/bin/python -I scripts/build_features.py --quiet && ROYAL_DB=/tmp/royal_feat.duckdb .venv/bin/python -I scripts/validate_features.py"
+description = "The feature table failed a validation check: schema/catalog mismatch, a rule-derived column, point-in-time leakage (static, dual-strategy, or perturbation), undeclared redundancy, a direction expectation contradicted by the weak signal, or a non-reproducible rebuild."
