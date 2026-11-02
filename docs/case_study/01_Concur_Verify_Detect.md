@@ -2,6 +2,16 @@
 
 작성일 2026-11-02. 1차 출처(SAP Learning 코스 9개 레슨, SAP Help 검색 API 스니펫, 2022 Verify Release Notes PDF, UF·UNC Charlotte 공지)를 직접 읽고 정리. **검증 불가 항목은 ⚠️로 표기.**
 
+## 0. 한 장 요약
+
+경비 시스템(Concur) 안에 붙은 자동 검사기. 직원이 "제출"하는 순간 한 번 검사하고, 이상이 있으면 감사자가 항목마다 "맞다/오탐" 결정.
+
+- **체크 목록은 SAP 소유.** 고객은 켜고 끄고 기준치만 조정, 새 규칙은 못 만든다.
+- **설명은 규칙 설명문.** "이 건이 왜 걸렸나"가 아니라 "이 체크가 뭔가"를 보여준다.
+- **피드백이 학습으로 가지 않는다.** 감사자의 "오탐" 클릭이 모델·임계치를 바꾼다는 근거 없음.
+- 한계: 제출 시점 1회 검사(사후 엑셀 감사 불가) · 저화질·다중 영수증은 조용히 건너뜀 · 한국 규정 없음 · 기준이 전 세계 고객 USD 평균 · 데이터 해외 반출 · 정확도 수치 전부 벤더 주장.
+- 가져올 것: 항목 단위 판정 + 반려 코멘트 필수 → 우리 "위반/아님/보류" · 금액 이상치에 평균·percentile·분포 한 화면(단, 자사 데이터 기준) · 평가 불가는 숨기지 말고 명시.
+
 ## 1. 한 줄 정의
 
 Concur Verify는 Concur Expense 워크플로우 **안에** 끼어 들어 제출된 경비보고서 100%를 "Receipt 체크 + Policy 체크" 라이브러리로 평가하고, 예외(exception)가 하나라도 있으면 보고서를 `Reports Pending Audit Review` 큐로 보내 사람 감사자가 예외 단위로 Pass/Fail을 내리게 하는 **예외 기반(exception-based) 인워크플로우 감사 엔진**이다. Concur Detect by Oversight는 같은 자리에 꽂히는 **파트너(Oversight) 엔진**으로, 보고서를 Concur 밖 Oversight Workbench로 보내 선지급(pre-payment)·후지급(post-payment) 두 번 리스크 점수를 매긴다. Audit Service(Intelligent Audit)는 SAP 소속 사람 감사자가 대신 감사해 주는 유료 서비스다.
