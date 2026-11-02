@@ -1,0 +1,141 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>파이프라인 — 근거와 방법</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+ :root{--ink:#111;--mute:#6b7280;--line:#e5e7eb;--accent:#2563eb;--red:#dc2626;--amber:#b45309}
+ *{box-sizing:border-box} html,body{margin:0;background:#3f3f46;font-family:"Pretendard Variable",-apple-system,sans-serif;color:var(--ink)}
+ .deck{display:flex;flex-direction:column;align-items:center;gap:24px;padding:24px}
+ .slide{width:297mm;height:210mm;background:#fff;padding:14mm 16mm;position:relative;display:flex;flex-direction:column;box-shadow:0 8px 30px rgba(0,0,0,.35);page-break-after:always;overflow:hidden}
+ .n{position:absolute;right:16mm;bottom:9mm;font-size:11px;color:var(--mute)} .tag{font-size:12px;letter-spacing:.08em;color:var(--accent);font-weight:600}
+ h1{font-size:40px;margin:6px 0 0;font-weight:700;letter-spacing:-.02em} h2{font-size:26px;margin:2px 0 12px;font-weight:700;letter-spacing:-.01em}
+ .cols{display:grid;grid-template-columns:1fr 1.25fr;gap:16px;flex:1;min-height:0}
+ .card{border:1px solid var(--line);border-radius:10px;padding:14px 16px} .card h3{margin:0 0 8px;font-size:14px;font-weight:700;color:var(--mute);letter-spacing:.04em}
+ ul{margin:0;padding-left:18px;font-size:13.5px;line-height:1.55} li{margin-bottom:5px} li b{font-weight:600}
+ .src{font-size:11.5px;color:var(--mute);margin-top:8px;border-top:1px dashed var(--line);padding-top:6px}
+ .flow{display:flex;align-items:stretch;gap:8px;margin:6px 0 10px} .box{flex:1;border:1.5px solid var(--ink);border-radius:8px;padding:9px 8px;text-align:center;font-size:12.5px;font-weight:600} .box small{display:block;font-weight:400;color:var(--mute);font-size:10.5px;margin-top:2px} .box.h{background:#fef3c7;border-color:#f59e0b} .box.d{border-style:dashed;color:var(--mute);font-weight:500}
+ .arr{align-self:center;color:var(--mute)} table{border-collapse:collapse;width:100%;font-size:12.5px} th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top} th{color:var(--mute);font-weight:600;font-size:11.5px} td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
+ .kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px} .kpi div{border:1px solid var(--line);border-radius:8px;padding:10px} .kpi b{display:block;font-size:26px;font-weight:700;letter-spacing:-.02em} .kpi span{font-size:11.5px;color:var(--mute)}
+ .pill{display:inline-block;border-radius:999px;padding:1px 8px;font-size:11px;font-weight:600;background:#f3f4f6} .red{color:var(--red)} .amb{color:var(--amber)}
+ code{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;background:#f3f4f6;padding:1px 5px;border-radius:4px}
+ .foot{margin-top:auto;font-size:11.5px;color:var(--mute)} .kbd{position:fixed;left:16px;bottom:12px;color:#d4d4d8;font-size:12px}
+ @media print{html,body{background:#fff} .deck{padding:0;gap:0} .slide{box-shadow:none} .kbd{display:none} @page{size:A4 landscape;margin:0}}
+</style></head><body><div class="deck">
+
+<section class="slide"><div class="tag">파이프라인 · 근거와 방법</div><h1>다섯 상자를 왜, 어떻게 만들었나</h1>
+ <div class="flow" style="margin-top:28px"><div class="box">① 적재·정규화</div><span class="arr">→</span><div class="box">② 규칙 엔진</div><span class="arr">→</span><div class="box">③ 피처·라벨</div><span class="arr">→</span><div class="box">④ 점수 모델</div><span class="arr">→</span><div class="box">⑤ 검토 큐</div><span class="arr">→</span><div class="box h">⑥ 사람 판정</div></div>
+ <div class="cols" style="margin-top:14px"><div class="card"><h3>각 장의 구성</h3><ul><li><b>왼쪽 — 왜 이렇게</b>: 데이터에서 확인한 사실, 업계·논문·감사원 근거, 거부한 대안</li><li><b>오른쪽 — 어떻게</b>: 흐름, 핵심 결정, 숫자로 확인한 결과</li><li>모든 수치는 우리 DB(거래 29,433건 + 합성 851건)에서 직접 나온 값. 벤더 주장은 표시</li></ul></div>
+ <div class="card"><h3>관통하는 원칙 세 가지</h3><ul><li><b>판정은 코드가, 번역·서술은 LLM이, 순서는 모델이.</b> 감사 결과는 징계 근거이므로 "왜"를 끝까지 추적할 수 있어야 한다</li><li><b>설정은 한 파일에, 변경은 버전으로.</b> 규칙·피처·라벨 집계가 전부 YAML 카탈로그. 사람이 읽고 고친다</li><li><b>숫자로 검증.</b> 합성 정답셋, 7종 피처 검사, 기준선 대비 모델 시험, 재실행 해시 동일 — 전부 CI 체크</li></ul></div></div>
+ <div class="foot">문서: docs/PROJECT_NOTES.md · RULES.md · FEATURES.md · MODEL.md · DISCOVERY_LOOP.md · deliverables/</div><div class="n">1</div></section>
+
+<section class="slide"><div class="tag">① 적재 · 정규화</div><h2>엑셀을 "규칙이 바로 읽을 수 있는 표"로 바꾸고, 원본은 건드리지 않는다</h2>
+ <div class="cols"><div class="card"><h3>왜 이렇게</h3><ul>
+  <li><b>데이터를 먼저 세어 봤다.</b> 시트 8개 중 적재 가치가 있는 것 4개, 메모 3개, 빈 시트 1개. 거래 시트 69열 중 뒤 29열이 HR(휴일·휴가·출장·주소)로 이미 결합돼 있어 조인 비용이 없었다</li>
+  <li><b>금액이 글자였다.</b> <code>₩27,273</code>. 날짜·시간도 분리. 그대로는 집계 불가</li>
+  <li><b>취소가 두 종류였다.</b> '카드취소' 486건은 회계용 ±쌍(합이 0, 456건이 지급수수료 "카드취소 처리")이라 실거래가 아님. 진짜 부분취소는 법인카드 음수 79건, 적요에 "부분 취소"</li>
+  <li><b>계정 이름이 규정표와 달랐다.</b> 거래 49종 vs 규정 42종. 괄호·공백 차이가 대부분, 사람이 결정할 건 10개</li>
+  <li><b>거부한 대안:</b> 엑셀에서 손으로 정리 → 다음 파일부터 재현 불가, 변경 이력 없음</li></ul>
+  <div class="src">근거: data/inventory/README.md(인벤토리·프로파일·적재 리포트), scripts/inventory.py · profile.py · load.py</div></div>
+ <div class="card"><h3>어떻게</h3>
+  <div class="flow"><div class="box">인벤토리<small>8시트 행·열·헤더 위치</small></div><span class="arr">→</span><div class="box">프로파일<small>열별 채움률·고유값</small></div><span class="arr">→</span><div class="box">정규화<small>금액·시각·취소·계정</small></div><span class="arr">→</span><div class="box">DuckDB<small>테이블 6 + 뷰</small></div><span class="arr">→</span><div class="box">품질 리포트<small>JSON</small></div></div>
+  <table><tr><th>정규화</th><th>처리</th><th class="r">건수</th></tr>
+  <tr><td>회계용 취소 쌍</td><td><code>exclude_reason</code>로 제외 표시(삭제 아님)</td><td class="r">486</td></tr>
+  <tr><td>부분취소</td><td>사번+상호+금액으로 원거래 연결, 순금액 열 추가</td><td class="r">79 (연결 71)</td></tr>
+  <tr><td>계정 매핑</td><td>자동 37 · 수동 10 · 규정 없음 2(수입인지세 등)</td><td class="r">49 → 39</td></tr>
+  <tr><td>규정표</td><td>병합 셀·두 줄 계정명 복원</td><td class="r">39 계정</td></tr>
+  <tr><td>출입 연결</td><td>사번 동일 체계, 방향(in/out) 파생</td><td class="r">사용자 80% · 거래 48.5% 당일 기록</td></tr></table>
+  <div class="kpi"><div><b>29,433</b><span>분석 대상 거래 (30,849 중)</span></div><div><b>91 / 85 / 99%</b><span>가맹점 · 주거지 · 근무지 주소 채움률</span></div><div><b>동일</b><span>재실행 시 결과 해시</span></div></div>
+  <div class="src">남은 것: 지오코딩(API 키 대기) · 주거지 주소 일부는 번지 없이 동 단위 → 거주지 규칙은 시군구 일치로</div></div></div><div class="n">2</div></section>
+
+<section class="slide"><div class="tag">② 규칙 엔진</div><h2>시나리오 12개를 규칙 21개로, 징계사례 22건으로 역검증</h2>
+ <div class="cols"><div class="card"><h3>왜 이렇게</h3><ul>
+  <li><b>규칙이 중심인 이유.</b> 감사 결과는 징계 근거 → 걸린 이유를 규정 조항으로 설명해야 함. LLM 판단은 같은 질문에 다른 답(이전 팀 한계), ML은 라벨 0건에서 불가</li>
+  <li><b>국내 적발 사례가 전부 단순 규칙 패턴.</b> 강원랜드 주말 3,593건, 가스안전공사 50만원 쪼개기 103건 — 규칙을 아무도 안 돌렸을 뿐</li>
+  <li><b>임계치는 규정에 없다.</b> 규정표엔 "금지 업종" 종류만 있고 "몇 분 안에 몇 번"은 없음 → 도구 설정값으로 분리, 민감도 표로 윤경팀이 확정</li>
+  <li><b>등급을 둘로.</b> 규정 근거 있는 규칙(🔴 13개)과 통계·가설(⚪ 8개). 업계 공통(Ramp 차단/경고, Expensify 빨강/노랑)</li>
+  <li><b>거부한 대안:</b> 비지도 이상탐지(저발생률에서 정밀도 9~20%, 영국 정부 경비팀이 설명성 부족으로 폐기)</li></ul>
+  <div class="src">근거: docs/RULES.md(시나리오→규칙→사례 대응표, 민감도), rules/catalog.yaml, 조사 보고서 §2(CAAT 플래그 확정률 10~47%), 참고 비용정산지침 시트</div></div>
+ <div class="card"><h3>어떻게</h3>
+  <div class="flow"><div class="box">시나리오 12<small>과제 요구</small></div><span class="arr">→</span><div class="box">규칙 19<small>SQL 1파일 = 규칙 1개</small></div><span class="arr">→</span><div class="box">사례 22로 역검증<small>못 덮는 2건 → R16·R21</small></div><span class="arr">→</span><div class="box">규칙 21<small>catalog v2</small></div></div>
+  <table><tr><th>출력 계약 (모든 상위 층의 입력)</th></tr><tr><td><code>rule_id · tx_id · evidence(JSON: 걸린 값) · related_tx_ids · severity(violation/advisory) · rule_version</code></td></tr></table>
+  <table style="margin-top:8px"><tr><th>검증</th><th class="r">결과</th></tr>
+  <tr><td>징계사례 22건을 가짜 사용자 24명·위반 79건으로 심은 합성 정답셋 재현율</td><td class="r"><b>114/114</b></td></tr>
+  <tr><td>실데이터에서 1개 이상 규칙에 걸린 거래 (초기 임계치)</td><td class="r">8,571 (29.1%)</td></tr>
+  <tr><td>민감도: 분할 창 30/60/120/240분</td><td class="r">222 / 243 / 276 / 305</td></tr>
+  <tr><td>민감도: 금액 과다 1.8/2.0/2.5배</td><td class="r">4,704 / 4,057 / 2,742</td></tr></table>
+  <div class="kpi"><div><b class="red">112 / 166</b><span>주점 결제 중 의욕관리비 → 첫 질문</span></div><div><b>7%</b><span>출입 출문 비율 → 대여 규칙 재정의</span></div><div><b>3 / 12</b><span>카드 데이터만으로 되는 시나리오</span></div></div>
+  <div class="src">근거 문장 = 결론 한 줄 + 숫자 + 규정 인용(계정별 Don'ts 자동 매칭). 증빙 위변조 2규칙은 파일 없어 미구현</div></div></div><div class="n">3</div></section>
+
+<section class="slide"><div class="tag">③ 피처 · 라벨</div><h2>거래를 "평소 대비 숫자"로 바꾸고, 규칙 투표로 임시 정답을 만든다</h2>
+ <div class="cols"><div class="card"><h3>왜 이렇게</h3><ul>
+  <li><b>정답이 0건.</b> 지도학습 불가 → 약한 지도(weak supervision): 규칙들을 노이즈 있는 투표자로 보고 합의 확률을 임시 라벨로. 벤치마크(WRENCH)상 이 규모에선 학습된 라벨 모델이 다수결과 차이 없음 → 선언된 집계</li>
+  <li><b>피처는 규칙과 분리.</b> 정답이 규칙에서 왔는데 입력도 규칙이면 베끼기. 규칙이 못 보는 것(사용자 평소, 가맹점 희소도, 부서 비교, 거래 간격)만 입력</li>
+  <li><b>시점 기준.</b> 3/20 거래의 "평소"에 3/31 데이터가 들어가면 미래 누수. feature store 표준(Airbnb Chronon, Tecton)</li>
+  <li><b>합성 79건은 학습에 안 씀.</b> 규칙 명세에서 만든 데이터라 순환. 회귀 테스트로만</li>
+  <li><b>거부한 대안:</b> 합성으로 학습, 무작위 분할, prob 회귀/가중치(규칙 수 베끼기로 회귀)</li></ul>
+  <div class="src">근거: docs/FEATURES.md · MODEL.md · research_notes/label_scarce_learning_comparison.md(Ratner 2017, WRENCH, Farquhar 2021), features/catalog.yaml, labels/weak.yaml</div></div>
+ <div class="card"><h3>어떻게</h3>
+  <div class="flow"><div class="box">피처 카탈로그<small>엔티티×시간창×집계 선언</small></div><span class="arr">→</span><div class="box">실행기<small>윈도 프레임 "1µs 전까지"</small></div><span class="arr">→</span><div class="box">tx_features<small>30,284행 × 34열</small></div><span class="arr">→</span><div class="box">검증 7종</div></div>
+  <table><tr><th>예: 노래방 590,000원 (#11012)</th><th class="r">값</th></tr>
+  <tr><td>본인 과거 중앙값 대비</td><td class="r">14.5배</td></tr><tr><td>같은 계정×업종 과거 거래 중 백분위</td><td class="r">100 (과거 1건)</td></tr><tr><td>이 가맹점을 과거에 쓴 직원</td><td class="r">0명</td></tr><tr><td>직전 거래 간격 · 같은 날 지역 수</td><td class="r">157분 · 2</td></tr></table>
+  <div class="flow" style="margin-top:10px"><div class="box">규칙 투표<small>violation 0.6 · advisory 0.2</small></div><span class="arr">→</span><div class="box">군집 10개<small>같은 상황 규칙은 1표</small></div><span class="arr">→</span><div class="box">noisy-OR<small>prior 0.02</small></div><span class="arr">→</span><div class="box">labels<small>weak / reviews / import</small></div></div>
+  <div class="kpi"><div><b>7 / 7</b><span>피처 검증: 누수 3종·중복·단조·재실행·스키마</span></div><div><b>0.535 vs 0.084</b><span>합성 위반 평균 vs 합성 정상 평균</span></div><div><b>11.5%</b><span>실거래 중 임시 정답 &gt; 0.5</span></div></div>
+  <div class="src">발견: "혼자만 가는 가게가 수상" 가정이 약한 신호와 반대(+0.36 — 금지 업종 규칙이 걸리는 술집이 인기 가맹점) → 가정 제거·기록</div></div></div><div class="n">4</div></section>
+
+<section class="slide"><div class="tag">④ 점수 모델</div><h2>세 후보를 같은 시험에 올리고, 기준선을 이길 때만 채택한다</h2>
+ <div class="cols"><div class="card"><h3>왜 이렇게</h3><ul>
+  <li><b>모델은 순서만.</b> 판정은 사람. 자동으로 바뀌는 건 검토 목록의 순서뿐 (Ramp Policy Agent도 추천만, 최종은 사람)</li>
+  <li><b>기준선 없이는 증명 불가.</b> 미국 국세청 감사원(TIGTA 2025-308-022) 지적 2: "AI가 이전 방식보다 나은지 평가 절차 없음". 그래서 지금 방식(규칙 수×금액 정렬)을 같은 소켓의 후보로</li>
+  <li><b>트리 모델이 맞는 규모.</b> 표 데이터·라벨 수천 건에선 트리가 DNN보다 우세(Grinsztajn 2022). Stripe가 DNN으로 간 조건(일 수백만 라벨, 100ms)은 우리에 없음. DNN은 빈 자리로</li>
+  <li><b>교체 가능한 소켓.</b> fit / predict / explain 세 함수만 지키면 어떤 모델도 꽂힘. 화면은 점수와 이유 3개만 받음</li>
+  <li><b>시간순 분할.</b> 1~2월 학습 → 3월 시험. 무작위 분할은 같은 사람이 양쪽에 들어가 과대평가</li></ul>
+  <div class="src">근거: docs/MODEL.md, research_notes/tigta_2025_308_022_ai_case_selection.md, models/base.py, scripts/train.py, manifest.json</div></div>
+ <div class="card"><h3>어떻게 · 결과</h3>
+  <table><tr><th>후보</th><th class="r">p@100</th><th class="r">PR-AUC</th><th class="r">기준선과 top-100 겹침</th></tr>
+  <tr><td>기준선 (규칙 수 × log 금액)</td><td class="r">1.00</td><td class="r">0.999</td><td class="r">—</td></tr>
+  <tr><td>로지스틱 회귀</td><td class="r">0.88</td><td class="r">0.660</td><td class="r">4%</td></tr>
+  <tr><td>XGBoost (규칙 열 없음)</td><td class="r">1.00</td><td class="r">0.812</td><td class="r">3%</td></tr></table>
+  <ul style="margin-top:10px"><li><b>해석.</b> 임시 정답이 규칙 투표의 함수라 기준선은 질 수 없다(PR-AUC 0.999). 선택 규칙대로 <code>chosen = baseline</code></li>
+  <li><b>의미 있는 결과.</b> 규칙을 전혀 못 보는 XGBoost가 행동 피처만으로 규칙 합의를 <b>81%</b> 복원, 상위 100건은 <b>3%</b>만 겹침 → "다른 눈으로 같은 결론". 학습 모델 점수를 별도 저장</li>
+  <li><b>규칙 밖 고점수</b> 상위: 11번가 PG 59,000 · 해외 전기요금 · 해외 게스트하우스 — 발굴 입구의 첫 후보</li>
+  <li><b>진짜 승부</b>는 윤경팀 판정 라벨에서. <code>train.py --label-source reviews</code>로 같은 시험</li></ul>
+  <div class="kpi"><div><b>6,836 → 22,597</b><span>학습(1~2월) → 시험(3월) 건수</span></div><div><b>3 + 1</b><span>후보 3 + DNN 빈 자리</span></div><div><b>시연용</b><span>manifest·화면에 한계 문구 고정</span></div></div></div></div><div class="n">5</div></section>
+
+<section class="slide"><div class="tag">⑤ 검토 큐</div><h2>규칙에 걸린 것 + 모델 추천 + 무작위 표본, 그리고 "왜 올라왔나"를 기록한다</h2>
+ <div class="cols"><div class="card"><h3>왜 이렇게</h3><ul>
+  <li><b>필터는 두 방향으로 틀린다.</b> "잘못 잡음"은 걸린 걸 보면 저절로 드러나지만, "놓침"은 안 걸린 더미를 아무도 안 보면 영원히 모른다. 운영은 보이는 오탐만 줄이는 쪽으로 기울어 시스템이 조용해지는 것을 좋아지는 것으로 착각</li>
+  <li><b>무작위 표본이 유일한 창문.</b> 사람이 고르면 또 하나의 규칙. 미국 국세청의 NRP(통계적 무작위 표본 조사)가 선정 모델 검증의 근거인 것과 같은 축소판</li>
+  <li><b>출처 기록 없이는 공정한 평가 불가.</b> 규칙이 고른 거래의 판정으로만 모델을 채점하면 "규칙이 보여준 세계" 안의 점수. 무작위 행의 판정이 중립 시험지(Farquhar 2021 능동학습 편향)</li>
+  <li><b>재빌드 보호.</b> 판정이 붙은 행은 다시 뽑아도 유지 — 라벨 고아 방지</li>
+  <li><b>거부한 대안:</b> 페이지 로드마다 즉석 샘플(재현 불가), reservoir sample(멀티스레드에서 불안정) → <code>hash(tx_id‖seed)</code> 정렬</li></ul>
+  <div class="src">근거: docs/DISCOVERY_LOOP.md, docs/MODEL.md §검토 큐, app/service.py build_queue · list_queue · get_queue_summary, tests/test_queue.py</div></div>
+ <div class="card"><h3>어떻게 · 3월 큐</h3>
+  <div class="flow"><div class="box">규칙 행<small>플래그 전부, 점수순</small></div><span class="arr">+</span><div class="box">모델 추천<small>미플래그 중 학습 점수 상위 20</small></div><span class="arr">+</span><div class="box">무작위<small>미플래그 풀의 10% (최소 10)</small></div><span class="arr">→</span><div class="box h">한 목록<small>queue_source · 선택확률 · 시드</small></div></div>
+  <table><tr><th>출처</th><th class="r">건수</th><th>화면 배지</th><th>판정 시</th></tr>
+  <tr><td>rule</td><td class="r">6,857</td><td>🔴 / ⚪ ×n</td><td>걸린 규칙마다 기록</td></tr>
+  <tr><td>model</td><td class="r">20</td><td>🧠 모델</td><td>거래 단위(rule_id NULL)</td></tr>
+  <tr><td>random</td><td class="r">686 / 15,864</td><td>🎲 무작위</td><td>거래 단위 → 중립 라벨</td></tr></table>
+  <ul style="margin-top:10px"><li>Home 요약에 <b>"무작위 n건 중 위반 k건 → 미플래그 위반율 추정"</b>. 규칙이 놓치는 것의 첫 측정</li><li>무작위에서 위반 1건이 나오면 → 새 규칙 후보(LLM 초안) → 과거 데이터 소급 실행 → 사람 승인 → 카탈로그. <b>규칙은 기계가 혼자 바꾸지 않는다</b></li></ul>
+  <div class="kpi"><div><b>7,563</b><span>3월 검토 목록</span></div><div><b>같은 시드 = 같은 표본</b><span>재현성 테스트 통과</span></div><div><b>33 / 33</b><span>전체 테스트</span></div></div></div></div><div class="n">6</div></section>
+
+<section class="slide"><div class="tag">근거 자료</div><h2>어디서 확인할 수 있나</h2>
+ <div class="cols" style="grid-template-columns:1fr 1fr"><div class="card"><h3>우리 저장소</h3><table>
+  <tr><td>조사 보고서</td><td><code>reports/법인카드 감사 솔루션 분석.md</code> (148 인용)</td></tr>
+  <tr><td>데이터 사실</td><td><code>data/inventory/README.md</code>, <code>load_report.json</code></td></tr>
+  <tr><td>규칙</td><td><code>rules/catalog.yaml</code>, <code>docs/RULES.md</code></td></tr>
+  <tr><td>피처·라벨</td><td><code>features/catalog.yaml</code>, <code>labels/weak.yaml</code>, <code>docs/FEATURES.md</code>, <code>docs/MODEL.md</code></td></tr>
+  <tr><td>모델 시험</td><td><code>models/&lt;v&gt;/manifest.json</code></td></tr>
+  <tr><td>큐·발굴</td><td><code>docs/DISCOVERY_LOOP.md</code></td></tr>
+  <tr><td>결정 기록</td><td><code>docs/PROJECT_NOTES.md</code> §7</td></tr>
+  <tr><td>산출물</td><td><code>deliverables/01~04</code></td></tr></table></div>
+ <div class="card"><h3>외부 근거 (전부 1차 자료 확인)</h3><table>
+  <tr><td>감사 실무</td><td>TIGTA 2025-308-022 · GAO-03-489 · ACFE Report to the Nations 2024 · 공공기관 업무추진비 지침(클린카드)</td></tr>
+  <tr><td>라벨 희소 학습</td><td>Ratner et al. 2017(Snorkel) · WRENCH 벤치마크 · Elkan&amp;Noto 2008 · Farquhar 2021</td></tr>
+  <tr><td>표 데이터 모델</td><td>Grinsztajn et al. 2022 · Stripe "How we built Radar"(DNN 조건 대조)</td></tr>
+  <tr><td>피처 구조</td><td>Airbnb Chronon · Tecton 시점 기준 집계</td></tr>
+  <tr><td>검토 UI</td><td>Stripe Radar 리뷰 큐 · Ramp Policy Agent · Concur Verify · HighBond · 국내 감사 점검표</td></tr>
+  <tr><td>AI UX</td><td>Stripe Sigma · Ramp · Retool · Linear · Notion — "답은 채팅이 아니라 산출물"</td></tr></table>
+  <div class="src">주의: Ramp 피처 시스템은 공개 자료 없음 → 근거로 쓰지 않음. 벤더 수치는 "벤더 주장"으로 표기</div></div></div>
+ <div class="foot">연구 노트 전체: research_notes/ (git 미추적) · 요약: docs/TEAM_SYNC_2026-11-02.md</div><div class="n">7</div></section>
+
+</div><div class="kbd">← → 키로 이동 · ⌘P 인쇄(A4 가로)</div>
+<script>const s=[...document.querySelectorAll('.slide')];let i=0;function go(k){i=Math.max(0,Math.min(s.length-1,k));s[i].scrollIntoView({behavior:'smooth',block:'center'})}
+addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' '].includes(e.key))go(i+1);if(['ArrowLeft','PageUp'].includes(e.key))go(i-1)});</script></body></html>
