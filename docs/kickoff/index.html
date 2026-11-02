@@ -1,0 +1,109 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>킥오프 — 법인카드 사용 점검</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+ :root{--ink:#111;--mute:#6b7280;--line:#e5e7eb;--accent:#2563eb;--red:#dc2626;--bg:#fff}
+ *{box-sizing:border-box} html,body{margin:0;background:#3f3f46;font-family:"Pretendard Variable",-apple-system,sans-serif;color:var(--ink)}
+ .deck{display:flex;flex-direction:column;align-items:center;gap:24px;padding:24px}
+ .slide{width:297mm;height:210mm;background:var(--bg);padding:16mm 18mm;position:relative;display:flex;flex-direction:column;box-shadow:0 8px 30px rgba(0,0,0,.35);page-break-after:always;overflow:hidden}
+ .n{position:absolute;right:18mm;bottom:10mm;font-size:11px;color:var(--mute)} .tag{font-size:12px;letter-spacing:.08em;color:var(--accent);font-weight:600;text-transform:uppercase}
+ h1{font-size:44px;line-height:1.15;margin:6px 0 0;font-weight:700;letter-spacing:-.02em} h2{font-size:30px;margin:4px 0 18px;font-weight:700;letter-spacing:-.01em}
+ .sub{font-size:16px;color:var(--mute);margin-top:10px}
+ .grid{display:grid;gap:14px} .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)} .g2{grid-template-columns:1fr 1fr}
+ .card{border:1px solid var(--line);border-radius:10px;padding:16px 18px} .card h3{margin:0 0 6px;font-size:15px;font-weight:600} .card p{margin:0;font-size:13px;color:var(--mute);line-height:1.5}
+ .big{font-size:46px;font-weight:700;letter-spacing:-.02em;line-height:1} .big small{font-size:14px;color:var(--mute);font-weight:500;margin-left:6px}
+ .flow{display:flex;align-items:center;gap:10px;margin:8px 0} .box{flex:1;border:1.5px solid var(--ink);border-radius:8px;padding:12px 10px;text-align:center;font-size:14px;font-weight:600} .box small{display:block;font-weight:400;color:var(--mute);font-size:11px;margin-top:3px} .box.h{background:#fef3c7;border-color:#f59e0b} .box.g{border-style:dashed;color:var(--mute)}
+ .arr{font-size:20px;color:var(--mute)} table{border-collapse:collapse;width:100%;font-size:13px} th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line)} th{color:var(--mute);font-weight:600;font-size:12px} td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
+ .pill{display:inline-block;border-radius:999px;padding:2px 9px;font-size:11px;font-weight:600;background:#f3f4f6} .pill.ok{background:#dcfce7;color:#166534} .pill.todo{background:#f3f4f6;color:#6b7280} .pill.red{background:#fee2e2;color:#991b1b}
+ .foot{margin-top:auto;font-size:12px;color:var(--mute)} .kbd{position:fixed;left:16px;bottom:12px;color:#d4d4d8;font-size:12px}
+ .bar{height:10px;background:#e5e7eb;border-radius:5px;overflow:hidden} .bar i{display:block;height:100%;background:var(--accent)}
+ @media print{html,body{background:#fff} .deck{padding:0;gap:0} .slide{box-shadow:none;margin:0} .kbd{display:none} @page{size:A4 landscape;margin:0}}
+</style></head><body><div class="deck">
+
+<section class="slide"><div class="tag">Kickoff · 2026-11-02</div>
+ <h1>법인카드 사용 점검 지원 시스템</h1>
+ <div class="sub">기계가 거르고, 사람이 판정하고, 판정이 기계를 다시 가르친다</div>
+ <div class="grid g4" style="margin-top:auto">
+  <div class="card"><div class="big">30만<small>건/년</small></div><p>법인카드 거래</p></div>
+  <div class="card"><div class="big">12<small>MM</small></div><p>지금의 수작업 점검</p></div>
+  <div class="card"><div class="big">12<small>시나리오</small></div><p>사적 사용 5 · 리더 3 · 절차 4</p></div>
+  <div class="card"><div class="big">0<small>건</small></div><p>"위반이었다"는 정답 라벨</p></div>
+ </div><div class="n">1</div></section>
+
+<section class="slide"><div class="tag">1 · 문제</div><h2>윤리경영팀은 거래와 증빙을 하나씩 열어 본다</h2>
+ <div class="grid g3">
+  <div class="card"><h3>사적 사용</h3><p>개인 물품 · 휴가/휴일 · 선결제/분할 · 거주지 인근 · 동시간 다른 장소</p></div>
+  <div class="card"><h3>리더 점검</h3><p>출장지 밖 사용 · 골프/유흥의 업무 연관성 · 과다 주유</p></div>
+  <div class="card"><h3>절차 위반</h3><p>증빙 누락 · 허위 증빙 · 부적절한 계정 · 타인 카드 대여</p></div>
+ </div>
+ <h3 style="margin:22px 0 8px;font-size:15px">최소 요구사항</h3>
+ <div class="flow"><div class="box">엑셀 업로드<small>기간·대상</small></div><span class="arr">→</span><div class="box">자연어 / 명령<small>"3월 출장지 밖 사용"</small></div><span class="arr">→</span><div class="box">시나리오별 적발<small>근거 포함</small></div><span class="arr">→</span><div class="box g">새 패턴 발굴<small>AI 제안</small></div><span class="arr">→</span><div class="box g">증빙 대조·위변조<small>OCR·해시·픽셀</small></div></div>
+ <div class="foot">실제 적발 사례(강원랜드 주말 3,593건 · 가스안전공사 쪼개기 103건)는 전부 단순 규칙으로 잡히는 패턴 — 아무도 규칙을 돌리지 않았을 뿐</div><div class="n">2</div></section>
+
+<section class="slide"><div class="tag">2 · 기존 솔루션</div><h2>한계는 알고리즘이 아니라 데이터와 워크플로에 있다</h2>
+ <table><tr><th style="width:22%">누가</th><th>무엇을 하나</th><th style="width:38%">왜 우리에게 안 맞나</th></tr>
+ <tr><td>글로벌 경비감사<br><span class="pill">AppZen · Oversight · Concur</span></td><td>자사 경비 흐름 안의 거래를 룰+ML로 감사</td><td>엑셀 사후 감사 불가 · 한국어 영수증 · 국내 규정 미지원</td></tr>
+ <tr><td>국내 SaaS<br><span class="pill">비즈플레이 · 고위드 · 더존</span></td><td>카드사 EDI → 전표 · 정산 자동화</td><td>통제는 한도·휴일·클린카드 업종 차단 수준</td></tr>
+ <tr><td>전통 감사분석<br><span class="pill">ACL · IDEA</span></td><td>40~200개 결정적 룰을 배치로</td><td>룰 플래그 중 확정되는 비율 10~47% · 영수증 못 봄</td></tr>
+ <tr><td>LLM 챗봇<br><span class="pill">이전 팀 방식</span></td><td>기준 파일과 거래를 넣고 프롬프트</td><td>같은 질문에 다른 답 · 설명이 데이터와 불일치 · 검증 불가</td></tr></table>
+ <div class="grid g2" style="margin-top:18px">
+  <div class="card"><h3>데이터 층의 한계</h3><p>카드사 피드에 좌표·사업자번호·표준 업종코드 없음 · PG 거래는 가맹점명이 가려짐 · 12개 시나리오 중 카드 데이터만으로 되는 건 3개</p></div>
+  <div class="card"><h3>워크플로 층의 한계</h3><p>정부 감사 보고서가 공통으로 지적: 플래그를 증거 없이 닫는 검토 단계. 12MM의 큰 몫은 플래그 생성이 아니라 해소에 쓰임</p></div>
+ </div><div class="n">3</div></section>
+
+<section class="slide"><div class="tag">3 · 설계 원칙</div><h2>판정은 코드가 · 번역과 서술은 LLM이 · 순서는 모델이</h2>
+ <div class="flow"><div class="box">① 적재<small>엑셀 → 표준 테이블</small></div><span class="arr">→</span><div class="box">② 규칙 엔진<small>21개 규칙 · 근거 문장</small></div><span class="arr">→</span><div class="box">③ 피처 · 라벨<small>평소 대비 숫자 · 임시 정답</small></div><span class="arr">→</span><div class="box">④ 점수 모델<small>순서만 정함</small></div><span class="arr">→</span><div class="box">⑤ 검토 큐<small>규칙 + 모델 + 무작위</small></div><span class="arr">→</span><div class="box h">⑥ 사람 판정<small>위반 / 아님 / 보류</small></div></div>
+ <div class="grid g3" style="margin-top:22px">
+  <div class="card"><h3>피드백 루프 A · 점수</h3><p>사람 판정 → 라벨 → 재학습. 자동. 바뀌는 것은 <b>순서</b>뿐</p></div>
+  <div class="card"><h3>피드백 루프 B · 규칙</h3><p>무작위 표본·모델 고점수에서 놓친 것 → 후보 → <b>사람 승인</b> → 규칙 추가</p></div>
+  <div class="card"><h3>사람이 바꾸는 것</h3><p>임계치 확정 · 새 규칙 승인 · 과거 결과 입력. 기계는 규칙과 숫자를 혼자 바꾸지 않는다</p></div>
+ </div>
+ <div class="foot">미국 국세청 감사원(TIGTA 2025)의 지적 두 가지 — "판정 결과를 모델에 되먹이지 않음" · "이전 방식보다 나은지 증명 못 함" — 을 처음부터 설계에 넣음</div><div class="n">4</div></section>
+
+<section class="slide"><div class="tag">4 · 데이터가 알려준 것</div><h2>받은 데이터를 돌려 보니</h2>
+ <div class="grid g3">
+  <div class="card"><div class="big" style="color:var(--red)">112<small>/ 166건</small></div><p>실제 주점 결제 중 <b>의욕관리비</b>로 처리된 건. 규정상 접대비만 가능 → 윤경팀에 첫 질문</p></div>
+  <div class="card"><div class="big">0<small>건</small></div><p>정답 라벨. 규칙 21개의 투표로 임시 정답을 만드는 <b>약한 지도</b>로 시작, 윤경팀 판정이 오면 같은 스크립트로 교체</p></div>
+  <div class="card"><div class="big">7<small>%</small></div><p>출입기록 중 <b>출문</b> 비율. "나간 기록 없음"은 신호가 아님 → 카드 대여 규칙을 "입문 직후 먼 곳 결제"로</p></div>
+  <div class="card"><div class="big">29<small>%</small></div><p>초기 임계치에서 규칙에 걸리는 거래. 임계치는 규정이 아니라 <b>도구 설정</b> — 우리가 초기값, 윤경팀이 확정</p></div>
+  <div class="card"><div class="big">81<small>%</small></div><p>규칙을 못 보는 XGBoost가 행동 피처만으로 규칙 합의를 복원한 정도(PR-AUC). 상위 100건은 기준선과 <b>3%</b>만 겹침 → 규칙 밖 탐지의 재료</p></div>
+  <div class="card"><div class="big">100<small>%</small></div><p>징계사례 22건을 심은 합성 정답셋 79건에 대한 규칙 재현율. 규칙을 고칠 때마다 자동 재채점</p></div>
+ </div><div class="n">5</div></section>
+
+<section class="slide"><div class="tag">5 · 지금 어디까지</div><h2>한 바퀴가 돌아간다</h2>
+ <table><tr><th>단계</th><th>상태</th><th>핵심 숫자</th></tr>
+ <tr><td>① 적재·정규화</td><td><span class="pill ok">완료</span></td><td>거래 29,433 · 출입 819,961 · 규정 39계정 · 징계사례 22</td></tr>
+ <tr><td>② 규칙 엔진</td><td><span class="pill ok">완료</span></td><td>21규칙 · 근거 문장 + 규정 인용 · 합성 재현율 100%</td></tr>
+ <tr><td>③ 피처 · 라벨</td><td><span class="pill ok">완료</span></td><td>시점 기준 피처 34열 · 검증 7종 · 규칙 투표 라벨</td></tr>
+ <tr><td>④ 점수 모델</td><td><span class="pill ok">완료</span></td><td>기준선 · 로지스틱 · XGBoost 같은 시험 · 교체 가능한 소켓</td></tr>
+ <tr><td>⑤ 검토 큐</td><td><span class="pill ok">완료</span></td><td>3월: 규칙 6,857 · 모델 20 · 무작위 686 (출처 기록)</td></tr>
+ <tr><td>⑥ 검토 화면 (임시)</td><td><span class="pill ok">완료</span></td><td>3층 구조 · 3버튼 판정 · 선례 칩 · Streamlit</td></tr>
+ <tr><td>정식 프런트</td><td><span class="pill">시작</span></td><td>Vite + React + shadcn 껍데기. 검토 화면 제작 중</td></tr>
+ <tr><td>새 규칙 승인 · 자연어 질의 · 영수증</td><td><span class="pill todo">예정</span></td><td>설계 문서 있음 · 구현 전</td></tr></table>
+ <div class="foot">산출물 v0.1: 요구사항서(REQ 51) · WBS · 아키텍처 정의서 · 설계서(UI/API/DB + 추적표) — deliverables/</div><div class="n">6</div></section>
+
+<section class="slide"><div class="tag">6 · 남은 것과 역할</div><h2>네 덩어리, 담당자가 필요하다</h2>
+ <div class="grid g4">
+  <div class="card"><h3>프런트엔드</h3><p>검토 화면(좌 목록 · 우 패널 · 키보드) → 요약 → 큐 · 규칙. FastAPI 층 필요</p><div class="bar" style="margin-top:10px"><i style="width:15%"></i></div></div>
+  <div class="card"><h3>새 규칙 승인</h3><p>무작위 표본에서 위반 발견 → LLM 초안 → 과거 데이터 소급 → 승인 화면</p><div class="bar" style="margin-top:10px"><i style="width:5%"></i></div></div>
+  <div class="card"><h3>자연어 질의</h3><p>질문 → 규칙 + 파라미터 번역. 채팅 페이지가 아니라 ⌘K 팔레트 · 케이스 질문 상자</p><div class="bar" style="margin-top:10px"><i style="width:0%"></i></div></div>
+  <div class="card"><h3>영수증</h3><p>한국어 OCR → 승인번호 · 금액 대조 → 결정적/확률적 위변조 신호. 독립 작업, 바로 시작 가능</p><div class="bar" style="margin-top:10px"><i style="width:0%"></i></div></div>
+ </div>
+ <div class="grid g2" style="margin-top:18px">
+  <div class="card"><h3>선택: 범인 관점 변형 워크숍</h3><p>사례 22건마다 "규칙을 알면 어떻게 피할까". 라벨 없이 가능한 유일한 발굴. 팀원 여럿이 낼수록 좋음</p></div>
+  <div class="card"><h3>공통 원칙</h3><p>테스트 판정은 검토자 이름으로 분리 · 임계치·규칙은 사람 승인 · 회사 이름을 근거로 댈 때는 1차 자료 확인</p></div>
+ </div><div class="n">7</div></section>
+
+<section class="slide"><div class="tag">7 · 오늘 정할 것</div><h2>결정 4개, 질문 4개</h2>
+ <div class="grid g2">
+  <div class="card"><h3>팀이 정할 것</h3><table style="font-size:13px"><tr><td>역할 분담</td><td class="r">WBS의 [TBD] 채우기</td></tr><tr><td>프런트 스택 확정</td><td class="r">Vite + React + shadcn + FastAPI</td></tr><tr><td>임계치 초기값</td><td class="r">추천값 유지 / 재검토</td></tr><tr><td>변형 워크숍</td><td class="r">실시 여부 · 날짜</td></tr></table></div>
+  <div class="card"><h3>교수님 · 윤경팀에 물을 것</h3><table style="font-size:13px"><tr><td>과거 점검 결과 엑셀이 있나</td><td class="r">있으면 즉시 운영용 모델</td></tr><tr><td>실제 수법 30분 인터뷰</td><td class="r">변형 · 규칙 품질</td></tr><tr><td>지오코딩 API 키</td><td class="r">거주지 · 동시간 · 대여 정밀도</td></tr><tr><td>범위 밖 선언이 맞나</td><td class="r">자동 확정 · 실시간 차단 · 직접 연동 · 참석자 생성</td></tr></table></div>
+ </div>
+ <div class="card" style="margin-top:18px"><h3>시연 순서 (5분)</h3><p>① 아키텍처 레벨 0을 단계별로 → ② Streamlit 큐 모드에서 노래방 59만원 건 열기: 규칙 근거 · 규정 인용 · 선례 · 학습 점수 → "위반" 클릭 → ③ 요약의 출처별 표 → ④ 새 프런트 껍데기</p></div>
+ <div class="foot">자료: docs/TEAM_SYNC_2026-11-02.md · deliverables/ · docs/architecture/level0.html · reports/법인카드 감사 솔루션 분석.md</div><div class="n">8</div></section>
+
+</div><div class="kbd">← → 키로 이동 · ⌘P 인쇄(A4 가로)</div>
+<script>
+const slides=[...document.querySelectorAll('.slide')];let i=0;
+function go(k){i=Math.max(0,Math.min(slides.length-1,k));slides[i].scrollIntoView({behavior:'smooth',block:'center'})}
+addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' ')go(i+1);if(e.key==='ArrowLeft'||e.key==='PageUp')go(i-1)});
+</script></body></html>
