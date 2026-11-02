@@ -30,3 +30,12 @@
 | 9 | 검토 큐 무작위 표본 + 규칙 밖 고점수 | 규칙이 놓치는 것을 보는 창문. docs/DISCOVERY_LOOP.md | ✅ 완료 (`queue` 테이블, `build_queue`/`list_queue`/`get_queue_summary`, 큐 모드 UI, Home 출처별 표) |
 | 10 | 윤경팀 연락 (사용자) | 과거 결과 보유 여부, 수법 워크숍 | ⬜ |
 | 11·12 | 자연어 입력, 영수증 파이프라인 | 모델 축 뒤 | ⬜ |
+
+## 사례연구 반영 백로그 (2026-11-02, docs/case_study/03_Oversight.md §8.1)
+| # | 할 일 | 출처 | 상태 |
+|---|---|---|---|
+| B | 사용자 누적 의심도 (피처 user 집계 → 요약 화면 상위 사용자 표) | Oversight Wariness | ⬜ |
+| C | 보류 기한(기본 30일) + 요약에 기한 초과 건수 | 미 육군 AFARS 15/30일 규율 | ⬜ |
+| D | 위반 판정 시 조치 코드 1칸 (reviews 열 추가) | Oversight Corrective Action 11코드 | ⬜ |
+| A | 모델 점수 옆 "왜 1등인가" 두 줄 고정 | confidence × impact 설명성 | ⬜ |
+| E | 임계치를 `rules/thresholds.yaml`로 분리 | Base/Custom Frame | ⬜ |
