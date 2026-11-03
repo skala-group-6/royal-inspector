@@ -6,9 +6,10 @@ import re, hashlib
 from pathlib import Path
 import yaml
 
-ROOT = Path(__file__).resolve().parents[1]
-CATALOG = ROOT / "features" / "catalog.yaml"
-MACROS = ROOT / "rules" / "macros.sql"
+import sys
+ROOT = Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT)); import paths
+CATALOG = paths.FEATURES_CATALOG
+MACROS = paths.MACROS
 KEY_COLS = ["tx_id", "tx_ts", "tx_date", "emp_id", "is_synthetic"]
 
 def load_catalog(path: Path | str = CATALOG) -> dict:
@@ -129,7 +130,7 @@ FROM base t{(' WHERE t.tx_id IN (' + ','.join(str(int(i)) for i in focal_ids) + 
 
 def build(con, strategy="window", with_history=False, source=None, target="tx_features", quiet=False, focal_ids=None) -> dict:
     cat = load_catalog()
-    con.execute(MACROS.read_text()).fetchall()
+    if MACROS: con.execute(MACROS.read_text()).fetchall()
     sql, names = build_sql(cat, strategy, with_history, source, target, focal_ids)
     con.execute(sql).fetchall()
     n = con.execute(f"select count(*) from {target}").fetchall()[0][0]

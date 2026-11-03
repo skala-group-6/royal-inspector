@@ -6,8 +6,9 @@ import pandas as pd, numpy as np, duckdb
 sys.path.insert(0, str(Path(__file__).resolve().parent)); from keys import det_ids
 
 ROOT = Path(__file__).resolve().parents[1]
-RAW = ROOT / "data/raw"; DB = Path(os.environ.get("ROYAL_DB", ROOT / "data/warehouse.duckdb")); OUT = ROOT / "data/inventory"
-F1 = next(RAW.glob("1.*.xlsx")); F2 = next(RAW.glob("2.*.xlsx"))
+sys.path.insert(0, str(ROOT)); import paths
+RAW = paths.RAW_DIR; DB = paths.DB; OUT = ROOT / "data/inventory"
+F1 = next(RAW.glob(paths.RAW_GLOB[0])); F2 = next(RAW.glob(paths.RAW_GLOB[1]))
 report = {}
 
 # ---------- 1. transactions ----------

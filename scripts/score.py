@@ -2,9 +2,11 @@
 Prints recall per case and per rule, plus precision on synthetic users. Runs even before any rule exists.
 Importable: score.main(table) — called by run_rules.py after writing flags."""
 import os, sys, duckdb
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1])); import paths
 
 def main(table="flags", db=None):
-    con = duckdb.connect(db or os.environ.get("ROYAL_DB", "data/warehouse.duckdb"), read_only=True)
+    con = duckdb.connect(db or str(paths.DB), read_only=True)
     has_flags = con.execute(f"select count(*) from information_schema.tables where table_name='{table}'").fetchall()[0][0] > 0
     if not has_flags:
         con.execute(f"create temp table {table}(rule_id varchar, tx_id bigint)").fetchall()

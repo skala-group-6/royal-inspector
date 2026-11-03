@@ -5,9 +5,10 @@ import json, datetime as dt, uuid
 from pathlib import Path
 import duckdb, pandas as pd, yaml
 
-import os
-DB = Path(os.environ.get("ROYAL_DB", Path(__file__).resolve().parents[1] / "data" / "warehouse.duckdb"))  # ROYAL_DB: point tests at a copy while the app holds the lock
-CATALOG = Path(__file__).resolve().parents[1] / "rules" / "catalog.yaml"
+import os, sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[1])); import paths
+DB = paths.DB  # ROYAL_DB: point tests at a copy while the app holds the lock
+CATALOG = paths.RULES_CATALOG
 _CAT = yaml.safe_load(open(CATALOG))
 RULES = _CAT["rules"]
 TIER_LABEL = {"violation": "위반 가능", "advisory": "참고"}
@@ -20,7 +21,7 @@ def con() -> duckdb.DuckDBPyConnection:
     global _con
     if _con is None:
         _con = duckdb.connect(str(DB))
-        _con.execute(open(CATALOG.parent / "macros.sql").read()).fetchall()
+        if paths.MACROS: _con.execute(paths.macros_sql()).fetchall()
         _con.execute("""CREATE TABLE IF NOT EXISTS reviews(review_id VARCHAR, tx_id BIGINT, rule_id VARCHAR, decision VARCHAR, reason_code VARCHAR,
                         memo VARCHAR, reviewer VARCHAR, created_at TIMESTAMP, superseded_by VARCHAR)""").fetchall()
         _con.execute("CREATE TABLE IF NOT EXISTS ui_events(ts TIMESTAMP, reviewer VARCHAR, event VARCHAR, payload VARCHAR)").fetchall()

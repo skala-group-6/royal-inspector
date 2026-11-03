@@ -3,10 +3,11 @@ Checks: schema · static PIT markers · dual-strategy equality · future perturb
 Exit code 1 if any check fails. Honors ROYAL_DB."""
 import os, sys, re, random
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import paths
 import duckdb, pandas as pd, numpy as np
 from features.executor import load_catalog, build, build_sql, render_feature, KEY_COLS
 
-con = duckdb.connect(os.environ.get("ROYAL_DB", "data/warehouse.duckdb"))
+con = duckdb.connect(str(paths.DB))
 cat = load_catalog(); feats = cat["features"]; fails = []
 def check(name, ok, detail=""):
     print(f"{'PASS' if ok else 'FAIL'}  {name}" + (f"  — {detail}" if detail else ""))

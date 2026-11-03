@@ -1,9 +1,9 @@
 """Step 2: column profiling + key matching. Writes data/inventory/profile_*.csv. No raw PII printed."""
 import pandas as pd, numpy as np, re
 from pathlib import Path
-OUT = Path("data/inventory")
-F1 = "data/raw/1. 테스트 데이터 (비용내역, 주요시나리오, 회사지침 등 참고자료).xlsx"
-F2 = "data/raw/2. 테스트 데이터 (주요 사옥 출입기록).xlsx"
+import sys; sys.path.insert(0, str(Path(__file__).resolve().parents[1])); import paths
+OUT = paths.ROOT / "data/inventory"
+F1 = next(paths.RAW_DIR.glob(paths.RAW_GLOB[0])); F2 = next(paths.RAW_DIR.glob(paths.RAW_GLOB[1]))
 PII = {"요청자","검토자","승인자","사용자 주거지 주소","승인자 주소","성명","주소","주근무지 주소"}
 
 ex = pd.read_excel(F1, sheet_name="비용점검", header=1)

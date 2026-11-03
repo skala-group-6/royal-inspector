@@ -5,6 +5,7 @@ from __future__ import annotations
 import os, sys, re, json, argparse, datetime as dt
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT))
+import paths
 import numpy as np, pandas as pd, duckdb, yaml
 from sklearn.metrics import average_precision_score
 from features.executor import load_catalog, KEY_COLS
@@ -72,7 +73,7 @@ def train(con, label_source, reviewers=None, split_date="2025-03-01", ks=(100, 5
     beats = results[best]["p_at_100"] > results["baseline"]["p_at_100"]
     chosen = best if beats else "baseline"
     version = f"v{dt.datetime.now():%Y%m%d-%H%M%S}_{label_source}"
-    cat = load_catalog(); rules = yaml.safe_load(open(ROOT / "rules" / "catalog.yaml")); weak = yaml.safe_load(open(ROOT / "labels" / "weak.yaml"))
+    cat = load_catalog(); rules = yaml.safe_load(open(paths.RULES_CATALOG)); weak = yaml.safe_load(open(paths.WEAK_LABELS))
     manifest = dict(version=version, created_at=dt.datetime.now().isoformat(timespec="seconds"), label_source=label_source, label_version=meta["label_version"], reviewers=reviewers,
                     split=dict(split_date=meta["split_date"], train=meta["train"], test=meta["test"]), features=meta["features"], dropped=meta["dropped"],
                     candidates=results, chosen=chosen, beats_baseline=bool(beats),
@@ -95,6 +96,6 @@ if __name__ == "__main__":
     ap.add_argument("--split-date", default="2025-03-01"); ap.add_argument("--k", default="100,500"); ap.add_argument("--out", default="models"); ap.add_argument("--quiet", action="store_true")
     a = ap.parse_args()
     if a.label_source == "reviews" and not a.reviewers: ap.error("--reviewers is required with --label-source reviews")
-    con = duckdb.connect(os.environ.get("ROYAL_DB", "data/warehouse.duckdb"))
+    con = duckdb.connect(str(paths.DB))
     train(con, a.label_source, [r.strip() for r in a.reviewers.split(",")] if a.reviewers else None, a.split_date, tuple(int(k) for k in a.k.split(",")), a.out, a.quiet)
     con.close()

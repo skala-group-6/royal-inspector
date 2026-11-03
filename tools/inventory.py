@@ -4,7 +4,8 @@ import sys, csv, re
 from pathlib import Path
 import openpyxl
 
-RAW = Path("data/raw"); OUT = Path("data/inventory")
+import sys; sys.path.insert(0, str(Path(__file__).resolve().parents[1])); import paths
+RAW = paths.RAW_DIR; OUT = paths.ROOT / "data/inventory"
 rows = []
 
 def is_textish(v):

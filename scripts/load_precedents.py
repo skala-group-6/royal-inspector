@@ -1,14 +1,16 @@
-"""Load precedents: disciplinary cases from synth/cases.yaml (kind='case') and, later, reviewed transactions (kind='review').
+"""Load precedents: disciplinary cases from the pack cases file (paths.CASES) (kind='case') and, later, reviewed transactions (kind='review').
 Re-runnable: replaces only the rows of the kind being loaded. Honors ROYAL_DB."""
 import os, sys, yaml, duckdb, pandas as pd
-DB = os.environ.get("ROYAL_DB", "data/warehouse.duckdb")
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1])); import paths
+DB = str(paths.DB)
 con = duckdb.connect(DB)
 con.execute("""CREATE TABLE IF NOT EXISTS precedents(
   precedent_id VARCHAR PRIMARY KEY, kind VARCHAR, title VARCHAR, summary VARCHAR, cues VARCHAR[], rule_ids VARCHAR[],
   account VARCHAR, mcc_group VARCHAR, amount_band VARCHAR, outcome VARCHAR, source VARCHAR)""").fetchall()
 
 def load_cases():
-    cases = yaml.safe_load(open("synth/cases.yaml"))["cases"]
+    cases = yaml.safe_load(open(paths.CASES))["cases"]
     rows = [dict(precedent_id=f"case:{c['id']}", kind="case", title=c["title"], summary=c["summary"], cues=c["cues"], rule_ids=c["precedent_rules"],
                  account=None, mcc_group=None, amount_band=None, outcome=None, source=f"주요시나리오#{c['id']}") for c in cases]
     con.execute("DELETE FROM precedents WHERE kind='case'").fetchall()

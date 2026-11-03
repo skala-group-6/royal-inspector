@@ -4,6 +4,7 @@ from __future__ import annotations
 import os, sys, json, argparse
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT))
+import paths
 import numpy as np, pandas as pd, duckdb
 from features.executor import load_catalog
 from models.base import load_model
@@ -37,4 +38,4 @@ def score(con, models_dir="models", version=None, quiet=False) -> int:
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(); ap.add_argument("--models-dir", default="models"); ap.add_argument("--version", default=None); ap.add_argument("--quiet", action="store_true")
-    a = ap.parse_args(); con = duckdb.connect(os.environ.get("ROYAL_DB", "data/warehouse.duckdb")); score(con, a.models_dir, a.version, a.quiet); con.close()
+    a = ap.parse_args(); con = duckdb.connect(str(paths.DB)); score(con, a.models_dir, a.version, a.quiet); con.close()

@@ -2,7 +2,8 @@
 Usage: run_rules.py [--set R03_split_payment.window_min=60 ...] [--only R03,R05]"""
 import sys, re, json, yaml, duckdb
 from pathlib import Path
-CAT = yaml.safe_load(open("rules/catalog.yaml")); cat = CAT["rules"]; RULE_VERSION = int(CAT.get("version", 1))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1])); import paths
+CAT = yaml.safe_load(open(paths.RULES_CATALOG)); cat = CAT["rules"]; RULE_VERSION = int(CAT.get("version", 1))
 overrides = {}; only = None
 for a in sys.argv[1:]:
     if a.startswith("--set"): continue
@@ -27,11 +28,11 @@ def render(rid, sql, params):
     return out
 
 TABLE = "flags" if only is None else "flags_subset"  # partial runs never overwrite the full flags table
-import os; con = duckdb.connect(os.environ.get("ROYAL_DB", "data/warehouse.duckdb"))
-con.execute(open("rules/macros.sql").read()).fetchall()
+con = duckdb.connect(str(paths.DB))
+if paths.MACROS: con.execute(paths.macros_sql()).fetchall()
 con.execute(f"CREATE OR REPLACE TABLE {TABLE}(rule_id VARCHAR, tx_id BIGINT, evidence JSON, related_tx_ids BIGINT[], severity VARCHAR, rule_version INTEGER)").fetchall()
 rows = []
-for f in sorted(Path("rules/sql").glob("R*.sql")):
+for f in sorted(paths.RULES_SQL_DIR.glob("R*.sql")):
     rid = f.stem
     if only and rid[:3] not in only and rid not in only: continue
     params = {**DEFAULTS.get(rid[:3], {}), **cat.get(rid, {}).get("params", {})}

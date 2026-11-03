@@ -3,9 +3,9 @@ Idempotent: removes previous synthetic rows first. Seeded. Real rows are never m
 import random, datetime as dt, re, os, sys
 from pathlib import Path
 import pandas as pd, numpy as np, duckdb
-sys.path.insert(0, str(Path(__file__).resolve().parent)); from keys import det_id
+sys.path.insert(0, str(Path(__file__).resolve().parent)); sys.path.insert(0, str(Path(__file__).resolve().parents[1])); from keys import det_id; import paths
 
-DB = os.environ.get("ROYAL_DB", str(Path(__file__).resolve().parents[1] / "data/warehouse.duckdb")); SEED = 20251031
+DB = str(paths.DB); SEED = 20251031
 rng = random.Random(SEED)
 con = duckdb.connect(DB)
 D0, D1 = dt.date(2025, 2, 3), dt.date(2025, 3, 27)

@@ -9,8 +9,9 @@ import os, sys, argparse, hashlib, datetime as dt
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT))
 import yaml, duckdb, pandas as pd
+import paths
 
-WEAK_CFG = ROOT / "labels" / "weak.yaml"; RULES_CFG = ROOT / "rules" / "catalog.yaml"
+WEAK_CFG = paths.WEAK_LABELS; RULES_CFG = paths.RULES_CATALOG
 DDL = "CREATE TABLE IF NOT EXISTS labels(tx_id BIGINT, prob DOUBLE, label_source VARCHAR, source_version VARCHAR, n_votes INTEGER, clusters_hit VARCHAR[], created_at TIMESTAMP)"
 
 # ---------- config ----------
@@ -131,7 +132,7 @@ if __name__ == "__main__":
     a = ap.parse_args()
     if a.label_source == "reviews" and not a.reviewers: ap.error("--reviewers is required with --label-source reviews")
     if a.label_source == "import" and not a.file: ap.error("--file is required with --label-source import")
-    con = duckdb.connect(os.environ.get("ROYAL_DB", "data/warehouse.duckdb"))
+    con = duckdb.connect(str(paths.DB))
     if a.label_source == "weak":
         cfg = load_weak_cfg(a.config); df = weak_labels(con, cfg); write_labels(con, df)
         if not a.quiet: print(f"labels[weak]: {len(df):,} rows · version {df.source_version.iloc[0]} · hash {labels_hash(con, 'weak')[:12]}")
