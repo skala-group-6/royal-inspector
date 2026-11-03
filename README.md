@@ -21,6 +21,7 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 macOS arm64에서 xgboost import가 libomp 오류를 내면 `brew install libomp` (실패 시 자동으로 sklearn HistGradientBoosting 폴백).
 
 ## 문서
+- `docs/PRODUCT_ESSENCE.md` 제품의 본질 한 문장, 네 박자, Hex·Retool 비교, Claude-native 원칙
 - `docs/PROJECT_NOTES.md` 문제·조사·설계 원칙·데이터 확인 결과
 - `docs/ROADMAP.md` 진행 순서와 상태
 - `docs/RULES.md` 규칙 19개, 실데이터 적중, 임계치 민감도
