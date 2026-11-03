@@ -157,7 +157,6 @@ def get_hit_rates(date_from=None, date_to=None) -> pd.DataFrame: return get_summ
 def log_event(reviewer, event, payload=None):
     con().execute("insert into ui_events values (?,?,?,?)", [dt.datetime.now(), reviewer, event, json.dumps(payload, ensure_ascii=False, default=str) if payload else None]).fetchall()
 
-def list_depts() -> list[str]: return q("select distinct dept from tx_active where dept is not null order by 1").dept.tolist()
 
 
 # ---------- conclusion-first headlines (two lines per rule: what / numbers) ----------
@@ -236,8 +235,6 @@ def policy_citation(rule_id, t: dict) -> str:
     return RULES.get(rule_id, {}).get("policy_ref", "")
 
 # ---------- precedents: similar disciplinary cases (now) and similar reviewed transactions (later) ----------
-def _amount_band(v):
-    return "<5만" if v < 50000 else "5~20만" if v < 200000 else "20~50만" if v < 500000 else "50만+"
 
 _RULE_W = None
 def rule_weights() -> dict:
@@ -285,9 +282,6 @@ def peer_from_features(tx_id):
     if not len(df) or pd.isna(df.n.iloc[0]) or df.n.iloc[0] == 0: return None
     r = df.iloc[0].to_dict(); r["n"] = int(r["n"]); r["point_in_time"] = True; return r
 
-def get_features(tx_id) -> dict | None:
-    if not _has_table("tx_features"): return None
-    df = q("select * from tx_features where tx_id=?", [tx_id]); return df.iloc[0].to_dict() if len(df) else None
 
 
 # ---------- model score hooks ----------
