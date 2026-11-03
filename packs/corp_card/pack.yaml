@@ -1,11 +1,11 @@
 # 법인카드 팩 매니페스트. 경로는 이 파일 기준. 규격: docs/PACK_SPEC.md
 name: corp_card
 version: 1
-rules_catalog: ../../rules/catalog.yaml
-rules_sql_dir: ../../rules/sql
-macros: ../../rules/macros.sql        # null이면 피처·규칙 실행기가 매크로 로드를 건너뜀
-features_catalog: ../../features/catalog.yaml
-weak_labels: ../../labels/weak.yaml
-cases: ../../synth/cases.yaml
+rules_catalog: rules/catalog.yaml
+rules_sql_dir: rules/sql
+macros: rules/macros.sql              # null이면 피처·규칙 실행기가 매크로 로드를 건너뜀
+features_catalog: features.yaml
+weak_labels: weak_labels.yaml
+cases: cases.yaml
 raw_glob: ["1.*.xlsx", "2.*.xlsx"]    # data/raw 아래 (data/는 git 밖, Octave가 복사)
 presentation: null                    # 계획 3: app/service.py의 법카 표현 코드(근거 문장·규정 인용·출입 타임라인) 추출 자리

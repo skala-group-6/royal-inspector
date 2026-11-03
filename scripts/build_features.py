@@ -1,4 +1,4 @@
-"""Step 3.5: build tx_features (+ entity_stats view) from features/catalog.yaml. Honors ROYAL_DB.
+"""Step 3.5: build tx_features (+ entity_stats view) from the pack features catalog. Honors ROYAL_DB.
 Usage: build_features.py [--strategy window|correlated] [--with-history] [--target NAME] [--source VIEW] [--quiet]"""
 import os, sys, argparse, duckdb
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

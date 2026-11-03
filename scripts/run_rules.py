@@ -1,4 +1,4 @@
-"""Step 3: run every rule in rules/sql against tx_active, write `flags`, print counts (real vs synthetic), then score.
+"""Step 3: run every rule in the pack rules dir (paths.RULES_SQL_DIR) against tx_active, write `flags`, print counts (real vs synthetic), then score.
 Usage: run_rules.py [--set R03_split_payment.window_min=60 ...] [--only R03,R05]"""
 import sys, re, json, yaml, duckdb
 from pathlib import Path
@@ -10,7 +10,7 @@ for a in sys.argv[1:]:
     if a.startswith("--only"): continue
     if "=" in a: k, v = a.split("="); overrides[k] = v
     elif "," in a or a.startswith("R"): only = set(a.split(","))
-sev = lambda rid: cat[rid]["tier"]  # violation | advisory — single source of truth is rules/catalog.yaml
+sev = lambda rid: cat[rid]["tier"]  # violation | advisory — single source of truth is the pack rules catalog
 DEFAULTS = {}  # all thresholds live in the catalog
 
 def render(rid, sql, params):

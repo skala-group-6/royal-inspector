@@ -16,7 +16,7 @@ m1.metric("걸린 플래그", int(sm.flagged.sum())); m2.metric("검토 완료",
 m3.metric("위반 확정", int(sm.violation.sum())); m4.metric("전체 적중률", f"{(100*sm.violation.sum()/max(sm.reviewed.sum(),1)):.1f}%")
 
 st.subheader("규칙별 현황")
-st.caption("위반 가능 🔴: 규정에 근거가 있어 걸리면 확인 대상 · 참고 ⚪: 통계·가설 기반, 우선순위 참고용. 임계치와 등급은 rules/catalog.yaml v2")
+st.caption("위반 가능 🔴: 규정에 근거가 있어 걸리면 확인 대상 · 참고 ⚪: 통계·가설 기반, 우선순위 참고용. 임계치와 등급은 팩 규칙 카탈로그(packs/corp_card/rules/catalog.yaml) v2")
 view = sm[["rule_id", "name", "rule_class", "flagged", "reviewed", "violation", "ok", "hit_rate_pct"]].rename(
     columns={"rule_id": "규칙", "name": "이름", "rule_class": "부류", "flagged": "걸림", "reviewed": "검토", "violation": "위반", "ok": "아님", "hit_rate_pct": "적중률%"})
 st.dataframe(view, width='stretch', hide_index=True)

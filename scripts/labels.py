@@ -1,5 +1,5 @@
 """Step 3.7: labels for the prioritization model. One script, three sources — the label source is mandatory.
-  --label-source weak     rule votes → noisy-OR probability per tx (labels/weak.yaml). No human labels needed.
+  --label-source weak     rule votes → noisy-OR probability per tx (pack weak_labels.yaml). No human labels needed.
   --label-source reviews  --reviewers A,B : latest non-superseded auditor decisions (violation=1, ok=0, hold dropped)
   --label-source import   --file F        : past audit outcomes (xlsx/csv). Columns: tx_id OR (emp_id, tx_ts|tx_date, total); decision; decided_at; reason
 Output table labels(tx_id, prob, label_source, source_version, n_votes, clusters_hit, created_at), replaced per source.
