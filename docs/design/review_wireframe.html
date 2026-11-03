@@ -1,0 +1,113 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>검토 화면 와이어프레임 v2 — 결론 우선</title>
+<style>
+:root{--b:#e4e4e7;--m:#71717a;--fg:#18181b;--bg:#fafafa;--sel:#f4f4f5;--danger:#b91c1c;--danger-bg:#fef2f2;--muted-bg:#f4f4f5}
+*{box-sizing:border-box}body{font-family:Pretendard,-apple-system,sans-serif;margin:0;background:#e9e9ea;color:var(--fg);font-size:13px;line-height:1.5}
+.frame{width:1280px;margin:24px auto;background:#fff;border:1px solid var(--b);border-radius:10px;display:grid;grid-template-columns:184px 360px 1fr;grid-template-rows:52px 1fr;height:800px;overflow:hidden}
+.hdr{grid-column:1/4;border-bottom:1px solid var(--b);display:flex;align-items:center;gap:12px;padding:0 16px}
+.hdr h1{font-size:15px;margin:0;font-weight:600}.hdr .sep{color:var(--b)}
+.sel-ctl{border:1px solid var(--b);border-radius:6px;padding:4px 10px;background:#fff;color:var(--fg)}.sel-ctl::after{content:" ⌄";color:var(--m)}
+.search{margin-left:auto;border:1px solid var(--b);border-radius:6px;padding:4px 10px;color:var(--m);width:220px;display:flex;justify-content:space-between}
+.kbd{display:inline-block;border:1px solid var(--b);border-bottom-width:2px;border-radius:4px;padding:0 5px;font:11px ui-monospace,monospace;color:var(--m);background:#fff;line-height:16px}
+.side{border-right:1px solid var(--b);padding:12px 10px}.side a{display:block;padding:7px 10px;border-radius:6px;color:var(--m);text-decoration:none}.side a.on{background:var(--sel);color:var(--fg);font-weight:600}
+.list{border-right:1px solid var(--b);display:grid;grid-template-rows:auto 1fr;overflow:hidden}
+.list .meta{padding:10px 14px;border-bottom:1px solid var(--b);color:var(--m);display:flex;justify-content:space-between}
+.rows{overflow:auto}.row{padding:10px 14px;border-bottom:1px solid #f0f0f1;display:grid;grid-template-columns:1fr auto;row-gap:3px;cursor:pointer}
+.row:hover{background:var(--bg)}.row.sel{background:var(--sel);box-shadow:inset 3px 0 0 var(--fg)}
+.row .name{font-weight:600}.row .amt{font-weight:600;font-variant-numeric:tabular-nums;text-align:right}.row .sub{color:var(--m);font-size:12px}.row .badges{text-align:right}
+.badge{display:inline-block;font-size:11px;line-height:18px;padding:0 6px;border-radius:5px;border:1px solid var(--b);color:var(--m);background:#fff;margin-left:4px}
+.badge.danger{border-color:#fecaca;background:var(--danger-bg);color:var(--danger)}.badge.solid{background:var(--fg);color:#fff;border-color:var(--fg)}
+.row.done{opacity:.5}
+.case{display:grid;grid-template-rows:1fr auto;overflow:hidden}
+.main{padding:28px 32px;overflow:auto}
+.who{color:var(--m)}.title{font-size:16px;font-weight:600;margin:4px 0 22px}
+.verdict{font-size:22px;font-weight:700;letter-spacing:-.01em;margin:0 0 14px}
+.reasons{margin:0;padding:0;list-style:none;display:grid;gap:8px}
+.reasons li{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:baseline;padding:8px 12px;border:1px solid var(--b);border-radius:8px}
+.reasons .lv{font-size:11px;font-weight:600;color:var(--danger)}.reasons .lv.adv{color:var(--m)}.reasons .ref{color:var(--m);font-size:12px}
+.more{margin-top:22px;border-top:1px solid var(--b);padding-top:10px}
+.more summary{cursor:pointer;color:var(--m);padding:8px 0;list-style:none;display:flex;justify-content:space-between}.more summary::after{content:"펼치기";font-size:12px}
+.more[open] summary::after{content:"접기"}
+.more .c{padding:6px 0 10px}
+.kv{display:grid;grid-template-columns:140px 1fr;row-gap:6px;column-gap:14px}.kv dt{color:var(--m)}.kv dd{margin:0;font-variant-numeric:tabular-nums}
+.tl{list-style:none;margin:0;padding:0 0 0 14px;border-left:2px solid var(--b)}.tl li{position:relative;padding:2px 0 2px 12px;color:var(--m)}.tl li::before{content:"";position:absolute;left:-19px;top:9px;width:8px;height:8px;border-radius:50%;background:#fff;border:2px solid var(--b)}
+.tl li.me{color:var(--fg);font-weight:600}.tl li.me::before{background:var(--fg);border-color:var(--fg)}
+.lst{list-style:none;margin:0;padding:0}.lst li{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f0f0f1}.lst li:last-child{border:0}.lst .r{color:var(--m);font-variant-numeric:tabular-nums}
+.foot{border-top:1px solid var(--b);padding:14px 32px;display:flex;gap:8px;align-items:center;background:#fff}
+.btn{padding:9px 16px;border-radius:8px;border:1px solid var(--b);background:#fff;font-weight:600;cursor:pointer;display:inline-flex;gap:8px;align-items:center}
+.btn.primary{background:var(--danger);border-color:var(--danger);color:#fff}.btn.primary .kbd{color:#fff;border-color:rgba(255,255,255,.5);background:transparent}
+.foot .hint{margin-left:auto;color:var(--m)}
+.after{width:1280px;margin:0 auto 10px;color:var(--m);font-size:12px}
+.frame2{width:1280px;margin:0 auto 32px;background:#fff;border:1px solid var(--b);border-radius:10px;padding:14px 32px;display:flex;gap:8px;align-items:center}
+.frame2 .lab{color:var(--m);margin-right:6px}.inp{border:1px solid var(--b);border-radius:8px;padding:8px 10px;color:var(--m);flex:1}
+.note{width:1280px;margin:0 auto 40px;color:#3f3f46;line-height:1.75}.note h3{font-size:14px;margin:18px 0 6px}.note table{border-collapse:collapse;width:100%}.note td,.note th{border:1px solid var(--b);padding:6px 10px;text-align:left;vertical-align:top}.note th{background:var(--bg);font-weight:600}.note code{background:#eee;padding:0 4px;border-radius:3px}
+</style></head><body>
+
+<div class="frame">
+ <div class="hdr"><h1>검토</h1><span class="sep">|</span><span class="sel-ctl">2025년 3월 큐</span><span class="sel-ctl">미검토</span><span class="sel-ctl">출처: 전체</span><span class="sel-ctl">규칙: 전체</span>
+  <div class="search"><span>검색 또는 질문</span><span class="kbd">⌘K</span></div></div>
+ <nav class="side"><a class="on">검토</a><a>요약</a><a>큐·기간</a><a>규칙</a></nav>
+
+ <section class="list">
+  <div class="meta"><span>미검토 6,201건</span><span>오늘 12건 판정</span></div>
+  <div class="rows">
+   <div class="row sel"><span class="name">김○○ · 경영지원팀</span><span class="amt">590,000</span><span class="sub">3/20 목 22:57 · 미르노래연습장</span><span class="badges"><span class="badge danger">위반 3</span><span class="badge">참고 1</span></span></div>
+   <div class="row"><span class="name">이○○ · 영업1팀</span><span class="amt">480,000</span><span class="sub">3/14 금 23:40 · 분할 2건</span><span class="badges"><span class="badge danger">위반 2</span></span></div>
+   <div class="row"><span class="name">박○○ · 연구소</span><span class="amt">38,900</span><span class="sub">3/8 토 · 이마트 분당</span><span class="badges"><span class="badge">모델 추천</span></span></div>
+   <div class="row"><span class="name">최○○ · 인사팀</span><span class="amt">126,000</span><span class="sub">3/3 월 공휴일 · 스타벅스</span><span class="badges"><span class="badge danger">위반 1</span></span></div>
+   <div class="row"><span class="name">정○○ · 재무팀</span><span class="amt">15,400</span><span class="sub">3/11 화 12:10 · 김밥천국</span><span class="badges"><span class="badge">무작위 표본</span></span></div>
+   <div class="row done"><span class="name">한○○ · 영업2팀</span><span class="amt">312,000</span><span class="sub">3/19 수 21:30 · 더바</span><span class="badges"><span class="badge solid">위반 처리</span></span></div>
+   <div class="row"><span class="name">오○○ · 구매팀</span><span class="amt">74,000</span><span class="sub">3/5 수 19:20 · 교촌치킨</span><span class="badges"><span class="badge danger">위반 1</span></span></div>
+   <div class="row"><span class="name">서○○ · 연구소</span><span class="amt">220,000</span><span class="sub">3/22 토 13:05 · 코스트코</span><span class="badges"><span class="badge danger">위반 1</span><span class="badge">참고 1</span></span></div>
+  </div>
+ </section>
+
+ <section class="case">
+  <div class="main">
+   <div class="who">김○○ · 경영지원팀 · 팀원 · 승인자 박○○ · 전표 MJ162055505</div>
+   <div class="title">590,000원 · 미르노래연습장 · 2025-03-20 목 22:57 · 의욕관리비</div>
+
+   <p class="verdict">연차 등록일 밤에 노래연습장에서 59만 원을 결제했습니다.</p>
+   <ul class="reasons">
+    <li><span class="lv">위반</span><span>휴가(연차 종일) 등록일에 사용</span><span class="ref">비용정산지침 §4.2</span></li>
+    <li><span class="lv">위반</span><span>제한 업종 — 노래연습장(업종코드 7999)</span><span class="ref">클린카드 의무 제한 업종</span></li>
+    <li><span class="lv">위반</span><span>의욕관리비는 식대·다과 한정, 유흥 업종 사용 불가</span><span class="ref">계정별 지침</span></li>
+    <li><span class="lv adv">참고</span><span>승인자 거주지(성남시 분당구)와 가맹점이 같은 시군구</span><span class="ref">통계 기준</span></li>
+    <li><span class="lv adv">참고</span><span>본인 평소 중앙값 42,000원의 14배 · 같은 부서 이 계정 상위 0.4%</span><span class="ref">피처</span></li>
+   </ul>
+
+   <details class="more"><summary>그날의 흐름</summary><div class="c">
+    <ul class="tl"><li>08:00 연차(종일) 등록 · 사옥 출입 기록 없음</li><li>21:10 편의점 8,900원</li><li class="me">22:57 미르노래연습장 590,000원</li><li>23:40 택시 14,200원</li></ul></div></details>
+   <details class="more"><summary>함께 볼 거래 2건</summary><div class="c"><ul class="lst"><li><span>3/20 21:10 · 편의점</span><span class="r">8,900</span></li><li><span>3/20 23:40 · 택시</span><span class="r">14,200</span></li></ul></div></details>
+   <details class="more"><summary>비슷한 사례 2건 · 과거 판정 3건</summary><div class="c"><ul class="lst"><li><span>징계사례 5 · 유흥 업종, 승인자 결탁</span><span class="r">유사도 0.86</span></li><li><span>징계사례 2 · 휴가일 사적 사용</span><span class="r">0.71</span></li><li><span>같은 규칙 조합 과거 판정</span><span class="r">위반 3 · 아님 0</span></li></ul></div></details>
+   <details class="more"><summary>모델 점수와 이유</summary><div class="c"><dl class="kv"><dt>점수(시연용)</dt><dd>0.91</dd><dt>기여 피처</dt><dd>금액 배수 14.0 · 심야 · 업종 희귀도</dd><dt>모델</dt><dd>baseline v20261103 · 윤경팀 판정 축적 전까지 참고용</dd></dl></div></details>
+  </div>
+  <div class="foot"><button class="btn primary">위반 <span class="kbd">V</span></button><button class="btn">아님 <span class="kbd">N</span></button><button class="btn">보류 <span class="kbd">H</span></button><span class="hint">판정 저장 후 다음 건으로 · 이동 <span class="kbd">J</span> <span class="kbd">K</span></span></div>
+ </section>
+</div>
+
+<div class="after">위반 또는 보류를 누른 직후, 하단이 아래로 바뀜(아님은 바로 다음 건):</div>
+<div class="frame2"><span class="lab">위반 ·</span><span class="sel-ctl">조치: 환급 요청</span><span class="inp">사유 (선택) — 비워두면 근거 문장이 그대로 기록됩니다</span><button class="btn primary">저장 <span class="kbd">↵</span></button><button class="btn">취소 <span class="kbd">Esc</span></button></div>
+
+<div class="note">
+ <h3>바뀐 것</h3>
+ 결론 문장 하나가 가장 크고 먼저 온다. 근거는 한 줄씩, 위반과 참고를 글자로 구분한다(색만으로 구분하지 않음). 열 건 중 여덟은 여기서 끝난다. 그날 흐름, 함께 볼 거래, 선례, 모델 점수는 접힌 상태로 아래에 둔다. 이모지 없음. 거래 ID는 보이지 않고 전표번호로 식별한다. 판정 버튼은 주 버튼 하나(위반)와 보조 둘. 사유·조치 코드는 판정을 누른 뒤에만 나타난다.
+ <h3>데이터와 컴포넌트</h3>
+ <table><tr><th>데이터</th><th>출처</th><th>컴포넌트</th></tr>
+ <tr><td>큐 목록 (거래 1행)</td><td><code>queue</code> ⨝ <code>tx_active</code> ⨝ <code>flags</code> 집계 ⨝ <code>reviews</code> ⨝ <code>tx_score</code></td><td>TanStack Table 가상화 행. 선택 행은 좌측 바</td></tr>
+ <tr><td>심각도별 규칙 수</td><td><code>flags.severity</code> 집계</td><td><code>Badge</code> destructive("위반 3") / outline("참고 1")</td></tr>
+ <tr><td>큐 출처</td><td><code>queue.queue_source</code></td><td><code>Badge</code> outline("모델 추천", "무작위 표본"). 규칙 출처는 배지 없음(기본)</td></tr>
+ <tr><td>처리 상태</td><td><code>reviews.decision</code></td><td><code>Badge</code> solid + 행 흐림</td></tr>
+ <tr><td>결론 문장</td><td>규칙 조합 템플릿 → (후속) LLM 서술. 숫자는 <code>flags.evidence</code> 원본 대조</td><td>텍스트 h2</td></tr>
+ <tr><td>근거 목록</td><td><code>flags</code> + 카탈로그 <code>explain</code>·<code>policy_ref</code> + 정황 피처 1줄</td><td>리스트. 각 행: 등급 라벨 · 문장 · 출처</td></tr>
+ <tr><td>그날 흐름</td><td><code>access_logs</code> + 당일 거래</td><td><code>Collapsible</code> 안 세로 타임라인</td></tr>
+ <tr><td>함께 볼 거래</td><td><code>flags.related_tx_ids</code></td><td><code>Collapsible</code> 안 리스트, 클릭 시 해당 건으로 이동</td></tr>
+ <tr><td>선례</td><td><code>precedents</code> 유사도 + 같은 규칙 조합 과거 판정 집계</td><td><code>Collapsible</code> 안 리스트</td></tr>
+ <tr><td>모델 점수</td><td><code>tx_score</code></td><td><code>Collapsible</code> 안 정의 목록(dl). 시연용 문구 고정</td></tr>
+ <tr><td>판정</td><td><code>reviews</code> (거래 단위, 규칙별 행)</td><td><code>Button</code> destructive 1 + outline 2, <code>Kbd</code> 내장</td></tr>
+ <tr><td>조치 코드 · 사유</td><td><code>reviews.reason_code</code>, <code>memo</code> (백로그 D)</td><td>판정 후 하단 인라인: <code>Select</code> + <code>Input</code>, Enter 저장</td></tr>
+ <tr><td>걸린 규칙 없는 행(모델·무작위)</td><td><code>queue_source</code></td><td>결론 자리에 "걸린 규칙이 없습니다. {모델이 평소와 다르다고 본 / 무작위 표본} 건입니다" + 정황 1줄</td></tr>
+ </table>
+ <h3>백엔드 선결 과제</h3>
+ 결론 문장 생성(<code>service.conclusion(tx_id)</code>): 걸린 규칙 조합 → 템플릿. 예: 휴가일 + 제한업종 → "{휴가종류} 등록일 {시간대}에 {업종}에서 {금액}을 결제했습니다". 조합이 늘면 LLM이 규칙 출력 필드만으로 작문하고 숫자는 원본과 대조(로드맵 6단계).
+</div>
+</body></html>
