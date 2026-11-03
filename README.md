@@ -28,6 +28,19 @@ macOS arm64에서 xgboost import가 libomp 오류를 내면 `brew install libomp
 - `docs/REVIEW_SCREEN.md` 검토 화면 사양 · `docs/PRECEDENTS.md` 선례 기능 · `docs/MODEL.md` 우선순위 모델
 - `docs/TOOLING_DECISION.md` 스택 결정(React+FastAPI, 로우코드 불채택) · `docs/case_study/` 기존 솔루션 동작 원리 해부 · `deliverables/` 요구사항서·WBS·아키텍처·설계서
 
+## 스택 (2026-11-03 확정)
+| 층 | 선택 |
+|---|---|
+| 사람의 기록 (판정·큐·로그·사용자) | Postgres |
+| 기계의 계산 (거래·flags·피처·점수) | DuckDB 파일, 배치가 재생성 |
+| 규칙·피처·라벨 정의 | YAML + SQL (git) |
+| 배치 | Python 스크립트 (CLI) |
+| 모델 | 소켓(fit/predict/explain) + 플러그(기준선·로지스틱·XGBoost·DNN 자리) |
+| API | FastAPI (Postgres 쓰기, DuckDB 읽기 전용) |
+| 화면 | React (Vite + shadcn/ui + TanStack) · Streamlit은 시연·검증용 |
+| 개발 환경 | Docker compose (Postgres) |
+근거: `docs/TOOLING_DECISION.md`, `docs/STORAGE_ARCHITECTURE.md`
+
 ## 구조
 범용 엔진 + 법인카드 팩(`deliverables/03_아키텍처정의서.md` §2.1, 폴더 분리 `packs/corp_card/`는 예정).
 `scripts/` 적재·합성·규칙 실행·피처 · `rules/` 규칙 SQL과 카탈로그 · `features/` 피처 카탈로그와 실행기 · `labels/` 임시 정답 선언 · `models/` 모델 소켓과 플러그(기준선·로지스틱·XGBoost·DNN 자리) · `synth/` 사례 명세 · `app/service.py` 서비스 함수 · `app/Home.py`, `app/pages/` Streamlit(시연·검증용) · `web/` React 정식 화면(진행 중)
