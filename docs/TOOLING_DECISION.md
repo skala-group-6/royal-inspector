@@ -88,8 +88,8 @@
 | 다중 서버 | 불가 | 기본 | OLTP를 PG로 바꾸면 해결 |
 | 전환 비용 | 가장 큼(경계 없음) | DuckDB 추가는 ATTACH 한 줄 | 가장 낮음(경계 이미 분리) |
 
-**결정**
-1. **지금**: FastAPI 1프로세스. **판정·큐·사용자·감사 로그는 SQLite**(WAL, BEGIN IMMEDIATE, append-only). **거래·flags·피처·점수는 DuckDB**(월 배치가 재생성). DuckDB가 SQLite를 ATTACH해 조인. Postgres 설치 없음. 서비스 함수 뒤에 두 DB를 숨겨 화면·API는 모름.
+**결정(2026-11-03 오후 갱신 — "데이터가 로컬 PC에 종속되면 안 된다"는 요구 확인 후 SQLite → Postgres로 변경. 상세 `docs/STORAGE_ARCHITECTURE.md`)**
+1. **지금**: FastAPI 1프로세스. **판정·큐·사용자·감사 로그는 Postgres**(사내 서버 또는 IT 제공 DB, 개발은 Docker). ~~SQLite~~(WAL, BEGIN IMMEDIATE, append-only). **거래·flags·피처·점수는 DuckDB**(월 배치가 재생성). DuckDB가 SQLite를 ATTACH해 조인. Postgres 설치 없음. 서비스 함수 뒤에 두 DB를 숨겨 화면·API는 모름.
 2. **Postgres로 올리는 신호**: 두 번째 앱 서버·워커가 같은 DB에 써야 함 / DB 수준 롤·감사 요구가 규제상 필수 / 자동 failover·PITR 요구 / 공유 네트워크 스토리지만 가능. 그때 SQLite → Postgres만 바꾸고 DuckDB는 `postgres` 확장으로 ATTACH.
 3. **DuckDB 단독으로 가지 않는 이유**: "에러 0" 요구와 동일 행 충돌 에러·파일 잠금 사고가 충돌하고, 권한·백업·마이그레이션 생태계가 OLTP용으로 미성숙하며, 나중 전환 비용이 가장 크다.
 
