@@ -51,4 +51,4 @@ n_real = con.execute("select count(*) from tx_active where not is_synthetic").fe
 flagged_real = con.execute(f"select count(distinct tx_id) from {TABLE} f join transactions t using(tx_id) where not t.is_synthetic").fetchall()[0][0]
 print(f"\nreal transactions flagged by >=1 rule: {flagged_real}/{n_real} = {100.0*flagged_real/n_real:.1f}%")
 con.close()
-import subprocess; subprocess.run([sys.executable, "-I", "scripts/score.py", TABLE])
+sys.path.insert(0, str(Path(__file__).parent)); import score; score.main(TABLE)
