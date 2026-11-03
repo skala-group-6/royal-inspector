@@ -65,3 +65,32 @@
 - Budibase https://budibase.com/pricing/ · ToolJet https://tooljet.com/pricing · Windmill https://www.windmill.dev/pricing
 - DuckDB concurrency https://duckdb.org/docs/2.0/connect/concurrency.html
 - Streamlit architecture https://docs.streamlit.io/develop/concepts/architecture/architecture · auth https://docs.streamlit.io/develop/concepts/connections/authentication
+
+## 6. 저장소: DuckDB 단독 vs Postgres vs 혼합 (2026-11-03 조사)
+
+질문: 사내 여러 명이 쓰려면 Postgres로 가야 하나.
+
+**업계 입장 요약**
+- DuckDB 공식: OLAP 엔진. 읽기·쓰기는 프로세스 1개, 같은 행 동시 수정은 충돌 에러(재시도 필요), 인덱스 많은 OLTP 스키마에 불리, 웹앱 상태 저장 가이드 없음. 다중 프로세스 쓰기는 Quack(2.0 정식, 인증은 공유 비밀 하나)·DuckLake만. https://duckdb.org/docs/stable/connect/concurrency · https://duckdb.org/why_duckdb · https://duckdb.org/faq
+- MotherDuck(DuckDB 상용사)조차 "운영 상태는 Postgres에, 분석은 DuckDB로 오프로드". https://motherduck.com/learn/duckdb-vs-postgres-embedded-analytics/ · https://motherduck.com/blog/self-hosting-duckdb-road-to-production/
+- 프로덕션 사례는 전부 분석 서빙용. 앱 상태 저장소로 쓴 공개 사례 없음. https://motherduck.com/blog/15-companies-duckdb-in-prod/ · https://www.dench.com/blog/duckdb-in-production
+- SQLite: 단일 노드 앱 상태의 정석(Fly.io Litestream, Tailscale). 하루 10만 요청 이하면 충분, writer 1개 + 큐. https://www.sqlite.org/whentouse.html · https://fly.io/blog/all-in-on-sqlite-litestream/ · https://tailscale.com/blog/database-for-2022
+- Postgres: "진짜 한계에 닿을 때 전문 도구 추가". 단일 PC 운영비(서비스·롤·pg_dump·업그레이드)는 파일 DB 대비 명확히 높음. https://www.amazingcto.com/postgres-for-everything/
+
+| 항목 | DuckDB 단독(서버 1개) | Postgres 단독 | 혼합: SQLite/PG(판정·큐·로그) + DuckDB(분석) |
+|---|---|---|---|
+| 설치·운영 | 최저 | 높음 | SQLite면 최저, PG면 PG와 같음 |
+| 동시 사용자 5~20 | 가능 | 여유 | 가능 |
+| 쓰기 동시성 | 1프로세스, 동일 행 충돌 에러 | 다중 writer | OLTP 쪽이 담당 |
+| 분석 30만 행 | 최고 | 충분 | 최고 |
+| 백업·마이그레이션 | CHECKPOINT+복사, 도구 빈약 | pg_dump, Alembic 성숙 | SQLite 파일 복사/Litestream, Alembic 지원 |
+| 권한·감사 | 없음(앱 레이어) | 롤·RLS | SQLite 없음 / PG 있음 |
+| 다중 서버 | 불가 | 기본 | OLTP를 PG로 바꾸면 해결 |
+| 전환 비용 | 가장 큼(경계 없음) | DuckDB 추가는 ATTACH 한 줄 | 가장 낮음(경계 이미 분리) |
+
+**결정**
+1. **지금**: FastAPI 1프로세스. **판정·큐·사용자·감사 로그는 SQLite**(WAL, BEGIN IMMEDIATE, append-only). **거래·flags·피처·점수는 DuckDB**(월 배치가 재생성). DuckDB가 SQLite를 ATTACH해 조인. Postgres 설치 없음. 서비스 함수 뒤에 두 DB를 숨겨 화면·API는 모름.
+2. **Postgres로 올리는 신호**: 두 번째 앱 서버·워커가 같은 DB에 써야 함 / DB 수준 롤·감사 요구가 규제상 필수 / 자동 failover·PITR 요구 / 공유 네트워크 스토리지만 가능. 그때 SQLite → Postgres만 바꾸고 DuckDB는 `postgres` 확장으로 ATTACH.
+3. **DuckDB 단독으로 가지 않는 이유**: "에러 0" 요구와 동일 행 충돌 에러·파일 잠금 사고가 충돌하고, 권한·백업·마이그레이션 생태계가 OLTP용으로 미성숙하며, 나중 전환 비용이 가장 크다.
+
+이전 답변(2026-11-03 오전) "서버 하나면 DuckDB 단독으로 충분"은 **동작 여부로는 맞지만 정석은 아니었다.** 정석은 혼합이며, 그중 가벼운 쪽(SQLite)으로 시작한다.
