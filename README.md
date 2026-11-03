@@ -26,6 +26,8 @@ macOS arm64에서 xgboost import가 libomp 오류를 내면 `brew install libomp
 - `docs/RULES.md` 규칙 19개, 실데이터 적중, 임계치 민감도
 - `docs/API.md` 서비스 함수 / API 설계 (프런트 계약)
 - `docs/REVIEW_SCREEN.md` 검토 화면 사양 · `docs/PRECEDENTS.md` 선례 기능 · `docs/MODEL.md` 우선순위 모델
+- `docs/TOOLING_DECISION.md` 스택 결정(React+FastAPI, 로우코드 불채택) · `docs/case_study/` 기존 솔루션 동작 원리 해부 · `deliverables/` 요구사항서·WBS·아키텍처·설계서
 
 ## 구조
-`scripts/` 적재·합성·규칙 실행·피처 · `rules/` 규칙 SQL과 카탈로그 · `features/` 피처 카탈로그와 실행기 · `labels/` 임시 정답 선언 · `models/` 모델 소켓과 플러그(기준선·로지스틱·XGBoost·DNN 자리) · `synth/` 사례 명세 · `app/service.py` 서비스 함수 · `app/Home.py`, `app/pages/` Streamlit
+범용 엔진 + 법인카드 팩(`deliverables/03_아키텍처정의서.md` §2.1, 폴더 분리 `packs/corp_card/`는 예정).
+`scripts/` 적재·합성·규칙 실행·피처 · `rules/` 규칙 SQL과 카탈로그 · `features/` 피처 카탈로그와 실행기 · `labels/` 임시 정답 선언 · `models/` 모델 소켓과 플러그(기준선·로지스틱·XGBoost·DNN 자리) · `synth/` 사례 명세 · `app/service.py` 서비스 함수 · `app/Home.py`, `app/pages/` Streamlit(시연·검증용) · `web/` React 정식 화면(진행 중)

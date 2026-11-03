@@ -4,6 +4,7 @@
 1. 화면이 바뀌어도 남는 것만 백엔드에 둔다. 지금은 파이썬 함수(`app/service.py`)로 만들고 Streamlit이 직접 호출, 나중에 같은 함수를 FastAPI로 노출한다.
 2. 모든 응답은 규칙 엔진의 출력 계약(rule_id, evidence, related_tx_ids, severity, rule_version)을 그대로 전달한다. 화면에서 재가공하지 않는다.
 3. 요청·응답 스키마는 Pydantic으로 고정한다. 아래 필드명이 그 스키마의 초안이다.
+4. (2026-11-03) FastAPI 서버 프로세스 1개가 `warehouse.duckdb` 쓰기를 독점한다. Streamlit·배치 스크립트는 복사본(`ROYAL_DB`)을 쓰거나 서버 중지 후 실행. API는 팩이 바뀌어도 동일하다(엔진 테이블 flags/queue/reviews/tx_score만 노출).
 
 공통 객체
 - `FlagSummary`: tx_id, tx_ts, emp_id, emp_name(마스킹 가능), dept, account_policy, merchant, mcc_name, total, rules[{rule_id, severity}], review_status(unreviewed|violation|ok|hold)
