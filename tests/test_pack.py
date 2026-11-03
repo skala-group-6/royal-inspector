@@ -25,3 +25,21 @@ def test_float_and_int_amounts_hash_equal():
 
 def test_synthetic_key_is_stable():
     assert det_id("SY", "SY000000001") == det_id("SY", "SY000000001") != det_id("SY", "SY000000002")
+
+
+def test_manifest_paths_exist_and_default_pack_is_corp_card():
+    sys.path.insert(0, str(ROOT)); import importlib, paths as P
+    assert P.PACK_NAME == "corp_card" and P.PACK_DIR == (ROOT / "packs" / "corp_card").resolve()
+    for p in (P.RULES_CATALOG, P.RULES_SQL_DIR, P.FEATURES_CATALOG, P.WEAK_LABELS, P.CASES):
+        assert p is not None and p.exists(), p
+    assert P.MACROS is None or P.MACROS.exists()
+    import yaml
+    stems = {f.stem for f in P.RULES_SQL_DIR.glob("R*.sql")}; cat = set(yaml.safe_load(open(P.RULES_CATALOG))["rules"])
+    assert stems and stems <= cat, stems - cat   # every rule SQL is declared in the catalog
+    assert P.RAW_GLOB
+
+def test_no_hardcoded_pack_paths_in_engine_code():
+    import re
+    bad = re.compile(r'"(rules|features|labels|synth)/[^"]*\.(yaml|sql)"|ROOT / "(rules|features|labels|synth)"')
+    hits = [f for f in list((ROOT / "scripts").glob("*.py")) + [ROOT / "features" / "executor.py", ROOT / "app" / "service.py"] if bad.search(f.read_text())]
+    assert not hits, hits

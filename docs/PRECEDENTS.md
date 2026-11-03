@@ -24,7 +24,7 @@ precedents
   outcome       NULL | 'violation' | 'ok'
   source        '주요시나리오#12' | reviewer
 ```
-사례의 원천은 `synth/cases.yaml`(title, summary, cues, rules). 적재 스크립트가 테이블로 넣는다. 규칙이 바뀌면 yaml만 고친다.
+사례의 원천은 `packs/corp_card/cases.yaml`(title, summary, cues, rules). 적재 스크립트가 테이블로 넣는다. 규칙이 바뀌면 yaml만 고친다.
 
 ## 유사도
 ```

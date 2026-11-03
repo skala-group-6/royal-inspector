@@ -21,7 +21,7 @@
 1. **비율로 본다.** 금액 자체 대신 `금액 / 본인 중앙값`, `부서 내 백분위`. 직급·부서별 기준을 모델이 따로 배울 필요가 없어진다.
 2. **시점 기준.** 집계는 해당 거래 시각 이전 데이터만, 거래 자신은 제외. 위반 시 평가가 부풀려지고 운영에서 떨어진다(누수).
 3. **관측 수를 피처로.** 데이터가 3개월뿐이라 초기 거래는 "평소"가 없다. `user__all__n_tx`를 넣어 비율 피처의 신뢰도를 모델이 알게 한다(콜드 스타트).
-4. **선언으로 관리.** `features/catalog.yaml`에 선언, 실행기 하나가 SQL 생성. 규칙 카탈로그와 같은 패턴. 모델 manifest에 피처 카탈로그 버전 기록.
+4. **선언으로 관리.** `packs/corp_card/features.yaml`에 선언, 실행기 하나가 SQL 생성. 규칙 카탈로그와 같은 패턴. 모델 manifest에 피처 카탈로그 버전 기록.
 5. **규칙 결과는 넣지 않는다.** 규칙별 걸림 여부·걸린 규칙 수·검토자 정보 제외. 규칙 점수는 별도 열로 저장하고 모델 입력이 아닌 최종 앙상블에서만 합친다(docs/MODEL.md).
 6. **같은 숫자를 세 곳에서.** 엔티티 통계표(`entity_stats`)를 모델, 검토 화면의 동료 비교, 선례 유사도가 공유한다. 화면의 "평소의 18배"와 모델이 본 18배가 같아야 한다.
 
@@ -64,7 +64,7 @@
 새 소스(출입기록, 영수증)는 엔티티·집계 한 줄 추가. LangGraph에서는 실행기가 노드 하나.
 
 ## 구현 기록 (2026-11-01, catalog v1)
-- 파일: `features/catalog.yaml`(선언 35개 = agg 25 + column 9 + history 1), `features/executor.py`, `scripts/build_features.py`, `scripts/validate_features.py`, `tests/test_features.py`. 결과 `tx_features` 30,284행 × 34열(0.8초), `entity_stats` 뷰.
+- 파일: `packs/corp_card/features.yaml`(선언 35개 = agg 25 + column 9 + history 1), `features/executor.py`, `scripts/build_features.py`, `scripts/validate_features.py`, `tests/test_features.py`. 결과 `tx_features` 30,284행 × 34열(0.8초), `entity_stats` 뷰.
 - DuckDB 2.0 프로브: 윈도 `quantile_cont`, `count(distinct)`, `RANGE BETWEEN … AND INTERVAL 1 MICROSECOND PRECEDING`, 30d RANGE 하한 모두 지원. 윈도 vs 상관 서브쿼리 3만 행 불일치 0.
 - 시점 기준 구현: 윈도 프레임 상한 `INTERVAL 1 MICROSECOND PRECEDING`(자신·동시각 제외). `since_last_min`은 두 전략 모두 상관 서브쿼리(동시각 제외 일관성). 상관 전략은 큰 파티션(직급)에서 O(n²)라 검증용 표본 500건에만 사용.
 - 설계 조정: 직급 백분위 → 중앙값 배수(비용). `lookahead: true` 명시(same_day 4개, until_next). 이력 그룹(`hist__`)은 기본 제외, `--with-history`에서만(약한 라벨 누설). 선례 유사도는 제외(자기 규칙 집합의 함수).

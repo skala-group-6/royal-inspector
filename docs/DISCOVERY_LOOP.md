@@ -62,4 +62,4 @@ Stripe 공식 글 기준 대조: Stripe도 "과거 공격을 범인 입장에서
 
 ## 데이터 모델
 `candidate_patterns(pattern_id, name, description, rule_draft, evidence_tx_ids, backtest{hits, overlap_pct, agree_with_reviews}, status{proposed|approved|rejected}, decided_by, decided_at)`
-승인 시 `rules/catalog.yaml`에 항목 추가, `source: discovery`. 기존 규칙과 같은 통로를 타므로 "신규 시나리오"가 별도 세계로 존재하지 않는다.
+승인 시 `packs/corp_card/rules/catalog.yaml`에 항목 추가, `source: discovery`. 기존 규칙과 같은 통로를 타므로 "신규 시나리오"가 별도 세계로 존재하지 않는다.

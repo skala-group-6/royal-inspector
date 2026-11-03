@@ -31,7 +31,7 @@
 
 | 원칙 | 우리 현황 | 뜻 |
 |---|---|---|
-| 규칙·임계치는 데이터(YAML) | `rules/catalog.yaml`, `features/catalog.yaml`, `labels/weak.yaml` | 윤경팀이 바꾸는 것은 코드가 아니라 파일 한 줄 |
+| 규칙·임계치는 데이터(YAML) | `packs/corp_card/rules/catalog.yaml`, `packs/corp_card/features.yaml`, `packs/corp_card/weak_labels.yaml` | 윤경팀이 바꾸는 것은 코드가 아니라 파일 한 줄 |
 | DB가 단일 진실 원천 | `warehouse.duckdb`에 판정·큐·점수 전부 | 화면은 보기만 함. 화면을 갈아도 기록은 남음 |
 | 얇은 서비스 레이어 | `app/service.py` | Streamlit도 React도 같은 함수를 호출 |
 | 테스트가 규칙 변경을 지킴 | Octave checks(unit/rules/features/model) | 임계치 바꾸고 합성 재현율 떨어지면 바로 알림 |

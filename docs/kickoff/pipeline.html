@@ -52,7 +52,7 @@
   <li><b>임계치는 규정에 없다.</b> 규정표엔 "금지 업종" 종류만 있고 "몇 분 안에 몇 번"은 없음 → 도구 설정값으로 분리, 민감도 표로 윤경팀이 확정</li>
   <li><b>등급을 둘로.</b> 규정 근거 있는 규칙(🔴 13개)과 통계·가설(⚪ 8개). 업계 공통(Ramp 차단/경고, Expensify 빨강/노랑)</li>
   <li><b>거부한 대안:</b> 비지도 이상탐지(저발생률에서 정밀도 9~20%, 영국 정부 경비팀이 설명성 부족으로 폐기)</li></ul>
-  <div class="src">근거: docs/RULES.md(시나리오→규칙→사례 대응표, 민감도), rules/catalog.yaml, 조사 보고서 §2(CAAT 플래그 확정률 10~47%), 참고 비용정산지침 시트</div></div>
+  <div class="src">근거: docs/RULES.md(시나리오→규칙→사례 대응표, 민감도), packs/corp_card/rules/catalog.yaml, 조사 보고서 §2(CAAT 플래그 확정률 10~47%), 참고 비용정산지침 시트</div></div>
  <div class="card"><h3>어떻게</h3>
   <div class="flow"><div class="box">시나리오 12<small>과제 요구</small></div><span class="arr">→</span><div class="box">규칙 19<small>SQL 1파일 = 규칙 1개</small></div><span class="arr">→</span><div class="box">사례 22로 역검증<small>못 덮는 2건 → R16·R21</small></div><span class="arr">→</span><div class="box">규칙 21<small>catalog v2</small></div></div>
   <table><tr><th>출력 계약 (모든 상위 층의 입력)</th></tr><tr><td><code>rule_id · tx_id · evidence(JSON: 걸린 값) · related_tx_ids · severity(violation/advisory) · rule_version</code></td></tr></table>
@@ -71,7 +71,7 @@
   <li><b>시점 기준.</b> 3/20 거래의 "평소"에 3/31 데이터가 들어가면 미래 누수. feature store 표준(Airbnb Chronon, Tecton)</li>
   <li><b>합성 79건은 학습에 안 씀.</b> 규칙 명세에서 만든 데이터라 순환. 회귀 테스트로만</li>
   <li><b>거부한 대안:</b> 합성으로 학습, 무작위 분할, prob 회귀/가중치(규칙 수 베끼기로 회귀)</li></ul>
-  <div class="src">근거: docs/FEATURES.md · MODEL.md · research_notes/label_scarce_learning_comparison.md(Ratner 2017, WRENCH, Farquhar 2021), features/catalog.yaml, labels/weak.yaml</div></div>
+  <div class="src">근거: docs/FEATURES.md · MODEL.md · research_notes/label_scarce_learning_comparison.md(Ratner 2017, WRENCH, Farquhar 2021), packs/corp_card/features.yaml, packs/corp_card/weak_labels.yaml</div></div>
  <div class="card"><h3>어떻게</h3>
   <div class="flow"><div class="box">피처 카탈로그<small>엔티티×시간창×집계 선언</small></div><span class="arr">→</span><div class="box">실행기<small>윈도 프레임 "1µs 전까지"</small></div><span class="arr">→</span><div class="box">tx_features<small>30,284행 × 34열</small></div><span class="arr">→</span><div class="box">검증 7종</div></div>
   <table><tr><th>예: 노래방 590,000원 (#11012)</th><th class="r">값</th></tr>
@@ -120,8 +120,8 @@
  <div class="cols" style="grid-template-columns:1fr 1fr"><div class="card"><h3>우리 저장소</h3><table>
   <tr><td>조사 보고서</td><td><code>reports/법인카드 감사 솔루션 분석.md</code> (148 인용)</td></tr>
   <tr><td>데이터 사실</td><td><code>data/inventory/README.md</code>, <code>load_report.json</code></td></tr>
-  <tr><td>규칙</td><td><code>rules/catalog.yaml</code>, <code>docs/RULES.md</code></td></tr>
-  <tr><td>피처·라벨</td><td><code>features/catalog.yaml</code>, <code>labels/weak.yaml</code>, <code>docs/FEATURES.md</code>, <code>docs/MODEL.md</code></td></tr>
+  <tr><td>규칙</td><td><code>packs/corp_card/rules/catalog.yaml</code>, <code>docs/RULES.md</code></td></tr>
+  <tr><td>피처·라벨</td><td><code>packs/corp_card/features.yaml</code>, <code>packs/corp_card/weak_labels.yaml</code>, <code>docs/FEATURES.md</code>, <code>docs/MODEL.md</code></td></tr>
   <tr><td>모델 시험</td><td><code>models/&lt;v&gt;/manifest.json</code></td></tr>
   <tr><td>큐·발굴</td><td><code>docs/DISCOVERY_LOOP.md</code></td></tr>
   <tr><td>결정 기록</td><td><code>docs/PROJECT_NOTES.md</code> §7</td></tr>

@@ -10,7 +10,7 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python -I scripts/load_precedents.py  # 4.5단계: 징계사례 선례 적재
 .venv/bin/python -I scripts/build_features.py    # 3.5단계: 피처 표 tx_features (+entity_stats 뷰)
 .venv/bin/python -I scripts/validate_features.py # 3.6단계: 피처 검증 7종 (누수·중복·단조·재실행)
-.venv/bin/python -I scripts/labels.py --label-source weak  # 3.7단계: 임시 정답 labels (규칙 투표 noisy-OR, labels/weak.yaml)
+.venv/bin/python -I scripts/labels.py --label-source weak  # 3.7단계: 임시 정답 labels (규칙 투표 noisy-OR, packs/corp_card/weak_labels.yaml)
 .venv/bin/python -I scripts/train.py --label-source weak   # 3.8단계: 기준선·로지스틱·XGBoost 같은 시험 → models/<v>/manifest.json
 .venv/bin/python -I scripts/score_tx.py                    # 3.9단계: tx_score (기준선 점수 + 학습 모델 점수·이유)
 .venv/bin/python -I scripts/build_queue.py --from 2025-03-01 --to 2025-03-31  # 3.95단계: 검토 큐 (규칙 + 모델 상위 M + 무작위 p%)
@@ -43,5 +43,5 @@ macOS arm64에서 xgboost import가 libomp 오류를 내면 `brew install libomp
 근거: `docs/TOOLING_DECISION.md`, `docs/STORAGE_ARCHITECTURE.md`
 
 ## 구조
-범용 엔진 + 법인카드 팩(`deliverables/03_아키텍처정의서.md` §2.1, 폴더 분리 `packs/corp_card/`는 예정).
-`scripts/` 적재·합성·규칙 실행·피처 · `tools/` 일회성 분석(시트 인벤토리·프로파일·임계치 민감도) · `rules/` 규칙 SQL과 카탈로그 · `features/` 피처 카탈로그와 실행기 · `labels/` 임시 정답 선언 · `models/` 모델 소켓과 플러그(기준선·로지스틱·XGBoost·DNN 자리) · `synth/` 사례 명세 · `app/service.py` 서비스 함수 · `app/Home.py`, `app/pages/` Streamlit(시연·검증용) · `web/` React 정식 화면(진행 중)
+범용 엔진 + 법인카드 팩. 팩 규격 `docs/PACK_SPEC.md`, 경로 해석 `paths.py`(`PACK` 환경변수, 기본 `packs/corp_card`).
+`packs/corp_card/` 법인카드 팩(규칙 SQL·카탈로그·매크로, 피처 선언, 약한 라벨, 사례) · `scripts/` 엔진 CLI(적재·합성·규칙·피처·라벨·학습·점수·큐; `keys.py` 결정적 tx_id) · `tools/` 일회성 분석 · `features/executor.py` 피처 실행기 · `models/` 모델 소켓과 플러그(기준선·로지스틱·XGBoost·DNN 자리) · `app/service.py` 서비스 함수 · `app/Home.py`, `app/pages/` Streamlit(시연·검증용) · `web/` React 정식 화면(진행 중)
