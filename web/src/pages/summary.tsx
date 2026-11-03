@@ -1,9 +1,12 @@
 import { SiteHeader } from "@/components/site-header"
-import { SectionCards } from "@/components/section-cards"
-import { ChartAreaInteractive } from "@/components/chart-area-interactive"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 export function SummaryPage() {
   return (<><SiteHeader title="요약" />
-    <div className="flex flex-1 flex-col"><div className="@container/main flex flex-1 flex-col gap-2"><div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-      <SectionCards /><div className="px-4 lg:px-6"><ChartAreaInteractive /></div>
-    </div></div></div></>)
+    <div className="flex flex-1 flex-col gap-4 p-4 md:p-6">
+      <Card>
+        <CardHeader><CardTitle>요약 화면은 준비 중입니다</CardTitle>
+          <CardDescription>출처별 적중, 미처리율, 규칙별 확정 비율, 사용자 누적 의심도가 여기에 표시됩니다 (계획 4단계).</CardDescription></CardHeader>
+        <CardContent className="text-sm text-muted-foreground">데이터 연결(계획 3단계) 이후 채워집니다.</CardContent>
+      </Card>
+    </div></>)
 }
