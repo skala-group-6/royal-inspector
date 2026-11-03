@@ -41,7 +41,7 @@
 | 규칙 실행 | `run_rules` | rule_ids[]|null, overrides{rule.param: value} | run_id, per_rule_counts | 버튼 하나로 재점검 |
 | 실행 이력 | `list_runs` | - | [{run_id, ran_at, rule_versions, data_snapshot_hash, counts}] | 같은 결과가 재현되는지 추적 |
 | 임계치 변경 | `set_param` | rule_id, param, value, reason, actor | new_version | 조이기의 기록 |
-| 민감도 미리보기 | `preview_param` | rule_id, param, values[] | [{value, real_flagged, synth_recall}] | 바꾸기 전에 영향 확인 (sweep.py) |
+| 민감도 미리보기 | `preview_param` | rule_id, param, values[] | [{value, real_flagged, synth_recall}] | 바꾸기 전에 영향 확인 (tools/sweep.py) |
 | 적중률 | `get_hit_rates` | date_from, date_to | per_rule[{flagged, reviewed, violation, ok, hold, hit_rate}] | 임계치 조정의 근거 숫자 |
 
 ## 4. 데이터 적재

@@ -2,7 +2,7 @@
 
 실행: `scripts/run_rules.py` → `flags(rule_id, tx_id, evidence JSON, related_tx_ids, severity, rule_version)` → `scripts/score.py`
 규칙 SQL: `rules/sql/R*.sql`, 임계치: `rules/catalog.yaml` params + `run_rules.py` DEFAULTS, 주소 파서: `rules/macros.sql`(sido_of, sigungu_of)
-민감도: `scripts/sweep.py` (부분 실행은 `flags_subset`에 기록, 전체 `flags`는 보존)
+민감도: `tools/sweep.py` (부분 실행은 `flags_subset`에 기록, 전체 `flags`는 보존)
 
 ## 시나리오 12 → 규칙 21 → 사례 22 대응 (2026-10-31 확인)
 만든 순서: 과제의 시나리오 12개 → 시나리오마다 컴퓨터가 검사할 조건을 규칙으로 작성(19개) → 징계사례 22건으로 역검증해 어느 규칙에도 안 걸리는 사례 2건(KTX 2배 청구, 페이백)에서 R16·R21 추가(21개).

@@ -33,7 +33,7 @@
   <li><b>취소가 두 종류였다.</b> '카드취소' 486건은 회계용 ±쌍(합이 0, 456건이 지급수수료 "카드취소 처리")이라 실거래가 아님. 진짜 부분취소는 법인카드 음수 79건, 적요에 "부분 취소"</li>
   <li><b>계정 이름이 규정표와 달랐다.</b> 거래 49종 vs 규정 42종. 괄호·공백 차이가 대부분, 사람이 결정할 건 10개</li>
   <li><b>거부한 대안:</b> 엑셀에서 손으로 정리 → 다음 파일부터 재현 불가, 변경 이력 없음</li></ul>
-  <div class="src">근거: data/inventory/README.md(인벤토리·프로파일·적재 리포트), scripts/inventory.py · profile.py · load.py</div></div>
+  <div class="src">근거: data/inventory/README.md(인벤토리·프로파일·적재 리포트), tools/inventory.py · tools/profile.py · scripts/load.py</div></div>
  <div class="card"><h3>어떻게</h3>
   <div class="flow"><div class="box">인벤토리<small>8시트 행·열·헤더 위치</small></div><span class="arr">→</span><div class="box">프로파일<small>열별 채움률·고유값</small></div><span class="arr">→</span><div class="box">정규화<small>금액·시각·취소·계정</small></div><span class="arr">→</span><div class="box">DuckDB<small>테이블 6 + 뷰</small></div><span class="arr">→</span><div class="box">품질 리포트<small>JSON</small></div></div>
   <table><tr><th>정규화</th><th>처리</th><th class="r">건수</th></tr>
