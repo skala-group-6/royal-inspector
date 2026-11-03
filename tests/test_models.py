@@ -46,5 +46,6 @@ def test_score_tx_rows(con, tmp_path):
     assert n == con.execute("select count(*) from tx_features").fetchall()[0][0]
     r = con.execute("select top_features, top_features_learned from tx_score limit 1").fetchall()[0]
     assert len(json.loads(r[0])) == 3 and len(json.loads(r[1])) == 3
-    assert len(s.top_unflagged_by_score(5)) == 5 and s.get_score(11012)["disclaimer"]
+    any_tx = con.execute("select tx_id from tx_score limit 1").fetchall()[0][0]
+    assert len(s.top_unflagged_by_score(5)) == 5 and s.get_score(any_tx)["disclaimer"]
     assert "score_learned" in s.list_flags(sort="learned", page_size=5).columns

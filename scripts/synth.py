@@ -1,10 +1,11 @@
 """Step 2: inject 22 disciplinary cases as synthetic users/transactions into data/warehouse.duckdb.
 Idempotent: removes previous synthetic rows first. Seeded. Real rows are never modified."""
-import random, datetime as dt, re
+import random, datetime as dt, re, os, sys
 from pathlib import Path
 import pandas as pd, numpy as np, duckdb
+sys.path.insert(0, str(Path(__file__).resolve().parent)); from keys import det_id
 
-DB = "data/warehouse.duckdb"; SEED = 20251031
+DB = os.environ.get("ROYAL_DB", str(Path(__file__).resolve().parents[1] / "data/warehouse.duckdb")); SEED = 20251031
 rng = random.Random(SEED)
 con = duckdb.connect(DB)
 D0, D1 = dt.date(2025, 2, 3), dt.date(2025, 3, 27)
@@ -25,7 +26,7 @@ con.execute("DROP TABLE IF EXISTS ground_truth").fetchall()
 con.execute("CREATE OR REPLACE VIEW tx_active AS SELECT * FROM transactions WHERE exclude_reason IS NULL").fetchall()
 
 # ---------- materials from real data ----------
-real = con.execute("select * from transactions where not is_synthetic and exclude_reason is null").df()
+real = con.execute("select * from transactions where not is_synthetic and exclude_reason is null order by tx_id").df()
 TX_COLS = [r[0] for r in con.execute("describe transactions").fetchall()]
 pool = real.dropna(subset=["merchant", "merchant_addr", "mcc_name"])[["merchant", "merchant_addr", "mcc_code", "mcc_name"]].drop_duplicates()
 def merchants(mcc_names, pred=None):
@@ -47,10 +48,11 @@ def new_id():
 
 # ---------- actors ----------
 emps, tx_rows, acc_rows, gt_rows = [], [], [], []
-def actor(code, rank="팀원", site="본사", home_sido=None, worksite_sido=None):
+def actor(code, rank="팀원", site="본사", home_sido=None, worksite_sido=None, pred=None):
     cand = profiles[profiles["rank"] == rank] if (profiles["rank"] == rank).any() else profiles
     if home_sido: cand = cand[cand.home_addr.str.startswith(home_sido)]
     if worksite_sido: cand = cand[cand.work_site_addr.str.startswith(worksite_sido)]
+    if pred is not None: cand = cand[cand.apply(pred, axis=1)]  # scenario preconditions (e.g. home sigungu != work sigungu)
     if site == "본사": cand2 = cand[cand.work_site == "본사"]; cand = cand2 if len(cand2) else cand
     p = cand.iloc[rng.randrange(len(cand))]
     e = dict(emp_id=new_id(), emp_name=f"가상{code}", rank=rank, title=p.title, main_dept=p.main_dept, home_addr=p.home_addr,
@@ -125,7 +127,7 @@ def home_addr_for(a): return f"{a['home_addr'].strip()} 1층"
 # ---------- cases ----------
 A = {}
 # 1
-A[1] = a = actor("S01"); tr = trip("국내출장", 5, owner=a)
+A[1] = a = actor("S01", pred=lambda p: sigungu(p.home_addr) is not None and sigungu(p.home_addr) != sigungu(p.work_site_addr)); tr = trip("국내출장", 5, owner=a)
 for _ in range(4):
     d = tr["start"] + dt.timedelta(days=rng.randrange(5)); m = pick(merchants("일반음식점"))
     tx(a, {**m, "merchant": "㈜우아한형제들_KCP"}, d, rand_time("19:00", "21:00"), rng.randrange(18000, 42000), "의욕관리비", 1, ["R05_near_home", "R07_outside_trip_area"], trip=tr, addr_override=home_addr_for(a), memo="구성원 식사")
@@ -215,8 +217,8 @@ for e in emps:
     routine_access(e)
 
 # ---------- write ----------
-base = con.execute("select coalesce(max(tx_id),0) from transactions").fetchall()[0][0]
-txdf = pd.DataFrame(tx_rows)[TX_COLS]; txdf["tx_id"] = np.arange(base + 1, base + 1 + len(txdf))
+txdf = pd.DataFrame(tx_rows)[TX_COLS]; txdf["tx_id"] = txdf.sap_doc_no.map(lambda d: det_id("SY", d)).astype("int64")
+assert txdf.tx_id.is_unique
 gt = pd.DataFrame(gt_rows); gt["tx_id"] = gt.row_idx.map(lambda i: int(txdf.tx_id.iloc[i])); gt = gt.drop(columns="row_idx")
 empdf = pd.DataFrame(emps).drop(columns=["code", "dept", "approver_id", "trips"], errors="ignore"); empdf["n_tx"] = empdf.emp_id.map(txdf.emp_id.value_counts())
 accdf = pd.DataFrame(acc_rows)

@@ -1,10 +1,12 @@
 """Step 1: load raw Excel into data/warehouse.duckdb as standard tables.
 Re-runnable: drops and recreates everything. Original files are never modified."""
-import re, json, sys
+import re, json, sys, os
 from pathlib import Path
 import pandas as pd, numpy as np, duckdb
+sys.path.insert(0, str(Path(__file__).resolve().parent)); from keys import det_ids
 
-RAW = Path("data/raw"); DB = Path("data/warehouse.duckdb"); OUT = Path("data/inventory")
+ROOT = Path(__file__).resolve().parents[1]
+RAW = ROOT / "data/raw"; DB = Path(os.environ.get("ROYAL_DB", ROOT / "data/warehouse.duckdb")); OUT = ROOT / "data/inventory"
 F1 = next(RAW.glob("1.*.xlsx")); F2 = next(RAW.glob("2.*.xlsx"))
 report = {}
 
@@ -13,7 +15,6 @@ ex = pd.read_excel(F1, sheet_name="비용점검", header=1)
 ex.columns = [c.strip() for c in ex.columns]
 won = lambda s: pd.to_numeric(s.astype(str).str.replace(r"[₩,\s]", "", regex=True).replace({"nan": None, "": None}), errors="coerce")
 tx = pd.DataFrame({
-    "tx_id": np.arange(1, len(ex) + 1),
     "sap_doc_no": ex["SAP전표번호"], "settle_type": ex["정산유형"],
     "account_raw": ex["계정"].astype(str).str.strip(), "mid_account": ex["중계정"],
     "dept": ex["부서"], "emp_id": ex["사번"].astype("Int64"), "emp_name": ex["요청자"],
@@ -43,6 +44,9 @@ tx = pd.DataFrame({
 })
 tx["tx_ts"] = pd.to_datetime(tx["tx_date"].astype(str) + " " + tx["tx_time"].fillna("00:00:00"), errors="coerce")
 tx["time_is_dummy"] = tx["tx_time"].isin(["00:00:00", None]) | tx["tx_time"].isna()
+# deterministic key: content-derived, independent of row order (docs/STORAGE_ARCHITECTURE.md §5)
+tx.insert(0, "tx_id", det_ids(tx, ["sap_doc_no", "acquirer_no", "approval_no", "tx_date", "tx_time", "total", "emp_id"]))
+assert tx.tx_id.is_unique, "tx_id collision — key fields insufficient"
 
 # ---------- 2. cancellations ----------
 # (a) settle_type '카드취소' = accounting ± pairs -> exclude wholesale
@@ -55,7 +59,7 @@ pos = tx[(tx["settle_type"] == "법인카드") & (tx["total"] > 0)]
 for i, r in tx[tx["is_partial_cancel"]].iterrows():
     cand = pos[(pos.emp_id == r.emp_id) & (pos.merchant == r.merchant) & (pos.total >= -r.total)]
     if len(cand):
-        cand = cand.assign(gap=(pd.to_datetime(cand.tx_date) - pd.to_datetime(r.tx_date)).abs().dt.days).sort_values("gap")
+        cand = cand.assign(gap=(pd.to_datetime(cand.tx_date) - pd.to_datetime(r.tx_date)).abs().dt.days).sort_values(["gap", "tx_id"])
         tx.at[i, "cancel_of_tx_id"] = int(cand.iloc[0].tx_id)
 tx.loc[tx["is_partial_cancel"], "exclude_reason"] = "partial_cancel_row"
 tx["net_total"] = tx["total"]
