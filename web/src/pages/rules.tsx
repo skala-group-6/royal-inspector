@@ -1,10 +1,9 @@
 import { Outlet, useParams } from "@tanstack/react-router"
-import { SiteHeader } from "@/components/site-header"
 import { Badge } from "@/components/ui/badge"
 import { mock } from "@/mock"
 
 export function RulesLayout() {
-  return (<><SiteHeader title="규칙" /><Outlet /></>)
+  return <Outlet />
 }
 
 export function RulesEmpty() {

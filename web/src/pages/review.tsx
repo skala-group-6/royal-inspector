@@ -1,9 +1,8 @@
 import { Outlet, useParams } from "@tanstack/react-router"
-import { SiteHeader } from "@/components/site-header"
 import { mock, won } from "@/mock"
 
 export function ReviewLayout() {
-  return (<><SiteHeader title="검토" /><Outlet /></>)
+  return <Outlet />
 }
 
 export function ReviewEmpty() {

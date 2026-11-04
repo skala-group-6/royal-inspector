@@ -1,7 +1,6 @@
-import { SiteHeader } from "@/components/site-header"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 export function SummaryPage() {
-  return (<><SiteHeader title="요약" />
+  return (<>
     <div className="flex flex-1 flex-col gap-4 p-4 md:p-6">
       <Card>
         <CardHeader><CardTitle>요약 화면은 준비 중입니다</CardTitle>
