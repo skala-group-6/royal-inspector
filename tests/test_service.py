@@ -39,3 +39,21 @@ def test_tier_and_citation():
 def test_list_tier_marker():
     df = s.list_flags(rule_ids=["R08_banned_mcc"], page_size=5)
     assert (df.sev == 2).all(), "rows flagged by a violation-tier rule must carry sev=2"
+
+
+def test_profile():
+    tx = int(s.list_flags(rule_ids=["R16_amount_outlier"], synthetic_only=True, page_size=1).tx_id.iloc[0])
+    p = s.get_profile(tx)
+    assert set(p) == {"amount", "weekly"} and set(p["amount"]) == {"this", "user", "peer"}
+    for side in ("user", "peer"):
+        d = p["amount"][side]; assert set(d) == {"n", "p25", "p50", "p75", "p90"}
+        if d["n"]: assert d["p25"] <= d["p50"] <= d["p75"] <= d["p90"]
+    assert len(p["weekly"]) == 13 and list(p["weekly"].columns) == ["week_start", "flagged", "violations"]
+    assert (p["weekly"].violations <= p["weekly"].flagged).all()
+    # point-in-time: user n must equal the feature table's prior-tx count for this tx
+    f = s.q("select user__all__n_tx from tx_features where tx_id=?", [tx])
+    if len(f) and f.iloc[0, 0] is not None: assert p["amount"]["user"]["n"] == int(f.iloc[0, 0])
+    # no future rows: the tx itself is excluded
+    row = s.q("select emp_id, tx_ts from transactions where tx_id=?", [tx]).iloc[0]
+    n_strict = int(s.q("select count(*) from tx_active where emp_id=? and tx_ts<? and total>0", [int(row.emp_id), row.tx_ts]).iloc[0, 0])
+    assert p["amount"]["user"]["n"] == n_strict

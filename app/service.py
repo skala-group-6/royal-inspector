@@ -137,6 +137,26 @@ def get_context(tx_id, n=20) -> dict:
                 trip=dict(type=t.trip_type, start=t.trip_start, end=t.trip_end) if t.trip_type else None,
                 leave=dict(type=t.leave_type, hours=t.leave_hours) if t.is_leave else None, holiday=bool(t.is_holiday), history=hist)
 
+def get_profile(tx_id) -> dict:
+    """What the three case charts need, all point-in-time (only rows before this tx's tx_ts):
+    amount: this user's and the peer group's (account_policy × mcc_name) past amount quantiles;
+    weekly: 13 weeks ending at the tx date — flagged tx and confirmed violations (latest decision 'violation', same definition as get_context.history)."""
+    t = q("select emp_id, tx_ts, tx_date, total, account_policy, mcc_name from transactions where tx_id=?", [tx_id]).iloc[0]
+    Q = "count(*) n, quantile_cont(total,0.25) p25, quantile_cont(total,0.5) p50, quantile_cont(total,0.75) p75, quantile_cont(total,0.9) p90"
+    user = q(f"select {Q} from tx_active where emp_id=? and tx_ts<? and total>0", [int(t.emp_id), t.tx_ts]).iloc[0].to_dict()
+    peer = q(f"select {Q} from tx_active where account_policy=? and mcc_name=? and tx_ts<? and total>0", [t.account_policy, t.mcc_name, t.tx_ts]).iloc[0].to_dict()
+    for d in (user, peer):
+        d["n"] = int(d["n"]); d.update({k: (None if pd.isna(d[k]) else float(d[k])) for k in ("p25", "p50", "p75", "p90")})
+    weekly = q(f"""with {_LATEST},
+      weeks as (select range as week_start from range(date_trunc('week', ?::date) - interval 12 week, date_trunc('week', ?::date) + interval 1 day, interval 1 week)),
+      hits as (select date_trunc('week', t.tx_date) week_start, count(distinct f.tx_id) flagged,
+                      count(distinct case when l.decision='violation' then f.tx_id end) violations
+               from flags f join tx_active t using(tx_id) left join latest l on l.tx_id=f.tx_id and l.rule_id=f.rule_id
+               where t.emp_id=? and t.tx_ts<? and t.tx_date >= date_trunc('week', ?::date) - interval 12 week group by 1)
+      select cast(w.week_start as date) week_start, coalesce(h.flagged,0) flagged, coalesce(h.violations,0) violations
+      from weeks w left join hits h using(week_start) order by 1""", [t.tx_date, t.tx_date, int(t.emp_id), t.tx_ts, t.tx_date])
+    return dict(amount=dict(this=float(t.total), user=user, peer=peer), weekly=weekly)
+
 # ---------- reviews ----------
 def create_review(tx_id, rule_id, decision, reason_code, memo, reviewer) -> dict:
     assert decision in ("violation", "ok", "hold"), decision
