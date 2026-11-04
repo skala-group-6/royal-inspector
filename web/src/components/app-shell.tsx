@@ -3,7 +3,7 @@ import { AppSidebar } from "@/components/app-sidebar"
 import { SectionPanel } from "@/components/section-panel"
 import { SiteHeader } from "@/components/site-header"
 import { RAIL_WIDTH, useActiveSection } from "@/components/sections"
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
+import { SidebarProvider } from "@/components/ui/sidebar"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { Toaster } from "@/components/ui/sonner"
 
@@ -17,7 +17,7 @@ const SIZES = {
 /**
  * `variant="inset"`: the provider background (bg-sidebar) shows behind the full-height icon rail and the header band.
  * The right column = header band + rounded card; the card holds the section list panel and the main view.
- * SidebarInset is kept as the right column (peer coupling with the rail) but made transparent; the card is the inner div.
+ * The right column is a plain flex column (not SidebarInset, whose inset styles would round the header band); the card is drawn here.
  */
 export function AppShell({ children }: { children: ReactNode }) {
   const active = useActiveSection()
@@ -25,13 +25,13 @@ export function AppShell({ children }: { children: ReactNode }) {
     <TooltipProvider>
       <SidebarProvider style={SIZES}>
         <AppSidebar />
-        <SidebarInset className="m-0! min-h-0 rounded-none bg-transparent shadow-none md:m-0!">
+        <div className="flex min-h-svh min-w-0 flex-1 flex-col">
           <SiteHeader title={active?.title ?? "법인카드 점검"} />
           <div className="mr-2 mb-2 flex min-h-0 flex-1 overflow-hidden rounded-2xl bg-background shadow-sm">
             {active?.List && <SectionPanel title={active.title} List={active.List} />}
             <main className="flex min-w-0 flex-1 flex-col overflow-auto">{children}</main>
           </div>
-        </SidebarInset>
+        </div>
       </SidebarProvider>
       <Toaster />
     </TooltipProvider>
