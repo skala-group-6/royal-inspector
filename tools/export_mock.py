@@ -11,7 +11,8 @@ ROOT = Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT))
 import paths  # noqa: F401  (resolves pack + DB)
 from app import service as s
 
-DROP_TX_FIELDS = {"home_addr", "approver_addr", "work_site_addr", "approver", "reviewer", "approver_id"}
+DROP_TX_FIELDS = {"home_addr", "approver_addr", "work_site_addr", "reviewer"}
+MASK_TX_FIELDS = {"approver"}  # names are masked like emp_name; ids are not PII
 
 ID_KEYS = {"tx_id", "cancel_of_tx_id"}
 
@@ -54,12 +55,14 @@ def pick(period) -> list[int]:
 def bundle(tx_id: int) -> dict:
     t = s.get_transaction(tx_id)
     for k in DROP_TX_FIELDS: t.pop(k, None)
+    for k in MASK_TX_FIELDS: t[k] = s.mask(t.get(k))
     evs = []
     for e in s.get_evidence(tx_id):
         h, d = s.evidence_headline(e["rule_id"], e["evidence"], t)
         evs.append(dict(e, headline=h, detail=d, citation=s.policy_citation(e["rule_id"], t), explain=s.rule_explain(e["rule_id"])))
     return dict(tx_id=tx_id, transaction=t, evidences=evs, context=s.get_context(tx_id), timeline=s.get_day_timeline(tx_id),
-                precedents=s.get_precedents(tx_id), score=s.get_score(tx_id), policy=s.get_policy(t.get("account_policy")), reviews=s.get_reviews(tx_id))
+                precedents=s.get_precedents(tx_id), score=s.get_score(tx_id), policy=s.get_policy(t.get("account_policy")), reviews=s.get_reviews(tx_id),
+                profile=s.get_profile(tx_id))
 
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--period", nargs=2, default=["2025-03-01", "2025-03-31"]); ap.add_argument("--out", default=str(ROOT / "web/src/mock/data.json"))
@@ -72,7 +75,8 @@ def main():
     data = clean(data)
     # shape guard: what the UI types (web/src/types.ts) rely on
     for c in data["cases"].values():
-        assert {"tx_id", "transaction", "evidences", "context", "timeline", "precedents", "score", "policy", "reviews"} <= set(c)
+        assert {"tx_id", "transaction", "evidences", "context", "timeline", "precedents", "score", "policy", "reviews", "profile"} <= set(c)
+        assert len(c["profile"]["weekly"]) == 13 and c["profile"]["amount"]["user"]["n"] >= 0
         assert not (DROP_TX_FIELDS & set(c["transaction"])), "PII field leaked"
     assert all(isinstance(r["tx_id"], str) for r in data["queue"]) and set(data["cases"]) == {r["tx_id"] for r in data["queue"]}, "ids must be strings and match"
     Path(a.out).write_text(json.dumps(data, ensure_ascii=False, indent=1) + "\n")

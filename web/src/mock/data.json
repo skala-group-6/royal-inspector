@@ -461,6 +461,8 @@
     "dept": "CL-GLNQJ3",
     "emp_id": 880005,
     "emp_name": "가***5",
+    "approver": "가****L",
+    "approver_id": 880006,
     "approval_no": 31054668,
     "acquirer_no": null,
     "tx_date": "2025-03-10T00:00:00",
@@ -995,7 +997,93 @@
     "donts": "시내교통비, 유흥주점, 골프장, 스크린골프, 당구장, 스크린 야구, 탁구, 볼링, 방탈출 게임, 경조금, 고객접대, BP인력과 사용한 비용",
     "required_evidence": ""
    },
-   "reviews": []
+   "reviews": [],
+   "profile": {
+    "amount": {
+     "this": 323657.0,
+     "user": {
+      "n": 12,
+      "p25": 8300.0,
+      "p50": 27404.0,
+      "p75": 37315.0,
+      "p90": 61846.00000000001
+     },
+     "peer": {
+      "n": 51,
+      "p25": 37500.0,
+      "p50": 64300.0,
+      "p75": 108500.0,
+      "p90": 157000.0
+     }
+    },
+    "weekly": [
+     {
+      "week_start": "2024-12-16T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-23T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-30T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-06T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-13T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-20T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-27T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-03T00:00:00",
+      "flagged": 1,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-10T00:00:00",
+      "flagged": 1,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-17T00:00:00",
+      "flagged": 1,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-24T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-03T00:00:00",
+      "flagged": 1,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-10T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     }
+    ]
+   }
   },
   "1367573120906755824": {
    "tx_id": "1367573120906755824",
@@ -1008,6 +1096,8 @@
     "dept": "CL-GLNQJ2",
     "emp_id": 47452,
     "emp_name": "윤*송",
+    "approver": "현*캬",
+    "approver_id": 701556,
     "approval_no": 9902401,
     "acquirer_no": "20250321KOVANDESC    00336860001",
     "tx_date": "2025-03-20T00:00:00",
@@ -1175,9 +1265,9 @@
       "merchant_addr": "경기 성남시 분당구 성남대로331번길 7 2층 203호 (정자동정자스",
       "total": 282500,
       "rules": [
-       "R16_amount_outlier",
+       "R02_leave_use",
        "R18_approver_conflict",
-       "R02_leave_use"
+       "R16_amount_outlier"
       ]
      },
      {
@@ -1287,8 +1377,8 @@
       "merchant_addr": "경기 성남시 분당구 성남대로331번길 13 1층 119호120호 (정자동",
       "total": 151000,
       "rules": [
-       "R16_amount_outlier",
-       "R18_approver_conflict"
+       "R18_approver_conflict",
+       "R16_amount_outlier"
       ]
      },
      {
@@ -1334,9 +1424,9 @@
       "merchant_addr": "경기 성남시 분당구 성남대로331번길 11-15 (정자동봉우빌딩 1층",
       "total": 118500,
       "rules": [
+       "R18_approver_conflict",
        "R01_holiday_use",
-       "R16_amount_outlier",
-       "R18_approver_conflict"
+       "R16_amount_outlier"
       ]
      },
      {
@@ -1724,7 +1814,93 @@
      "created_at": "2026-10-31T14:49:18",
      "superseded": false
     }
-   ]
+   ],
+   "profile": {
+    "amount": {
+     "this": 590000.0,
+     "user": {
+      "n": 24,
+      "p25": 21800.0,
+      "p50": 40607.0,
+      "p75": 154850.0,
+      "p90": 204500.0
+     },
+     "peer": {
+      "n": 1,
+      "p25": 35000.0,
+      "p50": 35000.0,
+      "p75": 35000.0,
+      "p90": 35000.0
+     }
+    },
+    "weekly": [
+     {
+      "week_start": "2024-12-23T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-30T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-06T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-13T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-20T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-27T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-03T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-10T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-17T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-24T00:00:00",
+      "flagged": 1,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-03T00:00:00",
+      "flagged": 4,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-10T00:00:00",
+      "flagged": 4,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-17T00:00:00",
+      "flagged": 2,
+      "violations": 0
+     }
+    ]
+   }
   },
   "-866276909885948414": {
    "tx_id": "-866276909885948414",
@@ -1737,6 +1913,8 @@
     "dept": "JJ-GKQMG8",
     "emp_id": 159994,
     "emp_name": "파*은",
+    "approver": "수*임",
+    "approver_id": 995332,
     "approval_no": 24455401,
     "acquirer_no": "20250310KOCESDESC    00175760013",
     "tx_date": "2025-03-09T00:00:00",
@@ -1974,8 +2152,8 @@
       "merchant_addr": "서울 강남구 삼성로 534 지하1층 (삼성동싹아트센터빌딩)",
       "total": 317000,
       "rules": [
-       "R05_near_home",
-       "R16_amount_outlier"
+       "R16_amount_outlier",
+       "R05_near_home"
       ]
      },
      {
@@ -2323,7 +2501,93 @@
     "donts": "전문인에게 지급하는 수수료\n(전문직수수료)",
     "required_evidence": ""
    },
-   "reviews": []
+   "reviews": [],
+   "profile": {
+    "amount": {
+     "this": 500000.0,
+     "user": {
+      "n": 15,
+      "p25": 28250.0,
+      "p50": 43000.0,
+      "p75": 89300.0,
+      "p90": 184799.99999999997
+     },
+     "peer": {
+      "n": 3,
+      "p25": 335000.0,
+      "p50": 350000.0,
+      "p75": 385000.0,
+      "p90": 406000.0
+     }
+    },
+    "weekly": [
+     {
+      "week_start": "2024-12-09T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-16T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-23T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-30T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-06T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-13T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-20T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-27T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-03T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-10T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-17T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-24T00:00:00",
+      "flagged": 1,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-03T00:00:00",
+      "flagged": 2,
+      "violations": 0
+     }
+    ]
+   }
   },
   "-3702695574559694892": {
    "tx_id": "-3702695574559694892",
@@ -2336,6 +2600,8 @@
     "dept": "KXRBJ2",
     "emp_id": 326580,
     "emp_name": "카*꺌",
+    "approver": "수*임",
+    "approver_id": 995332,
     "approval_no": 19557408,
     "acquirer_no": "20250310KOBILLEDC    00007510030",
     "tx_date": "2025-03-09T00:00:00",
@@ -2842,7 +3108,93 @@
     "donts": "전문인에게 지급하는 수수료\n(전문직수수료)",
     "required_evidence": ""
    },
-   "reviews": []
+   "reviews": [],
+   "profile": {
+    "amount": {
+     "this": 320000.0,
+     "user": {
+      "n": 42,
+      "p25": 39900.0,
+      "p50": 73600.0,
+      "p75": 174007.25,
+      "p90": 285600.0
+     },
+     "peer": {
+      "n": 2,
+      "p25": 367500.0,
+      "p50": 385000.0,
+      "p75": 402500.0,
+      "p90": 413000.0
+     }
+    },
+    "weekly": [
+     {
+      "week_start": "2024-12-09T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-16T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-23T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-30T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-06T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-13T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-20T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-27T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-03T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-10T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-17T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-24T00:00:00",
+      "flagged": 14,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-03T00:00:00",
+      "flagged": 4,
+      "violations": 0
+     }
+    ]
+   }
   },
   "9070990286978185982": {
    "tx_id": "9070990286978185982",
@@ -2855,6 +3207,8 @@
     "dept": "JJ-BBPZP2",
     "emp_id": 418670,
     "emp_name": "일*재",
+    "approver": "교*아",
+    "approver_id": 619913,
     "approval_no": 35568100,
     "acquirer_no": "20250319KISDESC      40160840006",
     "tx_date": "2025-03-18T00:00:00",
@@ -3161,7 +3515,93 @@
     "donts": "시내교통비, 유흥주점, 골프장, 스크린골프, 당구장, 스크린 야구, 탁구, 볼링, 방탈출 게임, 경조금, 고객접대, BP인력과 사용한 비용",
     "required_evidence": ""
    },
-   "reviews": []
+   "reviews": [],
+   "profile": {
+    "amount": {
+     "this": 190000.0,
+     "user": {
+      "n": 1,
+      "p25": 35400.0,
+      "p50": 35400.0,
+      "p75": 35400.0,
+      "p90": 35400.0
+     },
+     "peer": {
+      "n": 83,
+      "p25": 36750.0,
+      "p50": 64300.0,
+      "p75": 111400.0,
+      "p90": 179199.99999999997
+     }
+    },
+    "weekly": [
+     {
+      "week_start": "2024-12-23T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-30T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-06T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-13T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-20T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-27T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-03T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-10T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-17T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-24T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-03T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-10T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-17T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     }
+    ]
+   }
   },
   "-2105983076176062069": {
    "tx_id": "-2105983076176062069",
@@ -3174,6 +3614,8 @@
     "dept": "JJ-BBPZP5",
     "emp_id": 391323,
     "emp_name": "콱*바",
+    "approver": "원*조",
+    "approver_id": 25020,
     "approval_no": 260948,
     "acquirer_no": "0320250311HV100022485",
     "tx_date": "2025-03-09T00:00:00",
@@ -3425,7 +3867,93 @@
     "donts": "직무와 관계 없는 자기계발성 교육\n(취미, 여가 분야 등)\n미등록된 외국어 교육·시험 응시료",
     "required_evidence": "교육 품의서, 교육 수강신청 내역 or 수강증,\n결제 영수증 상세 (교육명 확인 가능한 증빙)"
    },
-   "reviews": []
+   "reviews": [],
+   "profile": {
+    "amount": {
+     "this": 469.0,
+     "user": {
+      "n": 5,
+      "p25": 19400.0,
+      "p50": 28000.0,
+      "p75": 56000.0,
+      "p90": 66800.0
+     },
+     "peer": {
+      "n": 0,
+      "p25": null,
+      "p50": null,
+      "p75": null,
+      "p90": null
+     }
+    },
+    "weekly": [
+     {
+      "week_start": "2024-12-09T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-16T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-23T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-30T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-06T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-13T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-20T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-27T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-03T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-10T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-17T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-24T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-03T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     }
+    ]
+   }
   },
   "1397897717161788121": {
    "tx_id": "1397897717161788121",
@@ -3438,6 +3966,8 @@
     "dept": "DCUCS8",
     "emp_id": 740318,
     "emp_name": "현*항",
+    "approver": "군*토",
+    "approver_id": 42046,
     "approval_no": 237732,
     "acquirer_no": "0320250312HV100011038",
     "tx_date": "2025-03-09T00:00:00",
@@ -3775,7 +4305,93 @@
     "donts": "직무와 관계 없는 자기계발성 교육\n(취미, 여가 분야 등)\n미등록된 외국어 교육·시험 응시료",
     "required_evidence": "교육 품의서, 교육 수강신청 내역 or 수강증,\n결제 영수증 상세 (교육명 확인 가능한 증빙)"
    },
-   "reviews": []
+   "reviews": [],
+   "profile": {
+    "amount": {
+     "this": 471.0,
+     "user": {
+      "n": 6,
+      "p25": 25400.0,
+      "p50": 32550.0,
+      "p75": 50275.0,
+      "p90": 106000.0
+     },
+     "peer": {
+      "n": 2,
+      "p25": 13150.5,
+      "p50": 25832.0,
+      "p75": 38513.5,
+      "p90": 46122.4
+     }
+    },
+    "weekly": [
+     {
+      "week_start": "2024-12-09T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-16T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-23T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-30T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-06T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-13T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-20T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-27T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-03T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-10T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-17T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-24T00:00:00",
+      "flagged": 1,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-03T00:00:00",
+      "flagged": 1,
+      "violations": 0
+     }
+    ]
+   }
   },
   "-2337183557834342661": {
    "tx_id": "-2337183557834342661",
@@ -3788,6 +4404,8 @@
     "dept": "GL-LDAIN2",
     "emp_id": 160064,
     "emp_name": "마*월",
+    "approver": "신*월",
+    "approver_id": 262247,
     "approval_no": 8400900,
     "acquirer_no": "20250319KSNETDDC     00006580013",
     "tx_date": "2025-03-18T00:00:00",
@@ -3966,8 +4584,8 @@
       "merchant_addr": "서울 구로구 디지털로26길 72 (구로동)",
       "total": 72000,
       "rules": [
-       "R16_amount_outlier",
-       "R03_split_payment"
+       "R03_split_payment",
+       "R16_amount_outlier"
       ]
      },
      {
@@ -4038,8 +4656,8 @@
       "merchant_addr": "대전 서구 월평중로 7-1 (월평동)",
       "total": 38400,
       "rules": [
-       "R08_banned_mcc",
-       "R11_account_mismatch"
+       "R11_account_mismatch",
+       "R08_banned_mcc"
       ]
      },
      {
@@ -4324,7 +4942,93 @@
     "donts": "※ 본 프로젝트 수행을 위해 근무 장소가 변경된 파견의 경우는 주근무지 변경에 해당되어 국내출장비 정산 불가, 프로젝트 파견 기준을 따름\n※ 인력관리규정 > 국내출장 참고",
     "required_evidence": "근태승인서,\n인터넷 숙박 예약 시\n구매 상세내역\n교통비 실물티켓"
    },
-   "reviews": []
+   "reviews": [],
+   "profile": {
+    "amount": {
+     "this": 100000.0,
+     "user": {
+      "n": 6,
+      "p25": 63000.0,
+      "p50": 67500.0,
+      "p75": 78000.0,
+      "p90": 83500.0
+     },
+     "peer": {
+      "n": 130,
+      "p25": 40000.0,
+      "p50": 51292.0,
+      "p75": 70000.0,
+      "p90": 83200.00000000001
+     }
+    },
+    "weekly": [
+     {
+      "week_start": "2024-12-23T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-30T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-06T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-13T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-20T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-27T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-03T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-10T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-17T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-24T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-03T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-10T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-17T00:00:00",
+      "flagged": 2,
+      "violations": 0
+     }
+    ]
+   }
   },
   "2096080569159296596": {
    "tx_id": "2096080569159296596",
@@ -4337,6 +5041,8 @@
     "dept": "KY-CUNEU3",
     "emp_id": 16663,
     "emp_name": "종*라",
+    "approver": "캬*갑",
+    "approver_id": 348597,
     "approval_no": 28853505,
     "acquirer_no": "20250314KRSYSEDC     00135580004",
     "tx_date": "2025-03-13T00:00:00",
@@ -4799,7 +5505,93 @@
     "donts": "내부임직원 상품권 포상,\n사내 구성원과 사용하는 사적비용\n업무를 수행함에 있어 상대방과의 관계를 원활하게 하기 위한 건전한 목적 이외에 사업의 수주 등 직접적인 대가를 바라고 제공되는 금전, 물품\n※ 외부 경조사의 경우 경조금 수령자가 부정청탁금지법 대상인 공무원 등에 해당하는지 사전 확인 필수(법무2팀)",
     "required_evidence": "전결권 확인 필수\n(Multiform Code)"
    },
-   "reviews": []
+   "reviews": [],
+   "profile": {
+    "amount": {
+     "this": 5356000.0,
+     "user": {
+      "n": 18,
+      "p25": 25875.0,
+      "p50": 36750.0,
+      "p75": 110735.0,
+      "p90": 436700.0000000001
+     },
+     "peer": {
+      "n": 214,
+      "p25": 34025.0,
+      "p50": 70500.0,
+      "p75": 159750.0,
+      "p90": 289400.00000000006
+     }
+    },
+    "weekly": [
+     {
+      "week_start": "2024-12-16T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-23T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-30T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-06T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-13T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-20T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-27T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-03T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-10T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-17T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-24T00:00:00",
+      "flagged": 1,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-03T00:00:00",
+      "flagged": 1,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-10T00:00:00",
+      "flagged": 2,
+      "violations": 0
+     }
+    ]
+   }
   },
   "-2195650968322758755": {
    "tx_id": "-2195650968322758755",
@@ -4812,6 +5604,8 @@
     "dept": "ES-MFQYM7",
     "emp_id": 880023,
     "emp_name": "가***1",
+    "approver": null,
+    "approver_id": 635761,
     "approval_no": 54147829,
     "acquirer_no": null,
     "tx_date": "2025-03-07T00:00:00",
@@ -5023,8 +5817,8 @@
       "merchant_addr": "경기 성남시 분당구 판교역로 230 B동 117호 (삼평동삼환하이펙",
       "total": 480000,
       "rules": [
-       "R21_kickback_candidate",
-       "R16_amount_outlier"
+       "R16_amount_outlier",
+       "R21_kickback_candidate"
       ]
      },
      {
@@ -5310,7 +6104,93 @@
     "donts": "시내교통비, 유흥주점, 골프장, 스크린골프, 당구장, 스크린 야구, 탁구, 볼링, 방탈출 게임, 경조금, 고객접대, BP인력과 사용한 비용",
     "required_evidence": ""
    },
-   "reviews": []
+   "reviews": [],
+   "profile": {
+    "amount": {
+     "this": 480000.0,
+     "user": {
+      "n": 21,
+      "p25": 10300.0,
+      "p50": 19200.0,
+      "p75": 52600.0,
+      "p90": 86000.0
+     },
+     "peer": {
+      "n": 1489,
+      "p25": 24000.0,
+      "p50": 45000.0,
+      "p75": 84000.0,
+      "p90": 150000.0
+     }
+    },
+    "weekly": [
+     {
+      "week_start": "2024-12-09T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-16T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-23T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-30T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-06T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-13T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-20T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-27T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-03T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-10T00:00:00",
+      "flagged": 2,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-17T00:00:00",
+      "flagged": 1,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-24T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-03T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     }
+    ]
+   }
   },
   "-7355743101616237705": {
    "tx_id": "-7355743101616237705",
@@ -5323,6 +6203,8 @@
     "dept": "CL-VOOSH3",
     "emp_id": 645834,
     "emp_name": "미*뼹",
+    "approver": "규*쫢",
+    "approver_id": 350582,
     "approval_no": 27440203,
     "acquirer_no": "20250319NICEEDI      20018520109",
     "tx_date": "2025-03-18T00:00:00",
@@ -5605,7 +6487,93 @@
     "donts": "※ 본 프로젝트 수행을 위해 근무 장소가 변경된 파견의 경우는 주근무지 변경에 해당되어 국내출장비 정산 불가, 프로젝트 파견 기준을 따름\n※ 인력관리규정 > 국내출장 참고",
     "required_evidence": "근태승인서,\n인터넷 숙박 예약 시\n구매 상세내역\n교통비 실물티켓"
    },
-   "reviews": []
+   "reviews": [],
+   "profile": {
+    "amount": {
+     "this": 25500.0,
+     "user": {
+      "n": 4,
+      "p25": 22300.0,
+      "p50": 30250.0,
+      "p75": 36325.0,
+      "p90": 38530.0
+     },
+     "peer": {
+      "n": 69,
+      "p25": 12700.0,
+      "p50": 15700.0,
+      "p75": 20500.0,
+      "p90": 23200.0
+     }
+    },
+    "weekly": [
+     {
+      "week_start": "2024-12-23T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-30T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-06T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-13T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-20T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-27T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-03T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-10T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-17T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-24T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-03T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-10T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-17T00:00:00",
+      "flagged": 1,
+      "violations": 0
+     }
+    ]
+   }
   },
   "-2462633364903129022": {
    "tx_id": "-2462633364903129022",
@@ -5618,6 +6586,8 @@
     "dept": "DF-LNGLN4",
     "emp_id": 274330,
     "emp_name": "강*혁",
+    "approver": "박*규",
+    "approver_id": 605008,
     "approval_no": 307030,
     "acquirer_no": "0320250310HV100022988",
     "tx_date": "2025-03-06T00:00:00",
@@ -5767,8 +6737,8 @@
       "merchant_addr": null,
       "total": 142142,
       "rules": [
-       "R16_amount_outlier",
-       "R03_split_payment"
+       "R03_split_payment",
+       "R16_amount_outlier"
       ]
      },
      {
@@ -5951,7 +6921,93 @@
     "donts": "고객사 및 협력사 출장비",
     "required_evidence": "해외출장품의서\n상세설명(p.33~34)\n교통비 실물티켓"
    },
-   "reviews": []
+   "reviews": [],
+   "profile": {
+    "amount": {
+     "this": 203660.0,
+     "user": {
+      "n": 14,
+      "p25": 19256.5,
+      "p50": 34462.5,
+      "p75": 111295.0,
+      "p90": 136106.60000000003
+     },
+     "peer": {
+      "n": 7,
+      "p25": 289161.0,
+      "p50": 860618.0,
+      "p75": 1960192.0,
+      "p90": 3696764.6000000006
+     }
+    },
+    "weekly": [
+     {
+      "week_start": "2024-12-09T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-16T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-23T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-30T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-06T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-13T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-20T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-27T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-03T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-10T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-17T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-24T00:00:00",
+      "flagged": 1,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-03T00:00:00",
+      "flagged": 7,
+      "violations": 0
+     }
+    ]
+   }
   },
   "2123646652057375089": {
    "tx_id": "2123646652057375089",
@@ -5964,6 +7020,8 @@
     "dept": "GL-LDAIN2",
     "emp_id": 76484,
     "emp_name": "자*권",
+    "approver": "신*월",
+    "approver_id": 262247,
     "approval_no": 402370,
     "acquirer_no": "0320250317HV100040382",
     "tx_date": "2025-03-13T00:00:00",
@@ -6220,7 +7278,93 @@
     "donts": "사무실임차료, 식대, 가구구입, 개인용품\n관리비 납부 연체로 인한 가산세는 본인부담",
     "required_evidence": "지로청구서,\n이체확인증"
    },
-   "reviews": []
+   "reviews": [],
+   "profile": {
+    "amount": {
+     "this": 316798.0,
+     "user": {
+      "n": 7,
+      "p25": 65890.0,
+      "p50": 67739.0,
+      "p75": 69067.5,
+      "p90": 89530.60000000002
+     },
+     "peer": {
+      "n": 8,
+      "p25": 61896.75,
+      "p50": 227699.0,
+      "p75": 344354.75,
+      "p90": 377933.0
+     }
+    },
+    "weekly": [
+     {
+      "week_start": "2024-12-16T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-23T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-30T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-06T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-13T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-20T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-27T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-03T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-10T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-17T00:00:00",
+      "flagged": 1,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-24T00:00:00",
+      "flagged": 1,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-03T00:00:00",
+      "flagged": 1,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-10T00:00:00",
+      "flagged": 1,
+      "violations": 0
+     }
+    ]
+   }
   },
   "7917472757184720084": {
    "tx_id": "7917472757184720084",
@@ -6233,6 +7377,8 @@
     "dept": "AI-GDOJK0",
     "emp_id": 22292,
     "emp_name": "평*재",
+    "approver": "쓯*하",
+    "approver_id": 700778,
     "approval_no": 23002910,
     "acquirer_no": "20250322KOCESDESC    00055400001",
     "tx_date": "2025-03-21T00:00:00",
@@ -6474,7 +7620,93 @@
     "donts": "물품 등 구매 불가\n구성원과 사용한 식사, 다과 비용\n고객 접대 비용",
     "required_evidence": "Finance 시스템 PJT운영비 정산화면 內\n장소, 목적 및 참석자 등 상세정보 입력 必"
    },
-   "reviews": []
+   "reviews": [],
+   "profile": {
+    "amount": {
+     "this": 21600.0,
+     "user": {
+      "n": 9,
+      "p25": 12800.0,
+      "p50": 18800.0,
+      "p75": 24800.0,
+      "p90": 30700.000000000004
+     },
+     "peer": {
+      "n": 172,
+      "p25": 11100.0,
+      "p50": 17050.0,
+      "p75": 27075.0,
+      "p90": 44600.00000000001
+     }
+    },
+    "weekly": [
+     {
+      "week_start": "2024-12-23T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-30T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-06T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-13T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-20T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-27T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-03T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-10T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-17T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-24T00:00:00",
+      "flagged": 1,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-03T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-10T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-17T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     }
+    ]
+   }
   },
   "3534151646419867405": {
    "tx_id": "3534151646419867405",
@@ -6487,6 +7719,8 @@
     "dept": "DEFTF1",
     "emp_id": 691702,
     "emp_name": "조*사",
+    "approver": "진*유",
+    "approver_id": 306634,
     "approval_no": 11914509,
     "acquirer_no": "20250308KISDESC      30120330004",
     "tx_date": "2025-03-07T00:00:00",
@@ -6696,8 +7930,8 @@
       "merchant_addr": "경기 성남시 분당구 성남대로331번길 3-12 102호 (정자동로얄비",
       "total": 172000,
       "rules": [
-       "R18_approver_conflict",
-       "R16_amount_outlier"
+       "R16_amount_outlier",
+       "R18_approver_conflict"
       ]
      },
      {
@@ -7206,7 +8440,93 @@
     "donts": "시내교통비, 유흥주점, 골프장, 스크린골프, 당구장, 스크린 야구, 탁구, 볼링, 방탈출 게임, 경조금, 고객접대, BP인력과 사용한 비용",
     "required_evidence": ""
    },
-   "reviews": []
+   "reviews": [],
+   "profile": {
+    "amount": {
+     "this": 73000.0,
+     "user": {
+      "n": 15,
+      "p25": 11500.0,
+      "p50": 20100.0,
+      "p75": 41250.0,
+      "p90": 152400.0
+     },
+     "peer": {
+      "n": 85,
+      "p25": 42000.0,
+      "p50": 66000.0,
+      "p75": 108000.0,
+      "p90": 179920.0
+     }
+    },
+    "weekly": [
+     {
+      "week_start": "2024-12-09T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-16T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-23T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-30T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-06T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-13T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-20T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-27T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-03T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-10T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-17T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-24T00:00:00",
+      "flagged": 1,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-03T00:00:00",
+      "flagged": 3,
+      "violations": 0
+     }
+    ]
+   }
   },
   "4745249173228561987": {
    "tx_id": "4745249173228561987",
@@ -7219,6 +8539,8 @@
     "dept": "WNHHG1",
     "emp_id": 854584,
     "emp_name": "꺌*퍕",
+    "approver": "껴*천",
+    "approver_id": 441326,
     "approval_no": 11451307,
     "acquirer_no": "20250321KICCDDC      00084300004",
     "tx_date": "2025-03-20T00:00:00",
@@ -7701,7 +9023,93 @@
     "donts": "지하철, 버스, 택시 등 대중교통(시내교통비) 회사 소유차량 유지비용(승용차량비)\n출퇴근 사용비용(유류비, 주차비 등)",
     "required_evidence": ""
    },
-   "reviews": []
+   "reviews": [],
+   "profile": {
+    "amount": {
+     "this": 12000.0,
+     "user": {
+      "n": 28,
+      "p25": 8620.0,
+      "p50": 11940.0,
+      "p75": 24000.0,
+      "p90": 42100.00000000001
+     },
+     "peer": {
+      "n": 77,
+      "p25": 6800.0,
+      "p50": 10000.0,
+      "p75": 20000.0,
+      "p90": 30000.0
+     }
+    },
+    "weekly": [
+     {
+      "week_start": "2024-12-23T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-30T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-06T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-13T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-20T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-27T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-03T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-10T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-17T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-24T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-03T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-10T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-17T00:00:00",
+      "flagged": 1,
+      "violations": 0
+     }
+    ]
+   }
   },
   "1663396007245544004": {
    "tx_id": "1663396007245544004",
@@ -7714,6 +9122,8 @@
     "dept": "UDCMO3",
     "emp_id": 161766,
     "emp_name": "인*일",
+    "approver": "영*암",
+    "approver_id": 167089,
     "approval_no": 23849902,
     "acquirer_no": "20250310SMTRDESC     00032440011",
     "tx_date": "2025-03-09T00:00:00",
@@ -7950,8 +9360,8 @@
       "merchant_addr": "서울 서초구 사평대로 353 1층 (103-107호) (반포동서일빌딩)",
       "total": 115000,
       "rules": [
-       "R02_leave_use",
-       "R18_approver_conflict"
+       "R18_approver_conflict",
+       "R02_leave_use"
       ]
      },
      {
@@ -8233,7 +9643,93 @@
     "donts": "내부임직원 상품권 포상,\n사내 구성원과 사용하는 사적비용\n업무를 수행함에 있어 상대방과의 관계를 원활하게 하기 위한 건전한 목적 이외에 사업의 수주 등 직접적인 대가를 바라고 제공되는 금전, 물품\n※ 외부 경조사의 경우 경조금 수령자가 부정청탁금지법 대상인 공무원 등에 해당하는지 사전 확인 필수(법무2팀)",
     "required_evidence": "전결권 확인 필수\n(Multiform Code)"
    },
-   "reviews": []
+   "reviews": [],
+   "profile": {
+    "amount": {
+     "this": 274300.0,
+     "user": {
+      "n": 56,
+      "p25": 25675.0,
+      "p50": 54000.0,
+      "p75": 102750.0,
+      "p90": 186000.0
+     },
+     "peer": {
+      "n": 12,
+      "p25": 294875.0,
+      "p50": 425500.0,
+      "p75": 629500.0,
+      "p90": 828400.0000000001
+     }
+    },
+    "weekly": [
+     {
+      "week_start": "2024-12-09T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-16T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-23T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-30T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-06T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-13T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-20T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-27T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-03T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-10T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-17T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-24T00:00:00",
+      "flagged": 13,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-03T00:00:00",
+      "flagged": 13,
+      "violations": 0
+     }
+    ]
+   }
   },
   "1827432886700165645": {
    "tx_id": "1827432886700165645",
@@ -8246,6 +9742,8 @@
     "dept": "NBTCE1",
     "emp_id": 751057,
     "emp_name": "일*항",
+    "approver": "가*금",
+    "approver_id": 217428,
     "approval_no": 129654,
     "acquirer_no": "0320250311HV100045965",
     "tx_date": "2025-03-09T00:00:00",
@@ -8691,7 +10189,93 @@
     "donts": "전문인에게 지급하는 수수료\n(전문직수수료)",
     "required_evidence": ""
    },
-   "reviews": []
+   "reviews": [],
+   "profile": {
+    "amount": {
+     "this": 1678244.0,
+     "user": {
+      "n": 7,
+      "p25": 13966.0,
+      "p50": 109000.0,
+      "p75": 134050.0,
+      "p90": 162660.00000000003
+     },
+     "peer": {
+      "n": 70,
+      "p25": 30358.0,
+      "p50": 32802.5,
+      "p75": 224186.25,
+      "p90": 503060.10000000003
+     }
+    },
+    "weekly": [
+     {
+      "week_start": "2024-12-09T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-16T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-23T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2024-12-30T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-06T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-13T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-20T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-01-27T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-03T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-10T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-17T00:00:00",
+      "flagged": 0,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-02-24T00:00:00",
+      "flagged": 2,
+      "violations": 0
+     },
+     {
+      "week_start": "2025-03-03T00:00:00",
+      "flagged": 3,
+      "violations": 0
+     }
+    ]
+   }
   }
  },
  "rules": [

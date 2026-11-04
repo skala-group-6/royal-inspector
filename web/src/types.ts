@@ -30,10 +30,16 @@ export interface Precedent { precedent_id: string; kind: "case" | "review"; titl
 export interface Score { score: number; model_version: string; top_features: [string, number, string][]; score_learned: number | null; learned_name: string | null; top_features_learned: [string, number, string][]; disclaimer: string }
 export interface Policy { account: string; description: string; dos: string; donts: string; required_evidence: string }
 export interface Review { review_id: string; rule_id: string | null; decision: Decision; reason_code: string; memo: string; reviewer: string; created_at: string; superseded: boolean }
+export interface Quantiles { n: number; p25: number | null; p50: number | null; p75: number | null; p90: number | null }
+/** Point-in-time profile for the case charts (service.get_profile). */
+export interface Profile {
+  amount: { this: number; user: Quantiles; peer: Quantiles }
+  weekly: { week_start: string; flagged: number; violations: number }[]
+}
 export interface CaseBundle {
   tx_id: TxId; transaction: Record<string, unknown> & { tx_ts: string; emp_name: string; dept: string; rank: string | null; merchant: string; mcc_name: string | null; total: number; account_policy: string; memo?: string | null; has_attachment: boolean }
   evidences: Evidence[]; context: Context; timeline: TimelineRow[]; precedents: { cases: Precedent[]; reviews: Precedent[]; summary: { n: number; violation: number; ok: number } }
-  score: Score | null; policy: Policy | null; reviews: Review[]
+  score: Score | null; policy: Policy | null; reviews: Review[]; profile: Profile
 }
 export interface MockData {
   period: { period_from: string; period_to: string }; queue: QueueRow[]; cases: Record<string, CaseBundle>
