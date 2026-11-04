@@ -9,8 +9,8 @@ import { Toaster } from "@/components/ui/sonner"
 
 /** Layout knobs. Rail width follows --sidebar-width-icon (+ inset padding); header height is --header-height. */
 const SIZES = {
-  "--sidebar-width-icon": "3rem",          // rail icon column (48px). Rail total = this + 1rem padding + 2px
-  "--header-height": "calc(var(--spacing) * 12)", // 48px
+  "--sidebar-width-icon": "2.5rem",        // rail icon column (40px). Rail total = this + 1rem padding + 2px = 58px
+  "--header-height": "calc(var(--spacing) * 10)", // 40px
   "--sidebar-width": RAIL_WIDTH,
 } as CSSProperties
 
