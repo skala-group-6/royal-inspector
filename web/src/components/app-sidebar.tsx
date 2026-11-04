@@ -9,11 +9,11 @@ import {
   SidebarMenu, SidebarMenuButton, SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
-/** Icon rail only: sections + user. `collapsible="icon"` (not "none") so the inset variant styles apply; open/closed widths are equal. The list panel lives inside SidebarInset. */
+/** Icon rail only: sections + user. `variant="sidebar"` = flush 48px; `collapsible="icon"` keeps open/closed widths equal. The list panel lives in the card (app-shell). */
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const active = useActiveSection()
   return (
-    <Sidebar variant="inset" collapsible="icon" {...props}>
+    <Sidebar variant="sidebar" collapsible="icon" className="border-r-0" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>

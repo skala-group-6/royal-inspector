@@ -28,5 +28,5 @@ export function useActiveSection(): Section | undefined {
 }
 
 export const PANEL_WIDTH = "20rem"
-// Inset-variant rail: icon width + container padding (p-2 each side) + 2px, same as the collapsed width, so toggling never moves the card.
-export const RAIL_WIDTH = "calc(var(--sidebar-width-icon) + var(--spacing) * 4 + 2px)"
+// Rail (variant "sidebar"): open width = icon width, so toggling the panel never moves the card.
+export const RAIL_WIDTH = "var(--sidebar-width-icon)"
