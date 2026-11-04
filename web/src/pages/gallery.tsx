@@ -2,7 +2,9 @@ import type { CSSProperties } from "react"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { CheckListIcon, Database01Icon, Layers01Icon, ChartHistogramIcon, ShieldKeyIcon, SidebarLeftIcon } from "@hugeicons/core-free-icons"
 import { Badge } from "@/components/ui/badge"
+import { CasePanel } from "@/components/case/case-panel"
 import { mock, mmdd, hhmm } from "@/mock"
+import type { CaseBundle } from "@/types"
 
 /**
  * Design decision page (dev only, not in the rail): surface layers without lines.
@@ -107,9 +109,35 @@ function Swatches({ s }: { s: Surfaces }) {
   )
 }
 
+/** Case panel proposal on three contrasting real cases: many violations, advisory-only, no rules (model pick). */
+function CaseSection() {
+  const cs = Object.values(mock.cases) as CaseBundle[]
+  const src = (c: CaseBundle) => mock.queue.find((r) => r.tx_id === c.tx_id)?.queue_source
+  const picks = [
+    { title: "위반 여러 개", c: cs.find((c) => c.evidences.filter((e) => e.severity === "violation").length >= 4) },
+    { title: "참고만 있음", c: cs.find((c) => c.evidences.length > 0 && c.evidences.every((e) => e.severity === "advisory")) },
+    { title: "걸린 규칙 없음 (모델 추천)", c: cs.find((c) => !c.evidences.length && src(c) === "model") },
+  ].filter((p): p is { title: string; c: CaseBundle } => !!p.c)
+  return (
+    <section className="mb-12">
+      <h2 className="text-base font-semibold">케이스 패널 제안 — 결론 → 근거 → 접힘 → 판정</h2>
+      <p className="mt-1 text-sm text-muted-foreground">실제 mock 3건. 한 안이 세 경우 모두에서 읽혀야 통과. 판정 버튼은 동작하되 저장은 하지 않음.</p>
+      <div className="mt-6 grid grid-cols-1 gap-8 2xl:grid-cols-2">
+        {picks.map((p) => (
+          <div key={p.c.tx_id}>
+            <div className="mb-2 text-sm font-semibold">{p.title}</div>
+            <div className="h-[640px] overflow-hidden rounded-2xl bg-surface-card shadow-sm ring-1 ring-black/5"><CasePanel c={p.c} source={src(p.c)} /></div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
 export function GalleryPage() {
   return (
     <div className="p-6">
+      <CaseSection />
       <h2 className="text-base font-semibold">면의 층 비교 — 선 없이 구분 · 채택: 제안 라이트 + 다크 A (2026-11-04, index.css surface-*)</h2>
       <p className="mt-1 text-sm text-muted-foreground">선택 행은 첫 줄, 호버 상태는 셋째 줄. 근거 목록은 패널과 같은 보조 면을 씁니다.</p>
       <div className="mt-6 grid grid-cols-1 gap-8 xl:grid-cols-2">
