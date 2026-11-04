@@ -7,6 +7,12 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+    /* Surface layers (docs/DESIGN.md): structure is shown by tone, not lines */
+    --color-surface-base: var(--surface-base);
+    --color-surface-card: var(--surface-card);
+    --color-surface-panel: var(--surface-panel);
+    --color-surface-hover: var(--surface-hover);
+    --color-surface-selected: var(--surface-selected);
     --font-heading: var(--font-sans);
     --font-sans: 'Pretendard Variable', 'Inter Variable', -apple-system, sans-serif;
     --color-sidebar-ring: var(--sidebar-ring);
@@ -74,11 +80,16 @@
     --chart-4: oklch(0.378 0.015 216);
     --chart-5: oklch(0.275 0.011 216.9);
     --radius: 0.625rem;
-    --sidebar: oklch(0.987 0.002 197.1);
+    --surface-base: oklch(0.955 0.004 214);      /* rail + header band */
+    --surface-card: var(--background);           /* work surface */
+    --surface-panel: oklch(0.982 0.003 214);     /* list panel, grouped blocks inside the card */
+    --surface-hover: oklch(0.962 0.004 214);
+    --surface-selected: oklch(0.94 0.005 214);
+    --sidebar: var(--surface-base);
     --sidebar-foreground: oklch(0.148 0.004 228.8);
     --sidebar-primary: oklch(0.218 0.008 223.9);
     --sidebar-primary-foreground: oklch(0.987 0.002 197.1);
-    --sidebar-accent: oklch(0.963 0.002 197.1);
+    --sidebar-accent: oklch(0.925 0.005 214);   /* rail hover/active: one step further from the card than base */
     --sidebar-accent-foreground: oklch(0.218 0.008 223.9);
     --sidebar-border: oklch(0.925 0.005 214.3);
     --sidebar-ring: oklch(0.723 0.014 214.4);
@@ -108,7 +119,12 @@
     --chart-3: oklch(0.45 0.017 213.2);
     --chart-4: oklch(0.378 0.015 216);
     --chart-5: oklch(0.275 0.011 216.9);
-    --sidebar: oklch(0.218 0.008 223.9);
+    --surface-base: oklch(0.218 0.008 223.9);
+    --surface-card: var(--background);
+    --surface-panel: oklch(0.178 0.006 225);
+    --surface-hover: oklch(0.215 0.007 224);
+    --surface-selected: oklch(0.255 0.009 222);
+    --sidebar: var(--surface-base);
     --sidebar-foreground: oklch(0.987 0.002 197.1);
     --sidebar-primary: oklch(0.488 0.243 264.376);
     --sidebar-primary-foreground: oklch(0.987 0.002 197.1);
@@ -132,3 +148,8 @@
     @apply font-sans;
     }
 }
+/* Type roles (docs/DESIGN.md). Prefix type-* (not text-*) so tailwind-merge never treats them as text colors. Hierarchy by size/weight/tone so lists need no dividers. */
+@utility type-title { @apply text-base font-semibold; }
+@utility type-label { @apply text-sm font-medium; }
+@utility type-value { @apply text-sm font-medium tabular-nums; }
+@utility type-meta { @apply text-xs text-muted-foreground; }

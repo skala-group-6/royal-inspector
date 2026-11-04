@@ -110,7 +110,7 @@ function Swatches({ s }: { s: Surfaces }) {
 export function GalleryPage() {
   return (
     <div className="p-6">
-      <h2 className="text-base font-semibold">면의 층 비교 — 선 없이 구분</h2>
+      <h2 className="text-base font-semibold">면의 층 비교 — 선 없이 구분 · 채택: 제안 라이트 + 다크 A (2026-11-04, index.css surface-*)</h2>
       <p className="mt-1 text-sm text-muted-foreground">선택 행은 첫 줄, 호버 상태는 셋째 줄. 근거 목록은 패널과 같은 보조 면을 씁니다.</p>
       <div className="mt-6 grid grid-cols-1 gap-8 xl:grid-cols-2">
         {VARIANTS.map((v) => (

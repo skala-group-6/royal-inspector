@@ -13,7 +13,7 @@ import {
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const active = useActiveSection()
   return (
-    <Sidebar variant="sidebar" collapsible="icon" className="border-r-0" {...props}>
+    <Sidebar variant="sidebar" collapsible="icon" className="group-data-[side=left]:border-r-0" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>

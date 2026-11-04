@@ -1,5 +1,6 @@
 import { Link, useParams } from "@tanstack/react-router"
 import { Badge } from "@/components/ui/badge"
+import { ListGroup, ListItem, ListMeta } from "@/components/layout/list"
 import { mock, mmdd, hhmm } from "@/mock"
 import type { QueueRow } from "@/types"
 
@@ -21,31 +22,28 @@ export function QueueList() {
   const { txId } = useParams({ strict: false }) as { txId?: string }
   const rows = mock.queue
   return (
-    <div className="flex flex-col">
-      <div className="flex items-center justify-between border-b px-4 py-2 text-xs text-muted-foreground">
+    <>
+      <ListMeta>
         <span>{mock.period.period_from.slice(0, 7)} 큐 · {rows.length}건</span>
         <span>미검토 {rows.filter((r) => r.review_status === "unreviewed").length}</span>
-      </div>
-      {rows.map((r) => {
-        const active = txId === String(r.tx_id)
-        const done = r.review_status !== "unreviewed"
-        return (
-          <Link
-            key={r.tx_id}
-            to="/review/$txId"
-            params={{ txId: String(r.tx_id) }}
-            data-active={active || undefined}
-            className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-0.5 border-b px-4 py-2.5 text-sm hover:bg-sidebar-accent data-active:bg-sidebar-accent data-active:shadow-[inset_3px_0_0_var(--sidebar-foreground)]"
-          >
-            <span className={`truncate font-medium ${done ? "text-muted-foreground" : ""}`}>{r.emp_name} · {r.dept}</span>
-            <span className={`text-right font-medium tabular-nums ${done ? "text-muted-foreground" : ""}`}>{Math.round(r.total).toLocaleString("ko-KR")}</span>
-            <span className="truncate text-xs text-muted-foreground">{mmdd(r.tx_ts)} {hhmm(r.tx_ts)} · {r.merchant}</span>
-            <span className="flex justify-end gap-1">
-              {badges(r).map((b) => <Badge key={b.label} variant={b.variant} className="h-4 px-1.5 text-[10px]">{b.label}</Badge>)}
-            </span>
-          </Link>
-        )
-      })}
-    </div>
+      </ListMeta>
+      <ListGroup>
+        {rows.map((r) => {
+          const done = r.review_status !== "unreviewed"
+          return (
+            <ListItem key={r.tx_id} asChild active={txId === String(r.tx_id)} className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-0.5">
+              <Link to="/review/$txId" params={{ txId: String(r.tx_id) }}>
+                <span className={`truncate type-label ${done ? "text-muted-foreground" : ""}`}>{r.emp_name} · {r.dept}</span>
+                <span className={`text-right type-value ${done ? "text-muted-foreground" : ""}`}>{Math.round(r.total).toLocaleString("ko-KR")}</span>
+                <span className="truncate type-meta">{mmdd(r.tx_ts)} {hhmm(r.tx_ts)} · {r.merchant}</span>
+                <span className="flex justify-end gap-1">
+                  {badges(r).map((b) => <Badge key={b.label} variant={b.variant} className="h-4 px-1.5 text-[10px]">{b.label}</Badge>)}
+                </span>
+              </Link>
+            </ListItem>
+          )
+        })}
+      </ListGroup>
+    </>
   )
 }
