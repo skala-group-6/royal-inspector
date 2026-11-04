@@ -3,6 +3,7 @@ import { AppSidebar } from "@/components/app-sidebar"
 import { PanelProvider } from "@/components/panel-state"
 import { SectionPanel } from "@/components/section-panel"
 import { SiteHeader } from "@/components/site-header"
+import { ScenarioSwitcher } from "@/components/scenario-switcher"
 import { useActiveSection } from "@/components/sections"
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { TooltipProvider } from "@/components/ui/tooltip"
@@ -29,7 +30,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <SidebarProvider open={false} onOpenChange={noop} style={SIZES} className="bg-surface-base">
         <AppSidebar />
         <div className="flex h-svh min-w-0 flex-1 flex-col">
-          <SiteHeader title={active?.title ?? "법인카드 점검"} />
+          <SiteHeader title={active?.title ?? "법인카드 점검"} right={<ScenarioSwitcher />} />
           <div className="mr-2 mb-2 ml-2 flex min-h-0 flex-1 overflow-hidden rounded-2xl bg-surface-card shadow-sm">
             {active?.List && <SectionPanel title={active.title} List={active.List} />}
             <main className="flex min-w-0 flex-1 flex-col overflow-auto">{children}</main>
