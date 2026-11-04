@@ -45,9 +45,11 @@ list_flags · get_transaction · get_evidence(+evidence_headline, policy_citatio
 - 참석자 정보: 원천 데이터에 없음. 데이터 확보 시 1층 헤더에 추가
 
 ## 셸 구조 (2026-11-04, React `web/`)
-shadcn 공식 블록 **sidebar-09(Collapsible nested sidebars)**. 바깥 `Sidebar collapsible="icon"` 안에 두 개를 가로로:
-- **레일**(아이콘 폭, 고정): 섹션 4개 — 검토 `/review`, 데이터 `/data`, 규칙 `/rules`, 요약 `/summary`. 하단 사용자.
-- **패널**(20rem): 현재 섹션의 **목록**. 검토 = 큐 목록, 데이터 = 적재·큐 이력, 규칙 = 규칙 목록, 요약 = 패널 없음(레일만).
-- **메인**(`SidebarInset`): 선택 항목의 내용. 검토는 결론 → 근거 → 접힘 섹션 → 판정 바(와이어프레임 v2 `docs/design/review_wireframe.html`).
-
-상태는 전부 URL: 활성 섹션 = 첫 경로 조각(`components/sections.tsx` `useActiveSection`), 선택 = 파라미터(`/review/$txId`, `/rules/$ruleId`). 전역 스토어 없음. 접으면(⌘B) 레일만, 모바일은 자동 Sheet. 목록 행 배지는 글자만("위반 n", "참고 n", "모델 추천", "무작위 표본", "위반 처리"). 이모지 없음. 거래 식별은 전표번호, tx_id는 URL에만.
+shadcn 공식 패턴 둘의 조합: **"사이드바가 사이트 헤더 아래에 들어가는" 패턴 + `variant="inset"`**.
+- **바탕**(`bg-sidebar`, 한 단계 어두움): 상단 헤더 띠(트리거 · 섹션 제목 · ⌘K 자리)와 아이콘 **레일**(섹션 4개 + 사용자).
+- **카드**(`SidebarInset`, 둥근 모서리·그림자): 안에 **목록 패널**(20rem, 현재 섹션의 목록) + **메인**(선택 항목 내용)이 한 면으로.
+- 레일은 `collapsible="icon"`으로 두되 열림·닫힘 폭을 같게 맞춰 항상 아이콘만 보임. 트리거(⌘B)의 `open` 상태는 **목록 패널 표시**에 재사용.
+- 섹션: 검토 `/review` = 큐 목록, 데이터 `/data` = 적재·큐 이력, 규칙 `/rules` = 규칙 목록, 요약 `/summary` = 패널 없음.
+- 상태는 전부 URL: 활성 섹션 = 첫 경로 조각(`components/sections.tsx` `useActiveSection`), 선택 = 파라미터(`/review/$txId`, `/rules/$ruleId`). 전역 스토어 없음.
+- 목록 행 배지는 글자만("위반 n", "참고 n", "모델 추천", "무작위 표본", "위반 처리"). 이모지 없음. 거래 식별은 전표번호, tx_id는 URL에만.
+- 파일: `app-shell.tsx`(배치), `app-sidebar.tsx`(레일), `section-panel.tsx`(카드 안 목록 열), `site-header.tsx`(헤더 띠), `lists/*`(섹션별 목록).
