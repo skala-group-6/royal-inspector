@@ -49,7 +49,8 @@
 
 | API | 함수 | 입력 | 출력 | 한 줄 설명 |
 |---|---|---|---|---|
-| 파일 업로드 | `ingest` | files[], period_label | load_id, rows, quality_report | 새 기간 데이터의 입구 (load.py) |
+| 파일 업로드 | `ingest` | files[], period_label | load_id, rows, quality_report | 새 기간 데이터의 입구 (load.py). 검사·미리보기까지만, 반영은 confirm_load (docs/INGESTION.md §3.4) |
+| 적재 확정 | `confirm_load` | load_id, actor | load_id, status | 보관함 전체 재생성 → 판정 대조 → 교체. 실패 시 기존 DB 유지 |
 | 적재 상태 | `get_load` | load_id | status, progress, errors | 큰 파일은 시간이 걸림 |
 | 컬럼 매핑 확인 | `get_column_mapping` | load_id | [{source_col, target_col, confidence}], unmapped[] | 포맷이 다른 엑셀 대응 |
 | 데이터 품질 | `get_quality` | load_id | fill_rates, unmapped_accounts, cancel_handling, access_link_rate | 규칙이 못 미치는 영역 |
