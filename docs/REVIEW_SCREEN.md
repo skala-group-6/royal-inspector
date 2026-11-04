@@ -48,7 +48,7 @@ list_flags · get_transaction · get_evidence(+evidence_headline, policy_citatio
 shadcn 공식 패턴 둘의 조합: **"사이드바가 사이트 헤더 아래에 들어가는" 패턴 + `variant="inset"`**.
 - **바탕**(`bg-sidebar`, 한 단계 어두움): 상단 헤더 띠(트리거 · 섹션 제목 · ⌘K 자리)와 아이콘 **레일**(섹션 4개 + 사용자).
 - **카드**(`SidebarInset`, 둥근 모서리·그림자): 안에 **목록 패널**(20rem, 현재 섹션의 목록) + **메인**(선택 항목 내용)이 한 면으로.
-- 레일은 `collapsible="icon"`으로 두되 열림·닫힘 폭을 같게 맞춰 항상 아이콘만 보임. 트리거(⌘B)의 `open` 상태는 **목록 패널 표시**에 재사용.
+- 레일은 shadcn 사이드바를 **접힘 상태로 고정**(`SidebarProvider open={false}`)해 항상 48px 아이콘 레일. 목록 패널은 **별도 상태**(`components/panel-state.tsx`, localStorage 저장, ⌘B·헤더 토글). 두 개념을 한 상태로 묶으면 패널을 여닫을 때마다 레일 버튼이 펼침↔접힘 스타일 사이를 전환해 출렁인다(2026-11-04 수정, CDP 실측으로 아이콘 위치 불변 확인). 모바일에서 토글은 레일 시트를 연다.
 - 섹션: 검토 `/review` = 큐 목록, 데이터 `/data` = 적재·큐 이력, 규칙 `/rules` = 규칙 목록, 요약 `/summary` = 패널 없음.
 - 상태는 전부 URL: 활성 섹션 = 첫 경로 조각(`components/sections.tsx` `useActiveSection`), 선택 = 파라미터(`/review/$txId`, `/rules/$ruleId`). 전역 스토어 없음.
 - 목록 행 배지는 글자만("위반 n", "참고 n", "모델 추천", "무작위 표본", "위반 처리"). 이모지 없음. 거래 식별은 전표번호, tx_id는 URL에만.

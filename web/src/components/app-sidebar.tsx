@@ -9,7 +9,7 @@ import {
   SidebarMenu, SidebarMenuButton, SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
-/** Icon rail only: sections + user. `variant="sidebar"` = flush 48px; `collapsible="icon"` keeps open/closed widths equal. The list panel lives in the card (app-shell). */
+/** Icon rail only: sections + user. Pinned collapsed by the provider (open={false}), so it is always the 48px icon rail and tooltips show by default. The list panel lives in the card (app-shell). */
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const active = useActiveSection()
   return (
@@ -17,7 +17,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" asChild className="md:h-8 md:p-0" tooltip={{ children: "법인카드 점검", hidden: false }}>
+            <SidebarMenuButton size="lg" asChild className="md:h-8 md:p-0" tooltip="법인카드 점검">
               <Link to="/review">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   <HugeiconsIcon icon={ShieldKeyIcon} strokeWidth={2} className="size-4" />
@@ -33,7 +33,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenu>
               {SECTIONS.map((s) => (
                 <SidebarMenuItem key={s.key}>
-                  <SidebarMenuButton asChild isActive={active?.key === s.key} className="px-2.5 md:px-2" tooltip={{ children: s.title, hidden: false }}>
+                  <SidebarMenuButton asChild isActive={active?.key === s.key} className="px-2.5 md:px-2" tooltip={s.title}>
                     <Link to={s.to}>
                       <HugeiconsIcon icon={s.icon} strokeWidth={2} />
                       <span className="sr-only">{s.title}</span>

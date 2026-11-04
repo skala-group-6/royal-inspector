@@ -46,7 +46,7 @@
 새 목록은 이 부품으로 만든다. 행마다 `border-b`를 쓰지 않는다.
 
 ## 6. 셸
-레일(`variant="sidebar"`, 48px, shadcn 기본 `--sidebar-width-icon` 3rem 유지)과 헤더 띠(40px)는 `surface-base`. 그 위에 `surface-card` 카드 하나, 안에 `surface-panel` 목록 패널 + 메인. 치수는 `web/src/components/app-shell.tsx`의 `SIZES`. 아이콘 열 변수는 줄이지 않는다(메뉴 버튼 32px + 패딩 16px와 결합돼 있어 깨짐). 구조 상세: `docs/REVIEW_SCREEN.md` 셸 구조.
+레일(`variant="sidebar"`, 접힘 상태 고정 48px, shadcn 기본 `--sidebar-width-icon` 3rem 유지. 패널 표시는 별도 상태 `panel-state.tsx`)과 헤더 띠(40px)는 `surface-base`. 그 위에 `surface-card` 카드 하나, 안에 `surface-panel` 목록 패널 + 메인. 치수는 `web/src/components/app-shell.tsx`의 `SIZES`. 아이콘 열 변수는 줄이지 않는다(메뉴 버튼 32px + 패딩 16px와 결합돼 있어 깨짐). 구조 상세: `docs/REVIEW_SCREEN.md` 셸 구조.
 
 ## 7. 검사
 `tests/test_design_rules.py`가 `web/src`(단, `components/ui/`와 `pages/gallery.tsx` 제외)에서 다음을 찾으면 실패한다: 구분용 테두리 클래스(`border`, `border-t/r/b/l/x/y`), `divide-*`, `Separator`(드롭다운 메뉴의 `DropdownMenuSeparator`는 허용), 왼쪽 막대 선택 표시(`shadow-[inset`). 테두리를 없애는 `border-*-0`은 허용.

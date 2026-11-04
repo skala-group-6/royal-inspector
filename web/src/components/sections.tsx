@@ -28,5 +28,3 @@ export function useActiveSection(): Section | undefined {
 }
 
 export const PANEL_WIDTH = "20rem"
-// Rail (variant "sidebar"): open width = icon width, so toggling the panel never moves the card.
-export const RAIL_WIDTH = "var(--sidebar-width-icon)"
