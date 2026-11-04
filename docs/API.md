@@ -4,6 +4,7 @@
 1. 화면이 바뀌어도 남는 것만 백엔드에 둔다. 지금은 파이썬 함수(`app/service.py`)로 만들고 Streamlit이 직접 호출, 나중에 같은 함수를 FastAPI로 노출한다.
 2. 모든 응답은 규칙 엔진의 출력 계약(rule_id, evidence, related_tx_ids, severity, rule_version)을 그대로 전달한다. 화면에서 재가공하지 않는다.
 3. 요청·응답 스키마는 Pydantic으로 고정한다. 아래 필드명이 그 스키마의 초안이다.
+5. (2026-11-04) **tx_id는 JSON에서 문자열**로 보낸다. DB의 BIGINT(64비트 내용 해시)는 자바스크립트 안전 정수 범위(2^53)를 넘어 숫자로 보내면 끝자리가 바뀐다. 모든 id 필드(tx_id, related_tx_ids, cancel_of_tx_id)에 적용. `tools/export_mock.py`가 같은 규칙으로 mock을 만든다.
 4. (2026-11-03) FastAPI 서버 프로세스 1개가 `warehouse.duckdb` 쓰기를 독점한다. Streamlit·배치 스크립트는 복사본(`ROYAL_DB`)을 쓰거나 서버 중지 후 실행. API는 팩이 바뀌어도 동일하다(엔진 테이블 flags/queue/reviews/tx_score만 노출).
 
 공통 객체

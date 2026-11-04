@@ -45,4 +45,4 @@ macOS arm64에서 xgboost import가 libomp 오류를 내면 `brew install libomp
 
 ## 구조
 범용 엔진 + 법인카드 팩. 팩 규격 `docs/PACK_SPEC.md`, 경로 해석 `paths.py`(`PACK` 환경변수, 기본 `packs/corp_card`).
-`packs/corp_card/` 법인카드 팩(규칙 SQL·카탈로그·매크로, 피처 선언, 약한 라벨, 사례) · `scripts/` 엔진 CLI(적재·합성·규칙·피처·라벨·학습·점수·큐; `keys.py` 결정적 tx_id) · `tools/` 일회성 분석 · `features/executor.py` 피처 실행기 · `models/` 모델 소켓과 플러그(기준선·로지스틱·XGBoost·DNN 자리) · `app/service.py` 서비스 함수 · `app/Home.py`, `app/pages/` Streamlit(시연·검증용) · `web/` React 정식 화면(진행 중)
+`packs/corp_card/` 법인카드 팩(규칙 SQL·카탈로그·매크로, 피처 선언, 약한 라벨, 사례) · `scripts/` 엔진 CLI(적재·합성·규칙·피처·라벨·학습·점수·큐; `keys.py` 결정적 tx_id) · `tools/` 일회성 분석·개발 도구(`export_mock.py`: 서비스 함수로 React mock 추출, `remap_reviews.py`) · `features/executor.py` 피처 실행기 · `models/` 모델 소켓과 플러그(기준선·로지스틱·XGBoost·DNN 자리) · `app/service.py` 서비스 함수 · `app/Home.py`, `app/pages/` Streamlit(시연·검증용) · `web/` React 정식 화면(진행 중)

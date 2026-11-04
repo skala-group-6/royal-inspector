@@ -6,7 +6,7 @@ import type { QueueRow } from "@/types"
 
 /** Per-row badges: severity counts from the case bundle when available (mock), else n_rules; provenance for model/random; status when reviewed. */
 function badges(r: QueueRow) {
-  const ev = mock.cases[String(r.tx_id)]?.evidences ?? []
+  const ev = mock.cases[r.tx_id]?.evidences ?? []
   const v = ev.length ? ev.filter((e) => e.severity === "violation").length : r.sev === 2 ? r.n_rules : 0
   const a = ev.length ? ev.length - v : r.sev === 2 ? 0 : r.n_rules
   const out: { label: string; variant: "destructive" | "outline" | "default" }[] = []
@@ -31,8 +31,8 @@ export function QueueList() {
         {rows.map((r) => {
           const done = r.review_status !== "unreviewed"
           return (
-            <ListItem key={r.tx_id} asChild active={txId === String(r.tx_id)} className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-0.5">
-              <Link to="/review/$txId" params={{ txId: String(r.tx_id) }}>
+            <ListItem key={r.tx_id} asChild active={txId === r.tx_id} className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-0.5">
+              <Link to="/review/$txId" params={{ txId: r.tx_id }}>
                 <span className={`truncate type-label ${done ? "text-muted-foreground" : ""}`}>{r.emp_name} · {r.dept}</span>
                 <span className={`text-right type-value ${done ? "text-muted-foreground" : ""}`}>{Math.round(r.total).toLocaleString("ko-KR")}</span>
                 <span className="truncate type-meta">{mmdd(r.tx_ts)} {hhmm(r.tx_ts)} · {r.merchant}</span>
