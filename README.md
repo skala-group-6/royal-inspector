@@ -14,7 +14,8 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python -I scripts/train.py --label-source weak   # 3.8단계: 기준선·로지스틱·XGBoost 같은 시험 → models/<v>/manifest.json
 .venv/bin/python -I scripts/score_tx.py                    # 3.9단계: tx_score (기준선 점수 + 학습 모델 점수·이유)
 .venv/bin/python -I scripts/build_queue.py --from 2025-03-01 --to 2025-03-31  # 3.95단계: 검토 큐 (규칙 + 모델 상위 M + 무작위 p%)
-.venv/bin/streamlit run app/Home.py        # 4단계: 임시 검토 화면
+pnpm --dir web install && pnpm --dir web dev  # 검토 화면(React). Octave Run 버튼도 이것을 띄움
+.venv/bin/streamlit run app/Home.py        # (동결) 시연용 Streamlit 화면
 .venv/bin/python -m pytest -q tests
 ```
 

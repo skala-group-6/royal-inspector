@@ -1,10 +1,12 @@
 [scripts]
 # data/ is gitignored: raw Excel inputs and the DuckDB warehouse built from them (load.py → synth.py → run_rules.py).
 copy = ["data/raw", "data/warehouse.duckdb"]
-setup = "python3 -m venv .venv && .venv/bin/pip install -r requirements.txt"
+setup = "python3 -m venv .venv && .venv/bin/pip install -r requirements.txt && pnpm --dir web install --frozen-lockfile"
 
+# Run = the React review app (web/, Vite dev server). The Streamlit screens are frozen for demo use:
+#   .venv/bin/streamlit run app/Home.py
 [scripts.run.app]
-command = ".venv/bin/streamlit run app/Home.py --server.headless true --server.port $OCTAVE_PORT"
+command = "pnpm --dir web exec vite --host 127.0.0.1 --port $OCTAVE_PORT --strictPort"
 
 [[scripts.check]]
 name = "unit"
