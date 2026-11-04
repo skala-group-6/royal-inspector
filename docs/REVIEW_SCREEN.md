@@ -43,3 +43,11 @@ list_flags · get_transaction · get_evidence(+evidence_headline, policy_citatio
 - 통과한 규칙도 접어서 표시(Concur 패턴)
 - 검토자 피드백 "규칙이 틀렸다" 버튼 → 억제 규칙 후보로 수집(Ramp 패턴)
 - 참석자 정보: 원천 데이터에 없음. 데이터 확보 시 1층 헤더에 추가
+
+## 셸 구조 (2026-11-04, React `web/`)
+shadcn 공식 블록 **sidebar-09(Collapsible nested sidebars)**. 바깥 `Sidebar collapsible="icon"` 안에 두 개를 가로로:
+- **레일**(아이콘 폭, 고정): 섹션 4개 — 검토 `/review`, 데이터 `/data`, 규칙 `/rules`, 요약 `/summary`. 하단 사용자.
+- **패널**(20rem): 현재 섹션의 **목록**. 검토 = 큐 목록, 데이터 = 적재·큐 이력, 규칙 = 규칙 목록, 요약 = 패널 없음(레일만).
+- **메인**(`SidebarInset`): 선택 항목의 내용. 검토는 결론 → 근거 → 접힘 섹션 → 판정 바(와이어프레임 v2 `docs/design/review_wireframe.html`).
+
+상태는 전부 URL: 활성 섹션 = 첫 경로 조각(`components/sections.tsx` `useActiveSection`), 선택 = 파라미터(`/review/$txId`, `/rules/$ruleId`). 전역 스토어 없음. 접으면(⌘B) 레일만, 모바일은 자동 Sheet. 목록 행 배지는 글자만("위반 n", "참고 n", "모델 추천", "무작위 표본", "위반 처리"). 이모지 없음. 거래 식별은 전표번호, tx_id는 URL에만.
