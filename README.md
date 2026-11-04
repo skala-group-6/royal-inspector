@@ -27,6 +27,7 @@ macOS arm64에서 xgboost import가 libomp 오류를 내면 `brew install libomp
 - `docs/RULES.md` 규칙 19개, 실데이터 적중, 임계치 민감도
 - `docs/API.md` 서비스 함수 / API 설계 (프런트 계약)
 - `docs/REVIEW_SCREEN.md` 검토 화면 사양 · `docs/PRECEDENTS.md` 선례 기능 · `docs/MODEL.md` 우선순위 모델
+- `docs/DESIGN.md` 디자인 규칙: 선 대신 면(surface-* 토큰)·여백·글자 위계(type-*), 공용 목록 부품, 검사
 - `docs/TOOLING_DECISION.md` 스택 결정(React+FastAPI, 로우코드 불채택) · `docs/case_study/` 기존 솔루션 동작 원리 해부 · `deliverables/` 요구사항서·WBS·아키텍처·설계서
 
 ## 스택 (2026-11-03 확정)
