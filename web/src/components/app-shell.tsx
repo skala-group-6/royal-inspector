@@ -28,7 +28,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <PanelProvider>
       <SidebarProvider open={false} onOpenChange={noop} style={SIZES} className="bg-surface-base">
         <AppSidebar />
-        <div className="flex min-h-svh min-w-0 flex-1 flex-col">
+        <div className="flex h-svh min-w-0 flex-1 flex-col">
           <SiteHeader title={active?.title ?? "법인카드 점검"} />
           <div className="mr-2 mb-2 ml-2 flex min-h-0 flex-1 overflow-hidden rounded-2xl bg-surface-card shadow-sm">
             {active?.List && <SectionPanel title={active.title} List={active.List} />}

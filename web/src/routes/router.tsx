@@ -5,6 +5,7 @@ import { RulesLayout, RulesEmpty, RuleDetail } from "@/pages/rules"
 import { DataPage } from "@/pages/data"
 import { SummaryPage } from "@/pages/summary"
 import { GalleryPage } from "@/pages/gallery"
+import { scenarioTx } from "@/lib/scenarios"
 
 // URL is the only UI state: section = first segment, selection = param. See docs/REVIEW_SCREEN.md.
 const rootRoute = createRootRoute({ component: () => (<AppShell><Outlet /></AppShell>) })
@@ -23,6 +24,11 @@ const ruleDetailRoute = createRoute({ getParentRoute: () => rulesRoute, path: "$
 const summaryRoute = createRoute({ getParentRoute: () => rootRoute, path: "/summary", component: SummaryPage })
 // Dev-only design comparison page; not in the rail.
 const galleryRoute = createRoute({ getParentRoute: () => rootRoute, path: "/gallery", component: GalleryPage })
+// Named scenario → the real review screen with that case selected (no separate layout to keep in sync).
+const galleryCaseRoute = createRoute({
+  getParentRoute: () => rootRoute, path: "/gallery/case/$slug",
+  beforeLoad: ({ params }) => { const tx = scenarioTx(params.slug); if (tx) throw redirect({ to: "/review/$txId", params: { txId: tx } }); throw redirect({ to: "/gallery" }) },
+})
 
 export const router = createRouter({
   routeTree: rootRoute.addChildren([
@@ -32,6 +38,7 @@ export const router = createRouter({
     rulesRoute.addChildren([rulesIndexRoute, ruleDetailRoute]),
     summaryRoute,
     galleryRoute,
+    galleryCaseRoute,
   ]),
 })
 declare module "@tanstack/react-router" { interface Register { router: typeof router } }
