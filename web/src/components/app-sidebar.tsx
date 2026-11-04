@@ -13,7 +13,7 @@ import {
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const active = useActiveSection()
   return (
-    <Sidebar variant="inset" collapsible="icon" className="top-(--header-height) h-[calc(100svh-var(--header-height))]!" {...props}>
+    <Sidebar variant="inset" collapsible="icon" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
