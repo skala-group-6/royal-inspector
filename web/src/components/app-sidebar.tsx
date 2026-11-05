@@ -1,15 +1,43 @@
 import * as React from "react"
 import { Link } from "@tanstack/react-router"
 import { HugeiconsIcon } from "@hugeicons/react"
-import { ShieldKeyIcon } from "@hugeicons/core-free-icons"
+import { Moon02Icon, ShieldKeyIcon, Sun03Icon } from "@hugeicons/core-free-icons"
 import { NavUser } from "@/components/nav-user"
 import { SECTIONS, useActiveSection } from "@/components/sections"
+import { useTheme } from "@/components/theme-provider"
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader,
   SidebarMenu, SidebarMenuButton, SidebarMenuItem,
 } from "@/components/ui/sidebar"
 
-/** Icon rail only: sections + user. Pinned collapsed by the provider (open={false}), so it is always the 48px icon rail and tooltips show by default. The list panel lives in the card (app-shell). */
+/** Dark ↔ light, same as the D key. Icon and tooltip follow the applied theme via the dark: variant, so they stay right in "system" mode when the OS flips. */
+function ThemeToggle() {
+  const { toggleTheme } = useTheme()
+  return (
+    <SidebarMenu>
+      <SidebarMenuItem>
+        <SidebarMenuButton
+          onClick={toggleTheme}
+          className="px-2.5 md:px-2"
+          tooltip={{
+            children: (
+              <>
+                <span className="dark:hidden">다크 모드로 전환 (D)</span>
+                <span className="hidden dark:inline">라이트 모드로 전환 (D)</span>
+              </>
+            ),
+          }}
+        >
+          <HugeiconsIcon icon={Sun03Icon} strokeWidth={2} className="dark:hidden" />
+          <HugeiconsIcon icon={Moon02Icon} strokeWidth={2} className="hidden dark:block" />
+          <span className="sr-only">테마 전환</span>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    </SidebarMenu>
+  )
+}
+
+/** Icon rail only: sections + theme toggle + user. Pinned collapsed by the provider (open={false}), so it is always the 48px icon rail and tooltips show by default. The list panel lives in the card (app-shell). */
 export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const active = useActiveSection()
   return (
@@ -46,6 +74,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
+        <ThemeToggle />
         <NavUser user={{ name: "감사자", email: "reviewer@company", avatar: "" }} />
       </SidebarFooter>
     </Sidebar>

@@ -46,7 +46,7 @@ list_flags · get_transaction · get_evidence(+evidence_headline, policy_citatio
 
 ## 셸 구조 (2026-11-04, React `web/`)
 shadcn 공식 패턴 둘의 조합: **"사이드바가 사이트 헤더 아래에 들어가는" 패턴 + `variant="inset"`**.
-- **바탕**(`bg-sidebar`, 한 단계 어두움): 상단 헤더 띠(트리거 · 섹션 제목 · ⌘K 자리)와 아이콘 **레일**(섹션 4개 + 사용자).
+- **바탕**(`bg-sidebar`, 한 단계 어두움): 상단 헤더 띠(트리거 · 섹션 제목 · ⌘K 자리)와 아이콘 **레일**(섹션 4개 + 하단에 테마 전환 · 사용자). 테마 전환은 다크↔라이트 원 버튼으로 `D` 키와 같은 동작(`theme-provider.tsx`의 `toggleTheme`). 기본값 `system`(OS 따름)은 한 번 누르면 고정되고, UI로 되돌리는 경로는 두지 않았다.
 - **카드**(`SidebarInset`, 둥근 모서리·그림자): 안에 **목록 패널**(20rem, 현재 섹션의 목록) + **메인**(선택 항목 내용)이 한 면으로.
 - 레일은 shadcn 사이드바를 **접힘 상태로 고정**(`SidebarProvider open={false}`)해 항상 48px 아이콘 레일. 목록 패널은 **별도 상태**(`components/panel-state.tsx`, localStorage 저장, ⌘B·헤더 토글). 두 개념을 한 상태로 묶으면 패널을 여닫을 때마다 레일 버튼이 펼침↔접힘 스타일 사이를 전환해 출렁인다(2026-11-04 수정, CDP 실측으로 아이콘 위치 불변 확인). 모바일에서 토글은 레일 시트를 연다.
 - 섹션: 검토 `/review` = 큐 목록, 데이터 `/data` = 적재·큐 이력, 규칙 `/rules` = 규칙 목록, 요약 `/summary` = 패널 없음.
