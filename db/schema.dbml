@@ -438,10 +438,36 @@ Ref:"tenants"."tenant_id" <? "rule_candidates"."tenant_id"
 Ref:"tenants"."tenant_id" <? "audit_events"."tenant_id"
 
 
-TableGroup "회사·설정 (cfg)" { tenants reviewers data_sources rule_settings }
+TableGroup "회사·설정 (cfg)" {
+  tenants
+  reviewers
+  data_sources
+  rule_settings
+}
 
-TableGroup "원천 (src)" { loads transactions employees access_logs policy_accounts }
+TableGroup "원천 (src)" {
+  loads
+  transactions
+  employees
+  access_logs
+  policy_accounts
+}
 
-TableGroup "파생 (der)" { rule_runs flags tx_features labels model_versions tx_scores }
+TableGroup "파생 (der)" {
+  rule_runs
+  flags
+  tx_features
+  labels
+  model_versions
+  tx_scores
+}
 
-TableGroup "기록 (rec)" { queues queue_items reviews model_bindings rule_candidates precedents audit_events }
+TableGroup "기록 (rec)" {
+  queues
+  queue_items
+  reviews
+  model_bindings
+  rule_candidates
+  precedents
+  audit_events
+}
