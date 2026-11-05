@@ -30,7 +30,7 @@ macOS arm64에서 xgboost import가 libomp 오류를 내면 `brew install libomp
 - `docs/INGESTION.md` 데이터 적재: 파일이 정식 입구인 이유(카드사·DB 연동 판단), 매핑표·입구 검사·파일 보관함·업로드 화면
 - `docs/REVIEW_SCREEN.md` 검토 화면 사양 · `docs/PRECEDENTS.md` 선례 기능 · `docs/MODEL.md` 우선순위 모델
 - `docs/DESIGN.md` 디자인 규칙: 선 대신 면(surface-* 토큰)·여백·글자 위계(type-*), 공용 목록 부품, 검사
-- `docs/ERD.md` Postgres 단독 스키마(회사 층·네 종류·루프) · `docs/design/erd.html` 그림
+- `db/schema.sql` **Postgres 스키마(진실)** — dbdiagram.io에 붙여넣으면 ERD · `docs/ERD.md` 설계 원칙·표 설명 · `docs/design/erd.html` 개념도
 - `docs/TOOLING_DECISION.md` 스택 결정(React+FastAPI, 로우코드 불채택) · `docs/case_study/` 기존 솔루션 동작 원리 해부 · `deliverables/` 요구사항서·WBS·아키텍처·설계서
 
 ## 스택 (2026-11-03 확정)

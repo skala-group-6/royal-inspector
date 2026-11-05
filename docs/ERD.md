@@ -1,6 +1,8 @@
 # ERD — Postgres 단독, 회사(테넌트) 층 포함 (2026-11-05)
 
-시각화: `docs/design/erd.html` (Mermaid). 결정 배경: `docs/STORAGE_ARCHITECTURE.md` §0.
+**진실은 `db/schema.sql`**(Postgres DDL, 표 22개·뷰 3개, Docker Postgres 17에서 적용·제약 검증: `tests/test_schema.py`).
+그림이 필요하면 그 파일을 **dbdiagram.io 또는 drawDB에 붙여넣으면** 확대·클릭되는 ERD가 바로 나온다(손그림 `docs/design/erd.html`은 개념도). 계획 3에서 실제 DB가 뜨면 DBeaver로 연결해 본다. 결정 배경: `docs/STORAGE_ARCHITECTURE.md` §0.
+이 문서의 §1~6은 요약이며, 열 이름·타입·제약이 다르면 `db/schema.sql`이 맞다.
 
 ## 0. 설계 원칙 (시니어 관점에서 먼저 정한 것)
 
