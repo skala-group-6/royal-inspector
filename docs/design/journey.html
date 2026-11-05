@@ -2,125 +2,134 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<title>거래 한 건의 여정 — 표 22개를 지나 루프가 닫히기까지</title>
+<title>거래 한 건의 이야기 — 카드가 7번 변한다</title>
 <style>
-  :root{--bg:#eef1f2;--card:#fff;--ink:#14181a;--muted:#6b787c;--line:#cfd6d9;
-        --cfg:#dcefe3;--cfg-ink:#1f6b3d;--src:#f3f5f6;--src-ink:#4a555a;--der:#dfe7f5;--der-ink:#2b4a86;--rec:#f6ead2;--rec-ink:#8a5a12;--red:#b3261e;--flow:#2b4a86}
+  :root{--bg:#eef1f2;--card:#fff;--ink:#14181a;--muted:#6b787c;--der:#dfe7f5;--der-ink:#2b4a86;--rec:#f6ead2;--rec-ink:#8a5a12;--red:#b3261e;--redbg:#fde4e3;--grey:#e6eaec}
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);font-family:Pretendard,"Pretendard Variable",-apple-system,sans-serif;font-size:13px;line-height:1.4}
-  .wrap{max-width:1360px;margin:0 auto;padding:22px 32px 40px}
-  .tx{display:flex;align-items:center;gap:18px;background:var(--card);border-radius:14px;padding:12px 18px}
-  .tx b{font-size:18px}.tx span{color:var(--muted)}
-  .stage{display:grid;grid-template-columns:560px 1fr;gap:18px;margin-top:16px;min-height:520px}
-  .map{background:var(--card);border-radius:16px;padding:16px;position:relative}
-  .map h3,.focus h3{margin:0 0 10px;font-size:12px;color:var(--muted);font-weight:600}
-  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-  .grp{border-radius:10px;padding:8px 8px 6px;background:rgba(0,0,0,.025)}
-  .grp .t{font-size:10px;color:var(--muted);margin:0 0 6px 2px;font-weight:600}
-  .tbl{border-radius:7px;padding:6px 7px;font-size:11px;margin:4px 0;transition:all .4s;opacity:.35;transform:scale(.97);display:flex;justify-content:space-between;align-items:center}
-  .tbl .n{font-family:ui-monospace,Menlo,monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-right:6px}
-  .tbl .c{font-size:10px;font-weight:700;background:rgba(0,0,0,.08);border-radius:999px;padding:0 6px;min-width:18px;text-align:center}
-  .tbl.cfg{background:var(--cfg);color:var(--cfg-ink)}.tbl.src{background:var(--src);color:var(--src-ink)}.tbl.der{background:var(--der);color:var(--der-ink)}.tbl.rec{background:var(--rec);color:var(--rec-ink)}
-  .tbl.done{opacity:.85;transform:none}
-  .tbl.now{opacity:1;transform:scale(1.04);box-shadow:0 0 0 2px var(--ink),0 6px 18px rgba(0,0,0,.12)}
-  svg.flow{position:absolute;inset:0;pointer-events:none;z-index:2;overflow:visible}
-  svg.flow path{fill:none;stroke:var(--flow);stroke-width:2.5;stroke-dasharray:6 6;animation:dash 1s linear infinite;opacity:.9}
-  svg.flow path.loop{stroke:var(--rec-ink)}
-  @keyframes dash{to{stroke-dashoffset:-12}}
-  .focus{background:var(--card);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column}
-  .focus .name{display:flex;align-items:baseline;gap:10px;margin-bottom:10px}
-  .focus .name b{font-family:ui-monospace,Menlo,monospace;font-size:15px}
-  .kind{font-size:10px;font-weight:700;border-radius:999px;padding:2px 8px}
-  table{border-collapse:separate;border-spacing:0 4px;width:100%;font-size:12px}
-  th{text-align:left;color:var(--muted);font-weight:600;font-size:11px;padding:0 8px}
-  td{padding:7px 8px;background:#f6f8f8}td:first-child{border-radius:8px 0 0 8px}td:last-child{border-radius:0 8px 8px 0}
-  td.m{font-family:ui-monospace,Menlo,monospace;font-size:11px}td.r{text-align:right;font-variant-numeric:tabular-nums}
-  tr.row{opacity:0;transform:translateY(10px);animation:in .45s ease forwards}
-  @keyframes in{to{opacity:1;transform:none}}
-  .v{color:var(--red);font-weight:700}.a{color:var(--muted);font-weight:700}
-  .cap{margin-top:auto;padding-top:12px;color:var(--muted);font-size:12px}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:Pretendard,"Pretendard Variable",-apple-system,sans-serif;font-size:14px;line-height:1.45}
+  .wrap{max-width:1100px;margin:0 auto;padding:28px 32px 40px}
+  .top{display:flex;align-items:baseline;gap:14px;color:var(--muted)}
+  .top h1{margin:0;font-size:18px;color:var(--ink)}
+  .scene{display:grid;grid-template-columns:1fr 440px;gap:22px;margin-top:18px;min-height:560px;align-items:start}
+  .story{background:var(--card);border-radius:18px;padding:22px 26px;min-height:560px;display:flex;flex-direction:column}
+  .who{display:flex;align-items:center;gap:10px;font-size:15px}
+  .who .ic{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:16px;background:var(--grey)}
+  .who .ic.h{background:var(--rec)} .who .ic.m{background:var(--der)}
+  .who b{font-weight:700}
+  .stageArea{flex:1;display:grid;place-items:center;position:relative;padding:18px 0}
+  .card{width:380px;background:#fff;border-radius:16px;box-shadow:0 2px 6px rgba(0,0,0,.08),0 12px 30px rgba(0,0,0,.08);padding:18px 20px;position:relative;transition:transform .5s}
+  .card .amt{font-size:26px;font-weight:700;letter-spacing:-.01em}
+  .card .meta{color:var(--muted);margin-top:2px}
+  .card .id{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--muted);margin-top:10px;opacity:0;transition:opacity .6s}
+  .card .id.on{opacity:1}
+  .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;min-height:0}
+  .tag{font-size:12px;padding:3px 9px;border-radius:999px;background:var(--redbg);color:var(--red);font-weight:600;opacity:0;transform:translateY(6px);animation:pop .4s forwards}
+  .tag.g{background:var(--grey);color:var(--muted)}
+  @keyframes pop{to{opacity:1;transform:none}}
+  .stamp{position:absolute;right:16px;top:14px;border:3px solid var(--red);color:var(--red);font-weight:800;font-size:18px;padding:4px 10px;border-radius:8px;transform:rotate(-12deg) scale(1.6);opacity:0;animation:stamp .5s .3s forwards}
+  .stamp.blue{border-color:var(--der-ink);color:var(--der-ink)}
+  @keyframes stamp{to{opacity:1;transform:rotate(-12deg) scale(1)}}
+  .side{display:flex;align-items:center;gap:14px;margin-left:18px}
+  .scale{width:180px;height:90px;position:relative}
+  .scale .bar{position:absolute;left:10px;right:10px;top:40px;height:6px;border-radius:3px;background:var(--grey)}
+  .scale .me{position:absolute;top:28px;width:3px;height:30px;background:var(--red);border-radius:2px;animation:slide 1s ease forwards}
+  .scale .lab{position:absolute;font-size:11px;color:var(--muted);top:58px}
+  @keyframes slide{from{left:30px}to{left:150px}}
+  .pile{position:relative;width:420px;height:230px;margin-top:10px}
+  .pile .sheet{position:absolute;left:50%;width:300px;height:56px;border-radius:10px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.1);transform:translateX(-50%)}
+  .pile .cnt{position:absolute;right:0;bottom:6px;color:var(--muted);font-size:12px}
+  .btnrow{display:flex;gap:8px;margin-top:14px}
+  .btn{padding:8px 16px;border-radius:9px;background:#fff;border:1.5px solid #d7dde0;font-weight:600}
+  .btn.v{background:var(--red);color:#fff;border-color:var(--red);animation:press .6s .4s}
+  @keyframes press{50%{transform:scale(.92)}}
+  .cursor{position:absolute;font-size:22px;animation:move 1s .1s forwards;left:40%;top:70%}
+  @keyframes move{to{left:46%;top:84%}}
+  .months{display:flex;gap:30px;align-items:flex-end;margin-top:8px}
+  .month{text-align:center}
+  .month .lab{font-size:12px;color:var(--muted);margin-bottom:6px}
+  .month .col{display:flex;flex-direction:column;gap:4px}
+  .mini{width:170px;height:26px;border-radius:7px;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.08);font-size:11px;display:flex;align-items:center;padding:0 8px;color:var(--muted)}
+  .mini.me{background:var(--redbg);color:var(--red);font-weight:700}
+  .arrowBig{font-size:28px;color:var(--rec-ink);align-self:center;animation:pop .5s .6s forwards;opacity:0}
+  .cap{color:var(--muted);font-size:13px;margin-top:8px}
   .cap b{color:var(--ink)}
-  .nav{display:flex;align-items:center;gap:10px;margin-top:14px}
+  .erd{background:var(--card);border-radius:18px;padding:18px 20px;position:sticky;top:20px}
+  .erd h3{margin:0 0 4px;font-size:12px;color:var(--muted);font-weight:600}
+  .erd .hint{font-size:12px;color:var(--muted);margin-bottom:12px}
+  .chain{display:flex;flex-direction:column;align-items:center;gap:0;position:relative}
+  .node{width:100%;border-radius:10px;padding:8px 12px;display:grid;grid-template-columns:1fr auto;gap:4px 10px;align-items:center;opacity:.25;transition:all .4s;border:2px solid transparent}
+  .node.der{background:var(--der);color:var(--der-ink)} .node.rec{background:var(--rec);color:var(--rec-ink)} .node.src{background:var(--grey);color:#4a555a}
+  .node.on{opacity:1} .node.now{opacity:1;border-color:var(--ink);transform:scale(1.03)}
+  .node .nm{font-family:ui-monospace,Menlo,monospace;font-size:12px;font-weight:700}
+  .node .rows{font-size:11px;background:rgba(0,0,0,.08);border-radius:999px;padding:1px 8px;white-space:nowrap}
+  .node .what{grid-column:1/3;font-size:11px;opacity:.85}
+  .link{height:16px;width:2px;background:#cfd6d9;position:relative}
+  .link.on{background:var(--der-ink)}
+  .link.back{background:none;height:0;width:0}
+  .back path{fill:none;stroke:var(--rec-ink);stroke-width:2.5;stroke-dasharray:6 6;animation:dash 1s linear infinite}
+  @keyframes dash{to{stroke-dashoffset:-12}}
+  .nav{display:flex;align-items:center;gap:10px;margin-top:16px}
   .dots{display:flex;gap:6px;flex:1;justify-content:center}
-  .dot{width:10px;height:10px;border-radius:50%;background:#cfd6d9;cursor:pointer;transition:.2s}
-  .dot.on{background:var(--ink);transform:scale(1.25)}.dot.seen{background:#8a949a}
+  .dot{width:10px;height:10px;border-radius:50%;background:#cfd6d9;cursor:pointer}
+  .dot.on{background:var(--ink);transform:scale(1.25)} .dot.seen{background:#8a949a}
   button{border:0;background:var(--card);padding:7px 14px;border-radius:999px;font:inherit;cursor:pointer}
   button.pri{background:var(--ink);color:#fff}
-  .legend{display:flex;gap:14px;color:var(--muted);font-size:11px;margin-top:10px}
-  .sw{display:inline-block;width:10px;height:10px;border-radius:3px;vertical-align:-1px;margin-right:4px}
-  .ring{position:relative;height:400px;margin:8px 60px 0}
-  .ring .node{position:absolute;transform:translate(-50%,-50%);padding:8px 12px;border-radius:10px;font-family:ui-monospace,Menlo,monospace;font-size:12px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
-  .ring svg{position:absolute;inset:0}
-  .ring svg ellipse{fill:none;stroke:var(--rec-ink);stroke-width:3;stroke-dasharray:8 8;animation:dash 1.2s linear infinite}
-  .ring .center{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;color:var(--muted)}
-  .ring .center b{display:block;font-size:22px;color:var(--ink)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="tx"><b>323,657원</b><span>맥주플랜트 · 일반주점</span><span>2025-03-10 (월) 22:56</span><span>가***5 · CL-GLNQJ3</span><span>의욕관리비</span><span>전표 SY000000019</span></div>
-  <div class="stage">
-    <div class="map">
-      <h3>표 22개 · 이번 단계에서 행이 생기는 표</h3>
-      <div class="grid" id="grid"></div>
-      <svg class="flow" id="flow"></svg>
-      <div class="legend"><span><span class="sw" style="background:var(--cfg)"></span>설정</span><span><span class="sw" style="background:var(--src);border:1px solid #d7dde0"></span>원천</span><span><span class="sw" style="background:var(--der)"></span>파생(기계)</span><span><span class="sw" style="background:var(--rec)"></span>기록(사람)</span></div>
+  <div class="top"><h1>거래 한 건의 이야기</h1><span>카드가 7번 변한다 · 오른쪽은 그때마다 남는 기록</span></div>
+  <div class="scene">
+    <div class="story" id="story"></div>
+    <div class="erd">
+      <h3>남는 기록 (ERD 핵심 8개)</h3>
+      <div class="hint">파랑 = 기계가 만든 것 · 노랑 = 사람이 만든 것. 거래 1건이 만든 행 수.</div>
+      <div class="chain" id="chain"></div>
     </div>
-    <div class="focus" id="focus"></div>
   </div>
   <div class="nav"><button id="prev">← 이전</button><div class="dots" id="dots"></div><button id="play" class="pri">▶ 자동 재생</button><button id="next">다음 →</button></div>
 </div>
 <script>
-const KIND={cfg:["tenants","reviewers","data_sources","rule_settings"],src:["loads","transactions","employees","access_logs","policy_accounts"],der:["rule_runs","flags","tx_features","labels","model_versions","tx_scores"],rec:["queues","queue_items","reviews","model_bindings","rule_candidates","precedents","audit_events"]};
-const LABEL={cfg:"설정",src:"원천",der:"파생",rec:"기록"};
-const KL={cfg:"설정 · 사람이 선언",src:"원천 · 밖에서 들어옴",der:"파생 · 기계가 만듦",rec:"기록 · 사람이 만듦"};
-const kindOf=n=>Object.keys(KIND).find(k=>KIND[k].includes(n));
-// counts of rows this one transaction adds to each table, cumulative by step
-const STEPS=[
- {tbl:["loads","transactions"],focus:"transactions",cols:["tx_id","emp_id","tx_ts","total","merchant","mcc_name","account_policy"],
-  rows:[["…620009","47452","03-10 22:56","323,657","맥주플랜트","일반주점","의욕관리비"]],cap:"3월 엑셀 적재. <b>내용 해시 번호</b>를 달고 거래 1행."},
- {tbl:["rule_runs","flags"],focus:"flags",cols:["rule_id","severity","evidence →"],
-  rows:[["R05_near_home","<span class=v>위반</span>","집 근처(용인시 수지구)에서 사용"],["R08_banned_mcc","<span class=v>위반</span>","금지 업종 일반주점"],["R11_account_mismatch","<span class=v>위반</span>","일반주점을 접대비 아닌 계정으로"],["R18_approver_conflict","<span class=v>위반</span>","승인자 집 근처 가맹점"],["R16_amount_outlier","<span class=a>참고</span>","동료 중앙값의 5.1배"]],cap:"규칙 21개 실행. 이 거래는 <b>5개에 걸림</b> → flags 5행. 실행 번호(run)가 붙어 다음 달 재실행과 구분."},
- {tbl:["tx_features"],focus:"tx_features",cols:["feature","value"],
-  rows:[["user__all__n_tx","12"],["user__all__amount_ratio_median","<b>11.8</b> ×"],["acct_mcc__all__amount_pctile","<b>94.1</b> %"],["ctx__hour","22"],["… 31개 더",""]],cap:"평소 대비 숫자 35개. 전부 <b>이 거래 이전</b> 데이터로만 계산(시점 기준)."},
- {tbl:["model_versions","tx_scores"],focus:"tx_scores",cols:["model_version","score","rank_pct","top_features →"],
-  rows:[["v…1641 · baseline","1.00","상위 0.1%","위반규칙 4 · 규칙 5 · 금액"],["v…1641 · xgb","0.08","상위 31%","휴가 0 · 직전 간격 6,389분 · 요일"]],cap:"모델<b>마다 한 행</b>. 옛 버전 점수는 지우지 않아 나란히 비교 가능."},
- {tbl:["queues","queue_items"],focus:"queue_items",cols:["queue","source","selection_prob","rank_in_source"],
-  rows:[["2025-03","rule","1.00","<b>1</b>"]],cap:"3월 큐 7,521건 중 <b>규칙 출처 1순위</b>. 무작위 표본·모델 추천 행과 함께 담김."},
- {tbl:["reviews"],focus:"reviews",cols:["rule_id","decision","action_code","reviewer"],
-  rows:[["R05_near_home","<span class=v>violation</span>","환급 요청","윤경팀 A"],["R08_banned_mcc","<span class=v>violation</span>","환급 요청","윤경팀 A"],["R11_account_mismatch","<span class=v>violation</span>","환급 요청","윤경팀 A"],["R18_approver_conflict","<span class=v>violation</span>","환급 요청","윤경팀 A"],["R16_amount_outlier","<span class=v>violation</span>","환급 요청","윤경팀 A"]],cap:"심사자가 <b>위반</b>을 누르면 규칙별 1행. 덮어쓰지 않고 추가(superseded_by)."},
- {tbl:["labels","model_versions","model_bindings"],focus:"model_bindings",cols:["role","model_version","state","set_by"],
-  rows:[["rank","v…1641 · baseline","serving","시스템"],["rank","<b>v…1201 · xgb</b> (판정으로 재학습)","<b>shadow</b>","월말 배치"]],cap:"판정이 라벨이 되어 재학습 → 새 버전은 <b>그림자</b>로 점수만 쌓음. 실제 판정과 더 맞으면 사람이 서빙으로 승격."},
- {ring:true}
+const CARD=(extra='',stamp='')=>`<div class="card">${stamp}<div class="amt">323,657원</div><div class="meta">맥주플랜트 · 일반주점 · 2025-03-10 (월) 22:56 · 가***5</div><div class="id" id="txid">거래번호 ‑20663416288620009 (내용으로 만든 번호 · 다시 올려도 같음)</div>${extra}</div>`;
+const TAGS=`<div class="tags"><span class="tag" style="animation-delay:.1s">집 근처에서 사용</span><span class="tag" style="animation-delay:.3s">제한 업종</span><span class="tag" style="animation-delay:.5s">업종–계정 불일치</span><span class="tag" style="animation-delay:.7s">승인자 집 근처</span><span class="tag g" style="animation-delay:.9s">동료 중앙값의 5배</span></div>`;
+const S=[
+ {who:['m','📥','<b>3월 엑셀</b>이 올라온다'],body:()=>CARD(),after:()=>setTimeout(()=>document.getElementById('txid')?.classList.add('on'),500),
+  cap:'엑셀 한 줄이 카드 한 장이 된다. 번호는 줄 순서가 아니라 <b>내용</b>으로 만들어, 다음 달 다시 올려도 같은 번호.',erd:['transactions'],rows:{transactions:'1행'}},
+ {who:['m','🔍','<b>규칙 21개</b>가 카드를 검사한다'],body:()=>CARD(TAGS),cap:'5개에 걸렸다. 빨강은 규정 위반, 회색은 참고. 꼬리표마다 <b>어느 규정 몇 조</b>인지가 붙어 있다.',erd:['flags'],rows:{flags:'5행 (꼬리표 1개 = 1행)'}},
+ {who:['m','⚖️','<b>평소와 비교</b>한다'],body:()=>CARD(TAGS)+`<div class="side"><div class="scale"><div class="bar"></div><div class="me"></div><span class="lab" style="left:0">본인 평소 27,404원</span><span class="lab" style="right:0">이 건 <b>11.8배</b></span></div></div>`,
+  cap:'이 사람의 과거 12건, 같은 업종 동료 51건과 비교. 전부 <b>이 거래 이전</b> 데이터만 쓴다.',erd:['tx_features'],rows:{tx_features:'1행 (숫자 35개)'}},
+ {who:['m','🎯','<b>모델</b>이 순위를 매긴다'],body:()=>CARD(TAGS,'<div class="stamp blue">상위 0.1%</div>'),cap:'모델마다 점수를 따로 남긴다. 기준선 1.00, 학습 모델 0.08. 화면엔 <b>순위</b>로 보여 모델을 바꿔도 뜻이 같다.',erd:['tx_scores'],rows:{tx_scores:'2행 (모델 수만큼)'}},
+ {who:['m','📚','<b>3월 검토 목록</b>에 들어간다'],body:()=>`<div class="pile">${[5,4,3,2,1].map(i=>`<div class="sheet" style="top:${40+i*22}px;opacity:${.35+i*.1}"></div>`).join('')}<div class="sheet" style="top:30px;background:var(--redbg);border:2px solid var(--red);display:flex;align-items:center;padding:0 14px;font-weight:700;color:var(--red);transform:translateX(-50%) translateY(-10px)">맥주플랜트 323,657원 · 1순위</div><div class="cnt">7,521건 중 맨 위</div></div>`,
+  cap:'규칙에 걸린 6,819건, 모델이 고른 20건, 무작위 682건이 한 목록. 이 카드는 <b>규칙 출처 1순위</b>.',erd:['queue_items'],rows:{queue_items:'1행 (출처 · 순위)'}},
+ {who:['h','🧑‍💼','<b>심사자</b>가 판정한다'],body:()=>CARD(TAGS,'<div class="stamp">위반</div>')+`<div class="btnrow"><span class="btn v">위반</span><span class="btn">아님</span><span class="btn">보류</span></div><span class="cursor">👆</span>`,
+  cap:'사람이 처음 등장한다. "위반 · 환급 요청"을 누르면 <b>꼬리표 5개마다 1행</b>. 덮어쓰지 않고 쌓는다.',erd:['reviews'],rows:{reviews:'5행 (사람)'}},
+ {who:['h','🔁','<b>다음 달</b>, 판정이 정답이 된다'],body:()=>`<div class="months"><div class="month"><div class="lab">3월 목록 (모델 v1)</div><div class="col"><div class="mini me">맥주플랜트 · 위반 ✓</div><div class="mini">아사칸정자점</div><div class="mini">상현골프클럽</div><div class="mini">…</div></div></div><div class="arrowBig">⟶</div><div class="month"><div class="lab">4월 목록 (모델 v2 · 그림자)</div><div class="col"><div class="mini me">비슷한 패턴이 위로</div><div class="mini">…</div><div class="mini">…</div><div class="mini">…</div></div></div></div>`,
+  cap:'위반 판정이 <b>정답(라벨)</b>이 되어 모델이 다시 배운다. 새 모델은 그림자로 점수만 내다가, 실제 판정과 더 맞으면 사람이 승격.',erd:['labels','model_versions','model_bindings'],rows:{labels:'5행',model_versions:'1행',model_bindings:'1행 (그림자)'},loop:true},
 ];
-const grid=document.getElementById('grid'),focus=document.getElementById('focus'),dots=document.getElementById('dots'),flow=document.getElementById('flow');
-for(const k of Object.keys(KIND)){const g=document.createElement('div');g.className='grp';g.innerHTML=`<div class="t">${KL[k]}</div>`+KIND[k].map(n=>`<div class="tbl ${k}" data-t="${n}"><span class="n">${n}</span><span class="c" data-c="${n}"></span></div>`).join('');grid.appendChild(g)}
-const COUNT={transactions:1,loads:1,rule_runs:1,flags:5,tx_features:1,model_versions:1,tx_scores:2,queues:1,queue_items:1,reviews:5,labels:5,model_bindings:2};
-STEPS.forEach((_,i)=>{const d=document.createElement('div');d.className='dot';d.onclick=()=>show(i);dots.appendChild(d)});
+const CHAIN=[['transactions','src','거래 카드'],['flags','der','규칙 꼬리표'],['tx_features','der','평소 대비 숫자'],['tx_scores','der','모델 점수·순위'],['queue_items','der','검토 목록 자리'],['reviews','rec','판정 (사람)'],['labels','der','정답'],['model_versions','der','다시 배운 모델'],['model_bindings','rec','어느 모델을 쓸지 (사람)']];
+const chain=document.getElementById('chain');
+CHAIN.forEach(([n,k,w],i)=>{if(i){const l=document.createElement('div');l.className='link';l.dataset.to=n;chain.appendChild(l)}const d=document.createElement('div');d.className=`node ${k}`;d.dataset.n=n;d.innerHTML=`<span class="nm">${n}</span><span class="rows" data-r="${n}"></span><span class="what">${w}</span>`;chain.appendChild(d)});
+const back=document.createElement('div');back.className='link back';back.innerHTML='<svg><path d="M20,536 C60,536 60,0 20,0"/></svg>';back.style.display='none';chain.appendChild(back);
+const story=document.getElementById('story'),dots=document.getElementById('dots');
+S.forEach((_,i)=>{const d=document.createElement('div');d.className='dot';d.onclick=()=>show(i);dots.appendChild(d)});
 let cur=0,timer=null;
-function edge(el,side){const r=el.getBoundingClientRect(),m=grid.parentElement.getBoundingClientRect();return{x:(side==='r'?r.right:r.left)-m.left,y:r.top-m.top+r.height/2}}
-function show(i){
-  cur=(i+STEPS.length)%STEPS.length;const s=STEPS[cur];
-  [...dots.children].forEach((d,j)=>{d.className='dot'+(j===cur?' on':j<cur?' seen':'')});
-  document.querySelectorAll('.tbl').forEach(el=>{el.classList.remove('now','done');const t=el.dataset.t;const seen=STEPS.slice(0,cur+1).some(st=>st.tbl&&st.tbl.includes(t));const c=el.querySelector('.c');c.textContent=seen&&COUNT[t]?COUNT[t]:'';if(s.tbl&&s.tbl.includes(t))el.classList.add('now');else if(seen)el.classList.add('done')});
-  flow.innerHTML='';
-  if(s.ring){renderRing();document.querySelectorAll('.tbl').forEach(el=>{if(STEPS.some(st=>st.tbl&&st.tbl.includes(el.dataset.t)))el.classList.add('done')});return}
-  const prev=STEPS[cur-1];
-  if(prev&&prev.focus){const a=edge(document.querySelector(`[data-t="${prev.focus}"]`),'r'),b=edge(document.querySelector(`[data-t="${s.focus}"]`),'l');const p=document.createElementNS('http://www.w3.org/2000/svg','path');const mx=(a.x+b.x)/2;p.setAttribute('d',`M${a.x},${a.y} C${mx},${a.y} ${mx},${b.y} ${b.x},${b.y}`);flow.appendChild(p)}
-  const k=kindOf(s.focus);
-  focus.innerHTML=`<div class="name"><b>${s.focus}</b><span class="kind ${k}" style="background:var(--${k});color:var(--${k}-ink)">${KL[k]}</span></div>
-    <table><thead><tr>${s.cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>${s.rows.map((r,ri)=>`<tr class="row" style="animation-delay:${ri*.12}s">${r.map((c,ci)=>`<td class="${ci===0?'m':''}${/^[\d,.]+/.test(c)?' r':''}">${c}</td>`).join('')}</tr>`).join('')}</tbody></table>
-    <div class="cap">${cur+1} / 7 · ${s.cap}</div>`;
-}
-function renderRing(){
-  const seq=["reviews","labels","model_versions","model_bindings","tx_scores","queue_items","reviews"];const n=6,cx=50,cy=50,R=38;
-  const nodes=seq.slice(0,6).map((t,i)=>{const a=-Math.PI/2+i*2*Math.PI/n;const k=kindOf(t);return`<div class="node" style="left:${cx+R*Math.cos(a)}%;top:${cy+R*Math.sin(a)}%;background:var(--${k});color:var(--${k}-ink)">${t}</div>`}).join('');
-  focus.innerHTML=`<div class="name"><b>루프</b><span class="kind" style="background:var(--rec);color:var(--rec-ink)">닫힘</span></div>
-    <div class="ring"><svg width="100%" height="100%"><ellipse cx="50%" cy="50%" rx="38%" ry="38%"/></svg>${nodes}<div class="center"><b>↻</b>판정이 다음 달 순서를 바꾼다</div></div>
-    <div class="cap">8 / 7 · 사람이 서는 자리는 셋: <b>reviews</b>(판정) · <b>model_bindings</b>(승격) · rule_candidates(규칙 승인). 나머지는 기계가 돈다.</div>`;
+function show(i){cur=(i+S.length)%S.length;const s=S[cur];
+  [...dots.children].forEach((d,j)=>d.className='dot'+(j===cur?' on':j<cur?' seen':''));
+  story.innerHTML=`<div class="who"><span class="ic ${s.who[0]}">${s.who[1]}</span><span>${s.who[2]}</span></div><div class="stageArea">${s.body()}</div><div class="cap">${cur+1} / 7 · ${s.cap}<br><span style="font-size:12px">남는 기록: ${s.erd.map(e=>`<code>${e}</code>`).join(' · ')}</span></div>`;
+  s.after&&s.after();
+  const seen=new Set(S.slice(0,cur+1).flatMap(x=>x.erd));
+  document.querySelectorAll('.node').forEach(n=>{const k=n.dataset.n;n.classList.toggle('on',seen.has(k));n.classList.toggle('now',s.erd.includes(k));const r=n.querySelector('.rows');r.textContent=S.slice(0,cur+1).map(x=>x.rows[k]).filter(Boolean).pop()||''});
+  document.querySelectorAll('.link:not(.back)').forEach(l=>l.classList.toggle('on',seen.has(l.dataset.to)));
+  back.style.display=s.loop?'block':'none';
+  if(s.loop){ // dashed return arrow: model_bindings → tx_scores (the serving model decides which scores the next queue reads)
+    const a=document.querySelector('[data-n="model_bindings"]').getBoundingClientRect(),b=document.querySelector('[data-n="tx_scores"]').getBoundingClientRect(),c=chain.getBoundingClientRect();
+    const x=a.right-c.left+4,y1=a.top-c.top+a.height/2,y2=b.top-c.top+b.height/2;
+    back.innerHTML=`<svg style="position:absolute;left:0;top:0;width:${c.width+40}px;height:${c.height}px;overflow:visible"><path d="M${x},${y1} C${x+70},${y1} ${x+70},${y2} ${x},${y2}"/><text x="${x+74}" y="${(y1+y2)/2}" font-size="11" fill="#8a5a12">다음 달 순서</text></svg>`;
+    back.style.position='absolute';back.style.inset='0';back.style.pointerEvents='none';
+  }
 }
 document.getElementById('prev').onclick=()=>show(cur-1);document.getElementById('next').onclick=()=>show(cur+1);
-const play=document.getElementById('play');play.onclick=()=>{if(timer){clearInterval(timer);timer=null;play.textContent='▶ 자동 재생';return}play.textContent='❚❚ 멈춤';timer=setInterval(()=>show(cur+1),2600)};
+const play=document.getElementById('play');play.onclick=()=>{if(timer){clearInterval(timer);timer=null;play.textContent='▶ 자동 재생';return}play.textContent='❚❚ 멈춤';timer=setInterval(()=>show(cur+1),3200)};
 document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')show(cur+1);if(e.key==='ArrowLeft')show(cur-1)});
 show(0);
 </script>
