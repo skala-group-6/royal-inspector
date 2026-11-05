@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>ERD — Postgres 단독, 회사 층 포함</title>
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+  mermaid.initialize({ startOnLoad: true, theme: "neutral", er: { layoutDirection: "TB", entityPadding: 10, fontSize: 12 } });
+</script>
+<style>
+  body{margin:0;background:#eef1f2;color:#14181a;font-family:Pretendard,"Pretendard Variable",-apple-system,sans-serif;font-size:13px}
+  header{padding:24px 36px 8px}
+  h1{margin:0;font-size:20px}
+  .legend{display:flex;gap:16px;margin-top:8px;color:#6b787c;font-size:12px;flex-wrap:wrap}
+  .sw{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:5px}
+  main{padding:12px 36px 48px}
+  .card{background:#fff;border-radius:16px;padding:16px 20px;margin-bottom:18px}
+  .card h2{margin:0 0 8px;font-size:14px}
+  .loop{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:12px}
+  .loop span{padding:4px 10px;border-radius:999px;background:#f6f8f8}
+  .loop .h{background:#f6ead2;color:#8a5a12;font-weight:600}
+  .loop i{color:#9aa5a9;font-style:normal}
+  .mermaid{background:#fff;border-radius:16px;padding:12px}
+  .mermaid svg{max-width:100%;height:auto}
+  /* entity classes by kind */
+  .cfg rect, .cfg path{fill:#dcefe3 !important} .src rect, .src path{fill:#f6f8f8 !important} .der rect, .der path{fill:#dfe7f5 !important} .rec rect, .rec path{fill:#f6ead2 !important}
+</style>
+</head>
+<body>
+<header>
+  <h1>ERD — Postgres 단독, 회사(테넌트) 층 포함</h1>
+  <div class="legend">
+    <span><span class="sw" style="background:#dcefe3"></span>회사·설정 (사람이 선언)</span>
+    <span><span class="sw" style="background:#f6f8f8;border:1px solid #d7dde0"></span>원천 (밖에서 들어옴, 불변)</span>
+    <span><span class="sw" style="background:#dfe7f5"></span>파생 (코드가 만듦, 재생성)</span>
+    <span><span class="sw" style="background:#f6ead2"></span>기록 (사람이 만듦, 불변)</span>
+    <span>상세: docs/ERD.md</span>
+  </div>
+</header>
+<main>
+<div class="card">
+  <h2>닫히는 루프</h2>
+  <div class="loop">
+    <span class="h">reviews</span><i>→</i><span>labels</span><i>→</i><span>model_versions</span><i>→</i><span class="h">model_bindings</span><i>→</i><span>tx_scores</span><i>→</i><span>queue_items</span><i>→</i><span class="h">reviews</span>
+    <i style="margin-left:14px">사람이 서는 자리 = 노란 셋 (판정 · 승격 · 규칙 승인 rule_candidates)</i>
+  </div>
+</div>
+
+<pre class="mermaid">
+erDiagram
+  tenants ||--o{ reviewers : has
+  tenants ||--o{ data_sources : has
+  tenants ||--o{ rule_settings : overrides
+  tenants ||--o{ loads : ingests
+  data_sources ||--o{ loads : feeds
+  loads ||--o{ transactions : produces
+  tenants ||--o{ employees : has
+  tenants ||--o{ access_logs : has
+  tenants ||--o{ policy_accounts : has
+
+  tenants ||--o{ rule_runs : runs
+  rule_runs ||--o{ flags : writes
+  transactions ||--o{ flags : hit_by
+  transactions ||--o{ tx_features : described_by
+  transactions ||--o{ labels : labeled
+  transactions ||--o{ tx_scores : scored
+  model_versions ||--o{ tx_scores : produces
+  tenants ||--o{ model_versions : trains
+  model_versions ||--o{ model_bindings : bound_as
+
+  tenants ||--o{ queues : builds
+  queues ||--o{ queue_items : contains
+  transactions ||--o{ queue_items : listed
+  transactions ||--o{ reviews : judged
+  reviewers ||--o{ reviews : makes
+  tenants ||--o{ rule_candidates : proposes
+  tenants ||--o{ precedents : keeps
+  tenants ||--o{ audit_events : logs
+
+  tenants { int tenant_id PK  text name }
+  reviewers { int reviewer_id PK  int tenant_id FK  text name  text role  bool counts_as_label }
+  data_sources { int source_id PK  int tenant_id FK  text kind  jsonb column_mapping  text raw_glob }
+  rule_settings { int tenant_id PK  text rule_id PK  int version PK  jsonb params  bool enabled  text policy_ref  text changed_by  timestamptz changed_at }
+
+  loads { int load_id PK  int tenant_id FK  int source_id FK  text file_hash  int n_rows  timestamptz loaded_at  text status }
+  transactions { int tenant_id PK  bigint tx_id PK  int load_id FK  int emp_id  timestamptz tx_ts  numeric total  text merchant  text mcc_name  text account_policy  text dept  text sap_doc_no  text exclude_reason  bool is_synthetic }
+  employees { int tenant_id PK  int emp_id PK  text name  text dept  text rank  text home_sigungu  text work_sigungu }
+  access_logs { int tenant_id PK  bigint access_id PK  int emp_id  timestamptz access_ts  text gate  text direction }
+  policy_accounts { int tenant_id PK  text account PK  text dos  text donts  text required_evidence }
+
+  rule_runs { int run_id PK  int tenant_id FK  int catalog_version  int settings_version  timestamptz ran_at  int n_flags }
+  flags { int run_id PK  bigint tx_id PK  text rule_id PK  int tenant_id  text severity  jsonb evidence  bigint_arr related_tx_ids  int rule_version }
+  tx_features { int tenant_id PK  bigint tx_id PK  int features_version PK  numeric user__all__amount_ratio_median  numeric acct_mcc__all__amount_pctile  text more_35_cols }
+  labels { int tenant_id PK  bigint tx_id PK  text label_source PK  text source_version PK  numeric prob  timestamptz created_at }
+  model_versions { text model_version PK  int tenant_id FK  text model_id  text plug  jsonb params  text label_source  timestamptz trained_at  jsonb metrics  text artifact_path  text artifact_hash }
+  tx_scores { text model_version PK  bigint tx_id PK  int tenant_id  numeric score  numeric rank_pct  jsonb top_features }
+
+  queues { text queue_id PK  int tenant_id FK  date period_from  date period_to  jsonb params  timestamptz built_at }
+  queue_items { text queue_id PK  bigint tx_id PK  text source  numeric selection_prob  int rank_in_source  text model_version }
+  reviews { text review_id PK  int tenant_id FK  bigint tx_id FK  text rule_id  text decision  text reason_code  text action_code  text memo  int reviewer_id FK  timestamptz created_at  text superseded_by }
+  model_bindings { int binding_id PK  int tenant_id FK  text role  text model_version FK  text state  text set_by  timestamptz set_at  text note }
+  rule_candidates { int candidate_id PK  int tenant_id FK  text title  text sql  jsonb backtest  text status  text decided_by  timestamptz decided_at }
+  precedents { text precedent_id PK  int tenant_id  text kind  text title  text_arr cues  text_arr rule_ids  text outcome }
+  audit_events { bigint event_id PK  int tenant_id FK  text actor  text event  jsonb payload  timestamptz ts }
+</pre>
+</main>
+<script type="module">
+  // colour entities by kind after render
+  const kinds = { cfg:["tenants","reviewers","data_sources","rule_settings"], src:["loads","transactions","employees","access_logs","policy_accounts"],
+    der:["rule_runs","flags","tx_features","labels","model_versions","tx_scores"], rec:["queues","queue_items","reviews","model_bindings","rule_candidates","precedents","audit_events"] };
+  const paint = () => { const svg = document.querySelector(".mermaid svg"); if (!svg) return setTimeout(paint, 200);
+    for (const [k, names] of Object.entries(kinds)) for (const n of names) svg.querySelectorAll(`[id*='entity-${n}-']`).forEach(g => g.classList.add(k)); };
+  paint();
+</script>
+</body>
+</html>

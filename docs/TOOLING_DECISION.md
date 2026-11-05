@@ -66,7 +66,7 @@
 - DuckDB concurrency https://duckdb.org/docs/2.0/connect/concurrency.html
 - Streamlit architecture https://docs.streamlit.io/develop/concepts/architecture/architecture · auth https://docs.streamlit.io/develop/concepts/connections/authentication
 
-## 6. 저장소: DuckDB 단독 vs Postgres vs 혼합 (2026-11-03 조사)
+## 6. 저장소: DuckDB 단독 vs Postgres vs 혼합 (2026-11-03 조사) — **2026-11-05 갱신: Postgres 단독으로 확정.** 근거 `docs/STORAGE_ARCHITECTURE.md` §0, 스키마 `docs/ERD.md`
 
 질문: 사내 여러 명이 쓰려면 Postgres로 가야 하나.
 

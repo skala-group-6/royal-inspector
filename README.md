@@ -30,17 +30,17 @@ macOS arm64에서 xgboost import가 libomp 오류를 내면 `brew install libomp
 - `docs/INGESTION.md` 데이터 적재: 파일이 정식 입구인 이유(카드사·DB 연동 판단), 매핑표·입구 검사·파일 보관함·업로드 화면
 - `docs/REVIEW_SCREEN.md` 검토 화면 사양 · `docs/PRECEDENTS.md` 선례 기능 · `docs/MODEL.md` 우선순위 모델
 - `docs/DESIGN.md` 디자인 규칙: 선 대신 면(surface-* 토큰)·여백·글자 위계(type-*), 공용 목록 부품, 검사
+- `docs/ERD.md` Postgres 단독 스키마(회사 층·네 종류·루프) · `docs/design/erd.html` 그림
 - `docs/TOOLING_DECISION.md` 스택 결정(React+FastAPI, 로우코드 불채택) · `docs/case_study/` 기존 솔루션 동작 원리 해부 · `deliverables/` 요구사항서·WBS·아키텍처·설계서
 
 ## 스택 (2026-11-03 확정)
 | 층 | 선택 |
 |---|---|
-| 사람의 기록 (판정·큐·로그·사용자) | Postgres |
-| 기계의 계산 (거래·flags·피처·점수) | DuckDB 파일, 배치가 재생성 |
+| 저장소 | **Postgres 단독**(회사별 설치, 2026-11-05). 스키마 `docs/ERD.md`. DuckDB는 개발자 로컬 탐색 도구 |
 | 규칙·피처·라벨 정의 | YAML + SQL (git) |
 | 배치 | Python 스크립트 (CLI) |
 | 모델 | 소켓(fit/predict/explain) + 플러그(기준선·로지스틱·XGBoost·DNN 자리) |
-| API | FastAPI (Postgres 쓰기, DuckDB 읽기 전용) |
+| API | FastAPI |
 | 화면 | React (Vite + shadcn/ui + TanStack) · Streamlit은 시연·검증용 |
 | 개발 환경 | Docker compose (Postgres) |
 근거: `docs/TOOLING_DECISION.md`, `docs/STORAGE_ARCHITECTURE.md`
