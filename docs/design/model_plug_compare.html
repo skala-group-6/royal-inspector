@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>모델 교체 구조 — 지금 vs 개선</title>
+<style>
+  :root{
+    --bg:#eef1f2; --card:#fff; --panel:#f6f8f8; --ink:#14181a; --muted:#6b787c; --soft:#e3e8ea;
+    --engine:#dfe7f5; --engine-ink:#2b4a86; --pack:#dcefe3; --pack-ink:#1f6b3d; --run:#f6ead2; --run-ink:#8a5a12;
+    --bad:#fde4e3; --bad-ink:#b3261e; --good:#e2f1e7; --good-ink:#1f6b3d; --ghost:#eef0f1;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:Pretendard,"Pretendard Variable",-apple-system,"Apple SD Gothic Neo",sans-serif;font-size:13px;line-height:1.45}
+  header{padding:28px 40px 8px}
+  header h1{margin:0;font-size:20px;font-weight:700}
+  .legend{display:flex;gap:14px;margin-top:10px;color:var(--muted);font-size:12px;flex-wrap:wrap}
+  .sw{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:5px}
+  nav{display:flex;gap:6px;padding:10px 40px 0;flex-wrap:wrap}
+  nav button{border:0;background:var(--card);color:var(--muted);padding:7px 12px;border-radius:999px;font:inherit;cursor:pointer}
+  nav button.on{background:var(--ink);color:#fff}
+  main{padding:18px 40px 48px}
+  .scene{display:none}
+  .scene.on{display:block}
+  .q{font-size:15px;font-weight:600;margin:0 0 14px}
+  .cmp{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .side{background:var(--card);border-radius:18px;padding:18px 20px;min-height:340px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+  .side h2{margin:0 0 14px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px}
+  .tag{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px}
+  .t-now{background:var(--bad);color:var(--bad-ink)} .t-new{background:var(--good);color:var(--good-ink)}
+  .box{border-radius:10px;padding:8px 10px;margin:6px 0;font-size:12px}
+  .engine{background:var(--engine);color:var(--engine-ink)} .pack{background:var(--pack);color:var(--pack-ink)}
+  .run{background:var(--run);color:var(--run-ink)} .bad{background:var(--bad);color:var(--bad-ink)} .ghost{background:var(--ghost);color:var(--muted);border:1.5px dashed #c9d0d3}
+  .mono{font-family:ui-monospace,Menlo,monospace;font-size:11.5px}
+  .row{display:flex;gap:8px;align-items:stretch} .row>*{flex:1}
+  .col{display:flex;flex-direction:column;gap:6px}
+  .arrow{color:var(--muted);text-align:center;font-size:16px;line-height:1}
+  .lab{font-size:11px;color:var(--muted);margin:10px 0 4px;font-weight:600}
+  .pill{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;margin:2px 3px 2px 0}
+  .x{color:var(--bad-ink);font-weight:700} .ok{color:var(--good-ink);font-weight:700}
+  table{border-collapse:separate;border-spacing:0 3px;width:100%;font-size:12px}
+  td,th{padding:5px 8px;text-align:left} th{color:var(--muted);font-weight:600;font-size:11px}
+  tbody td{background:var(--panel)} tbody td:first-child{border-radius:8px 0 0 8px} tbody td:last-child{border-radius:0 8px 8px 0}
+  .hl td{background:var(--run)}
+  .stack{display:flex;flex-direction:column;gap:6px}
+  .lane{display:grid;grid-template-columns:90px 1fr;gap:8px;align-items:center}
+  .track{display:flex;gap:6px;align-items:center}
+  .dot{width:10px;height:10px;border-radius:50%}
+  .big{font-size:28px;font-weight:700;letter-spacing:-.02em}
+  .note{color:var(--muted);font-size:11.5px;margin-top:10px}
+  .center{text-align:center}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .file{display:flex;align-items:center;gap:6px}
+  .file .ic{width:14px;height:16px;border-radius:2px;background:currentColor;opacity:.35}
+  .edit{position:relative}
+  .edit::after{content:"수정";position:absolute;right:8px;top:7px;font-size:10px;font-weight:700;color:var(--bad-ink)}
+  .add::after{content:"추가";position:absolute;right:8px;top:7px;font-size:10px;font-weight:700;color:var(--good-ink)}
+  .add{position:relative}
+  .foot{display:flex;justify-content:space-between;align-items:center;margin-top:18px;color:var(--muted);font-size:12px}
+  .foot button{border:0;background:var(--card);padding:7px 14px;border-radius:999px;font:inherit;cursor:pointer}
+</style>
+</head>
+<body>
+<header>
+  <h1>모델 교체 구조 — 지금 vs 개선</h1>
+  <div class="legend">
+    <span><span class="sw" style="background:var(--engine)"></span>엔진 (모든 팩 공통)</span>
+    <span><span class="sw" style="background:var(--pack)"></span>팩 (법인카드 전용)</span>
+    <span><span class="sw" style="background:var(--run)"></span>운영 기록 (지금 무엇이 도나)</span>
+    <span><span class="sw" style="background:var(--bad)"></span>문제 지점</span>
+  </div>
+</header>
+<nav id="nav"></nav>
+<main id="main">
+
+<!-- 1. 세 층 -->
+<section class="scene" data-title="1 세 층 분리">
+  <p class="q">무엇을 쓸 수 있나 · 무엇을 만들었나 · 지금 무엇이 도나</p>
+  <div class="cmp">
+    <div class="side"><h2><span class="tag t-now">지금</span></h2>
+      <div class="box bad"><div class="mono">scripts/train.py</div>
+        <div class="row" style="margin-top:6px"><span class="pill engine">후보 목록</span><span class="pill engine">설정값</span><span class="pill run">채택 규칙</span></div></div>
+      <div class="arrow">↓</div>
+      <div class="box engine"><div class="mono">models/v20261103/ model.pkl · model_learned.pkl</div></div>
+      <div class="arrow">↓</div>
+      <div class="box bad"><div class="mono">models/LATEST</div> 파일 하나 · 이력 없음</div>
+      <div class="note">세 층이 한 스크립트와 파일 두 개에 섞여 있음</div>
+    </div>
+    <div class="side"><h2><span class="tag t-new">개선</span></h2>
+      <div class="lab">정의</div>
+      <div class="row"><div class="box engine"><div class="mono">models/xgb.py</div>코드</div><div class="box pack"><div class="mono">packs/corp_card/models.yaml</div>무엇을·어떤 설정으로</div></div>
+      <div class="lab">결과물</div>
+      <div class="box engine"><div class="mono">models/&lt;버전&gt;/</div>학습 결과 · 해시 · 성적 (불변)</div>
+      <div class="lab">배치</div>
+      <div class="box run"><div class="mono">model_bindings 표</div>역할 · 버전 · 상태 · 바꾼 사람 · 시각</div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. 새 모델 넣기 -->
+<section class="scene" data-title="2 새 모델 넣기">
+  <p class="q">연구팀이 새 모델을 넘겨줬다</p>
+  <div class="cmp">
+    <div class="side"><h2><span class="tag t-now">지금</span> 엔진 코드 6곳 수정</h2>
+      <div class="stack">
+        <div class="box engine edit file"><span class="ic"></span><span class="mono">models/new.py</span></div>
+        <div class="box bad edit file"><span class="ic"></span><span class="mono">scripts/train.py</span>&nbsp;후보 목록</div>
+        <div class="box bad edit file"><span class="ic"></span><span class="mono">scripts/score_tx.py</span>&nbsp;점수 칸</div>
+        <div class="box bad edit file"><span class="ic"></span><span class="mono">app/service.py</span>&nbsp;× 6곳</div>
+        <div class="box bad edit file"><span class="ic"></span><span class="mono">web/src/types.ts</span></div>
+        <div class="box bad edit file"><span class="ic"></span><span class="mono">tests/test_models.py</span></div>
+      </div>
+    </div>
+    <div class="side"><h2><span class="tag t-new">개선</span> 파일 하나 + 한 줄</h2>
+      <div class="stack">
+        <div class="box engine add file"><span class="ic"></span><span class="mono">models/new.py</span></div>
+        <div class="box pack add"><div class="mono">packs/corp_card/models.yaml</div>
+          <div class="mono" style="margin-top:4px">+ new_v1: {plug: models.new, params: {...}}</div></div>
+      </div>
+      <div class="lab" style="margin-top:22px">자동으로</div>
+      <div class="row"><span class="pill" style="background:var(--panel)">규격 테스트</span><span class="pill" style="background:var(--panel)">같은 시험</span><span class="pill" style="background:var(--panel)">점수 저장</span><span class="pill" style="background:var(--panel)">화면 반영</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. 점수 저장 -->
+<section class="scene" data-title="3 점수 저장">
+  <p class="q">모델이 셋 이상이면 점수를 어디에 담나</p>
+  <div class="cmp">
+    <div class="side"><h2><span class="tag t-now">지금</span> 칸 두 개 고정</h2>
+      <table><thead><tr><th>tx_id</th><th>score</th><th>score_learned</th><th class="x">DNN?</th></tr></thead>
+        <tbody><tr><td>…009</td><td>1.00</td><td>0.08</td><td class="x">자리 없음</td></tr><tr><td>…661</td><td>0.29</td><td>0.01</td><td class="x">자리 없음</td></tr></tbody></table>
+      <div class="lab">읽는 쪽이 열 이름을 직접 앎</div>
+      <div class="row"><span class="pill bad">큐 빌드</span><span class="pill bad">목록 정렬</span><span class="pill bad">규칙 밖 후보</span><span class="pill bad">화면 타입</span></div>
+      <div class="note">새로 계산하면 이전 점수는 덮어써져 사라짐</div>
+    </div>
+    <div class="side"><h2><span class="tag t-new">개선</span> 모델마다 한 행</h2>
+      <table><thead><tr><th>tx_id</th><th>model</th><th>버전</th><th>점수</th></tr></thead>
+        <tbody><tr><td>…009</td><td>baseline</td><td>v1103</td><td>1.00</td></tr><tr><td>…009</td><td>xgb_d3</td><td>v1103</td><td>0.08</td></tr><tr class="hl"><td>…009</td><td>dnn_v1</td><td>v1110</td><td>0.41</td></tr><tr class="hl"><td>…009</td><td>xgb_d3</td><td>v1110</td><td>0.12</td></tr></tbody></table>
+      <div class="lab">읽는 쪽은 역할만 앎</div>
+      <div class="row"><span class="pill run">순서 정하기 = ?</span><span class="pill run">규칙 밖 후보 = ?</span></div>
+      <div class="note">옛 버전 점수도 남아 나란히 비교 가능</div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. 교체 흐름 -->
+<section class="scene" data-title="4 교체 흐름">
+  <p class="q">새 모델이 시험에서 이겼다. 바로 쓰나?</p>
+  <div class="cmp">
+    <div class="side"><h2><span class="tag t-now">지금</span> 즉시 교체</h2>
+      <div class="lane"><span class="lab" style="margin:0">순서 정하기</span><div class="track"><span class="box engine" style="margin:0">xgb v1103</span><span class="arrow">→</span><span class="box bad" style="margin:0">new v1110 (덮어씀)</span></div></div>
+      <div class="note" style="margin-top:28px">시험 정답 = 규칙으로 만든 임시 정답<br>→ "이겼다" = 규칙을 더 잘 흉내 냈다</div>
+      <div class="box bad" style="margin-top:14px">되돌리려면 재학습 또는 재계산</div>
+    </div>
+    <div class="side"><h2><span class="tag t-new">개선</span> 그림자 → 비교 → 승격</h2>
+      <div class="stack">
+        <div class="lane"><span class="lab" style="margin:0">서빙</span><div class="track"><span class="box engine" style="margin:0">xgb v1103</span><span class="arrow" style="opacity:.3">·····</span><span class="box engine" style="margin:0;opacity:.45">은퇴</span></div></div>
+        <div class="lane"><span class="lab" style="margin:0">그림자</span><div class="track"><span class="box run" style="margin:0">new v1110 점수만 쌓음</span><span class="arrow">→</span><span class="box good" style="margin:0;background:var(--good);color:var(--good-ink)">서빙 승격</span></div></div>
+        <div class="lane"><span class="lab" style="margin:0">판단 근거</span><div class="track"><span class="box" style="margin:0;background:var(--panel)">윤경팀 실제 판정과 대조</span></div></div>
+      </div>
+      <div class="box run" style="margin-top:16px">배치 표에 한 줄 바꾸면 되돌리기 끝</div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. 실패 격리 -->
+<section class="scene" data-title="5 실패 격리">
+  <p class="q">후보 하나가 고장 나거나 라이브러리가 없다</p>
+  <div class="cmp">
+    <div class="side"><h2><span class="tag t-now">지금</span> 하나가 멈추면 전부 멈춤</h2>
+      <div class="grid3">
+        <div class="box engine center">baseline</div><div class="box engine center">xgb</div><div class="box bad center">dnn ✕<br><span class="mono">torch 없음</span></div>
+      </div>
+      <div class="arrow" style="margin:10px 0">↓</div>
+      <div class="box bad center big" style="font-size:18px">학습 전체 중단</div>
+      <div class="lab">외부 모델</div>
+      <div class="box bad">남이 만든 pickle을 열면 = 그 코드를 실행</div>
+    </div>
+    <div class="side"><h2><span class="tag t-new">개선</span> 칸막이</h2>
+      <div class="grid3">
+        <div class="box engine center">baseline <span class="ok">✓</span></div><div class="box engine center">xgb <span class="ok">✓</span></div><div class="box ghost center">dnn 건너뜀<br><span class="mono">torch 없음 기록</span></div>
+      </div>
+      <div class="arrow" style="margin:10px 0">↓</div>
+      <div class="box center" style="background:var(--good);color:var(--good-ink);font-weight:700;font-size:18px">나머지로 시험 계속</div>
+      <div class="lab">외부 모델</div>
+      <div class="box pack">ONNX 우선 · pickle 거부 · 결과물 해시 기록</div>
+    </div>
+  </div>
+</section>
+
+<!-- 6. 조합 -->
+<section class="scene" data-title="6 조합 (XGBoost + DNN)">
+  <p class="q">두 모델을 섞고 싶다</p>
+  <div class="cmp">
+    <div class="side"><h2><span class="tag t-now">지금</span> 표현할 자리 없음</h2>
+      <div class="row"><div class="box engine center">xgb<br><span class="mono">0.08</span></div><div class="box ghost center">+</div><div class="box engine center">dnn<br><span class="mono">0.41</span></div></div>
+      <div class="arrow" style="margin:8px 0">↓</div>
+      <div class="box bad center">평균 0.245 ?<br><span class="mono">단위가 다른 숫자를 더함</span></div>
+    </div>
+    <div class="side"><h2><span class="tag t-new">개선</span> 순위로 합침 <span class="tag" style="background:var(--ghost);color:var(--muted)">B단계</span></h2>
+      <div class="row"><div class="box engine center">xgb<br><span class="mono">상위 12%</span></div><div class="box ghost center">+</div><div class="box engine center">dnn<br><span class="mono">상위 3%</span></div></div>
+      <div class="arrow" style="margin:8px 0">↓</div>
+      <div class="box pack center"><span class="mono">ens_mix: {members: [xgb_d3, dnn_v1], combine: rank_mean}</span><br>상위 7.5%</div>
+      <div class="note">지금은 규격에 자리만 · 연구팀 모델이 올 때 구현</div>
+    </div>
+  </div>
+</section>
+
+<!-- 7. 화면 -->
+<section class="scene" data-title="7 화면에 보이는 값">
+  <p class="q">모델이 바뀌면 화면 숫자의 뜻도 바뀌나</p>
+  <div class="cmp">
+    <div class="side"><h2><span class="tag t-now">지금</span> 원점수</h2>
+      <div class="row">
+        <div class="box engine center"><div class="lab" style="margin:0 0 4px">xgb</div><div class="big">0.08</div></div>
+        <div class="box engine center"><div class="lab" style="margin:0 0 4px">dnn으로 교체 후</div><div class="big">0.41</div></div>
+      </div>
+      <div class="box bad center">같은 거래인데 숫자가 5배 · 의미 비교 불가</div>
+    </div>
+    <div class="side"><h2><span class="tag t-new">개선</span> 순위</h2>
+      <div class="row">
+        <div class="box engine center"><div class="lab" style="margin:0 0 4px">xgb</div><div class="big">상위 12%</div></div>
+        <div class="box engine center"><div class="lab" style="margin:0 0 4px">dnn으로 교체 후</div><div class="big">상위 3%</div></div>
+      </div>
+      <div class="box center" style="background:var(--good);color:var(--good-ink)">모델과 무관하게 같은 뜻</div>
+    </div>
+  </div>
+</section>
+
+<!-- 8. 단계 -->
+<section class="scene" data-title="8 언제 무엇을">
+  <p class="q">지금 만들 것 · 나중에 만들 것</p>
+  <div class="side" style="min-height:0">
+    <div class="lane" style="grid-template-columns:150px 1fr"><span><span class="tag t-new">A</span> 지금 · API 직전</span>
+      <div class="row" style="flex-wrap:wrap"><span class="pill engine">규격 v2</span><span class="pill pack">팩 models.yaml</span><span class="pill engine">모델별 점수 표</span><span class="pill run">배치 표</span><span class="pill engine">입력 함수 통일</span><span class="pill engine">실패 격리</span><span class="pill engine">자동 규격 테스트</span><span class="pill engine">역할로 읽기 · 순위 표시</span></div></div>
+    <div class="lane" style="grid-template-columns:150px 1fr;margin-top:12px"><span><span class="tag" style="background:var(--run);color:var(--run-ink)">B</span> 연구팀 모델이 올 때</span>
+      <div class="row" style="flex-wrap:wrap"><span class="pill ghost">ONNX 어댑터</span><span class="pill ghost">라이브러리 검사</span><span class="pill ghost">순위 조합</span><span class="pill ghost">그림자 비교 리포트</span></div></div>
+    <div class="lane" style="grid-template-columns:150px 1fr;margin-top:12px"><span><span class="tag" style="background:var(--ghost);color:var(--muted)">C</span> 진짜 라벨이 올 때</span>
+      <div class="row" style="flex-wrap:wrap"><span class="pill ghost">실제 판정 기준 승격</span><span class="pill ghost">요약 화면 모델 상태 한 줄</span></div></div>
+  </div>
+</section>
+
+</main>
+<script>
+  const scenes=[...document.querySelectorAll('.scene')], nav=document.getElementById('nav'); let cur=0;
+  const show=i=>{cur=(i+scenes.length)%scenes.length; scenes.forEach((s,j)=>s.classList.toggle('on',j===cur)); [...nav.children].forEach((b,j)=>b.classList.toggle('on',j===cur)); history.replaceState(null,'','#'+(cur+1));};
+  scenes.forEach((s,i)=>{const b=document.createElement('button'); b.textContent=s.dataset.title; b.onclick=()=>show(i); nav.appendChild(b);});
+  document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')show(cur+1); if(e.key==='ArrowLeft')show(cur-1);});
+  const foot=document.createElement('div'); foot.className='foot'; foot.innerHTML='<button id="p">← 이전</button><span>← → 키로 넘기기</span><button id="n">다음 →</button>';
+  document.getElementById('main').appendChild(foot); document.getElementById('p').onclick=()=>show(cur-1); document.getElementById('n').onclick=()=>show(cur+1);
+  show((parseInt(location.hash.slice(1))||1)-1);
+</script>
+</body>
+</html>
