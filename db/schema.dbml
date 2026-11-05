@@ -1,0 +1,447 @@
+// Generated from db/schema.sql with: pnpm dlx --package=@dbml/cli sql2dbml db/schema.sql --postgres
+// Paste this whole file into the LEFT editor of https://dbdiagram.io (DBML). schema.sql is the source of truth; regenerate after changing it.
+
+Table "tenants" {
+  "tenant_id" int [pk, increment]
+  "name" text [unique, not null]
+  "created_at" timestamptz [not null, default: `now()`]
+  Note: '[cfg] 회사(테넌트). 모든 표의 뿌리.'
+}
+
+Table "reviewers" {
+  "tenant_id" int [not null]
+  "reviewer_id" int [increment]
+  "name" text [not null]
+  "role" text [not null, check: `role in ('reviewer','admin','dev')`, default: 'reviewer']
+  "counts_as_label" boolean [not null, default: true, note: '학습 라벨로 쓸지. 개발팀 테스트 계정은 false.']
+  "created_at" timestamptz [not null, default: `now()`]
+
+  Indexes {
+    (tenant_id, reviewer_id) [pk]
+  }
+}
+
+Table "data_sources" {
+  "tenant_id" int [not null]
+  "source_id" int [increment]
+  "kind" text [not null, check: `kind in ('card_tx','hr','access','policy')`]
+  "name" text [not null]
+  "column_mapping" jsonb [not null, default: `'{}'::jsonb`]
+  "raw_glob" text
+  "created_at" timestamptz [not null, default: `now()`]
+
+  Indexes {
+    (tenant_id, source_id) [pk]
+  }
+  Note: '[cfg] 회사별 입력 파일과 열 매핑.'
+}
+
+Table "rule_settings" {
+  "tenant_id" int [not null]
+  "rule_id" text [not null]
+  "version" int [not null]
+  "enabled" boolean [not null, default: true]
+  "params" jsonb [not null, default: `'{}'::jsonb`]
+  "policy_ref" text
+  "changed_by" text [not null]
+  "changed_at" timestamptz [not null, default: `now()`]
+  "note" text
+
+  Indexes {
+    (tenant_id, rule_id, version) [pk]
+  }
+  Note: '[cfg] 공통 규칙 카탈로그 위 회사별 덮어쓰기. 변경마다 새 version 행.'
+}
+
+Table "loads" {
+  "tenant_id" int [not null]
+  "load_id" int [increment]
+  "source_id" int [not null]
+  "file_name" text
+  "file_hash" text [not null]
+  "n_rows" int
+  "status" text [not null, check: `status in ('running','done','failed')`, default: 'done']
+  "loaded_at" timestamptz [not null, default: `now()`]
+
+  Indexes {
+    (tenant_id, load_id) [pk]
+  }
+}
+
+Table "transactions" {
+  "tenant_id" int [not null]
+  "tx_id" bigint [not null]
+  "load_id" int [not null]
+  "emp_id" int
+  "tx_ts" timestamptz [not null]
+  "tx_date" date [not null]
+  "total" numeric(14,0)
+  "net_total" numeric(14,0)
+  "merchant" text
+  "merchant_addr" text
+  "mcc_code" int
+  "mcc_name" text
+  "account_raw" text
+  "account_policy" text
+  "dept" text
+  "rank" text
+  "approver_id" int
+  "sap_doc_no" text
+  "approval_no" bigint
+  "memo" text
+  "has_attachment" boolean
+  "is_holiday" boolean
+  "is_leave" boolean
+  "leave_type" text
+  "leave_hours" numeric(5,2)
+  "trip_type" text
+  "trip_start" date
+  "trip_end" date
+  "time_is_dummy" boolean [not null, default: false]
+  "exclude_reason" text
+  "cancel_of_tx_id" bigint
+  "is_synthetic" boolean [not null, default: false]
+  "case_id" int
+  "extra" jsonb
+
+  Indexes {
+    (tenant_id, tx_id) [pk]
+    (tenant_id, emp_id, tx_ts)
+    (tenant_id, tx_date)
+    (tenant_id, account_policy, mcc_name)
+  }
+  Note: '[src] 표준 거래. tx_id는 내용 해시.'
+}
+
+Table "employees" {
+  "tenant_id" int [not null]
+  "emp_id" int [not null]
+  "name" text
+  "dept" text
+  "rank" text
+  "title" text
+  "home_sigungu" text
+  "work_site" text
+  "work_sigungu" text
+  "is_synthetic" boolean [not null, default: false]
+
+  Indexes {
+    (tenant_id, emp_id) [pk]
+  }
+}
+
+Table "access_logs" {
+  "tenant_id" int [not null]
+  "access_id" bigint [increment]
+  "emp_id" int [not null]
+  "access_ts" timestamptz [not null]
+  "gate" text
+  "site" text
+  "event" text
+  "direction" text [check: `direction in ('in','out')`]
+  "is_synthetic" boolean [not null, default: false]
+
+  Indexes {
+    (tenant_id, access_id) [pk]
+    (tenant_id, emp_id, access_ts)
+  }
+}
+
+Table "policy_accounts" {
+  "tenant_id" int [not null]
+  "account" text [not null]
+  "description" text
+  "dos" text
+  "donts" text
+  "required_evidence" text
+
+  Indexes {
+    (tenant_id, account) [pk]
+  }
+}
+
+Table "rule_runs" {
+  "tenant_id" int [not null]
+  "run_id" int [increment]
+  "catalog_version" int [not null]
+  "settings_version" int
+  "ran_at" timestamptz [not null, default: `now()`]
+  "n_flags" int
+
+  Indexes {
+    (tenant_id, run_id) [pk]
+  }
+}
+
+Table "flags" {
+  "tenant_id" int [not null]
+  "run_id" int [not null]
+  "tx_id" bigint [not null]
+  "rule_id" text [not null]
+  "severity" text [not null, check: `severity in ('violation','advisory')`]
+  "evidence" jsonb [not null]
+  "related_tx_ids" "bigint[]" [not null, default: '{}']
+  "rule_version" int [not null]
+
+  Indexes {
+    (tenant_id, run_id, tx_id, rule_id) [pk]
+    (tenant_id, tx_id)
+    (tenant_id, run_id, rule_id)
+  }
+  Note: '[der] 규칙 적중. 실행(run_id)마다 쌓임. 화면은 최신 run만 읽음.'
+}
+
+Table "tx_features" {
+  "tenant_id" int [not null]
+  "tx_id" bigint [not null]
+  "features_version" int [not null]
+  "features" jsonb [not null]
+  "computed_at" timestamptz [not null, default: `now()`]
+
+  Indexes {
+    (tenant_id, tx_id, features_version) [pk]
+  }
+}
+
+Table "labels" {
+  "tenant_id" int [not null]
+  "tx_id" bigint [not null]
+  "label_source" text [not null, check: `label_source in ('weak','reviews','import')`]
+  "source_version" text [not null]
+  "prob" numeric(5,4) [not null, check: `prob between 0 and 1`]
+  "created_at" timestamptz [not null, default: `now()`]
+
+  Indexes {
+    (tenant_id, tx_id, label_source, source_version) [pk]
+  }
+}
+
+Table "model_versions" {
+  "tenant_id" int [not null]
+  "model_version" text [not null]
+  "model_id" text [not null]
+  "plug" text [not null]
+  "params" jsonb [not null, default: `'{}'::jsonb`]
+  "label_source" text [not null]
+  "label_version" text
+  "split_date" date
+  "trained_at" timestamptz [not null, default: `now()`]
+  "metrics" jsonb [not null, default: `'{}'::jsonb`]
+  "status" text [not null, check: `status in ('ok','failed','skipped')`, default: 'ok']
+  "error" text
+  "artifact_path" text
+  "artifact_hash" text
+
+  Indexes {
+    (tenant_id, model_version) [pk]
+  }
+  Note: '[der] 학습 결과물 한 건 = 한 행. 실패·건너뜀도 기록(실패 격리).'
+}
+
+Table "tx_scores" {
+  "tenant_id" int [not null]
+  "model_version" text [not null]
+  "tx_id" bigint [not null]
+  "score" numeric(7,6) [not null]
+  "rank_pct" numeric(5,2)
+  "top_features" jsonb [not null, default: `'[]'::jsonb`]
+  "scored_at" timestamptz [not null, default: `now()`]
+
+  Indexes {
+    (tenant_id, model_version, tx_id) [pk]
+    (tenant_id, model_version, score [desc])
+  }
+  Note: '[der] 모델마다 한 행. 옛 버전 점수도 남아 나란히 비교.'
+}
+
+Table "queues" {
+  "tenant_id" int [not null]
+  "queue_id" text [not null]
+  "period_from" date [not null]
+  "period_to" date [not null]
+  "params" jsonb [not null, default: `'{}'::jsonb`]
+  "built_at" timestamptz [not null, default: `now()`]
+  "built_by" text
+
+  Indexes {
+    (tenant_id, queue_id) [pk]
+  }
+}
+
+Table "queue_items" {
+  "tenant_id" int [not null]
+  "queue_id" text [not null]
+  "tx_id" bigint [not null]
+  "source" text [not null, check: `source in ('rule','model','random')`]
+  "selection_prob" numeric(8,6) [not null]
+  "rank_in_source" int
+  "model_version" text
+
+  Indexes {
+    (tenant_id, queue_id, tx_id) [pk]
+    (tenant_id, tx_id)
+  }
+}
+
+Table "reviews" {
+  "tenant_id" int [not null]
+  "review_id" text [not null]
+  "tx_id" bigint [not null]
+  "rule_id" text
+  "decision" text [not null, check: `decision in ('violation','ok','hold')`]
+  "reason_code" text
+  "action_code" text
+  "memo" text
+  "reviewer_id" int [not null]
+  "created_at" timestamptz [not null, default: `now()`]
+  "superseded_by" text
+
+  Indexes {
+    (tenant_id, review_id) [pk]
+    (tenant_id, tx_id)
+  }
+  Note: '[rec] 판정. 덮어쓰지 않고 추가. 최신 = superseded_by is null.'
+}
+
+Table "model_bindings" {
+  "tenant_id" int [not null]
+  "binding_id" int [increment]
+  "role" text [not null, check: `role in ('rank','discover')`]
+  "model_version" text [not null]
+  "state" text [not null, check: `state in ('serving','shadow','retired')`]
+  "set_by" text [not null]
+  "set_at" timestamptz [not null, default: `now()`]
+  "note" text
+
+  Indexes {
+    (tenant_id, binding_id) [pk]
+    (tenant_id, role, state, set_at [desc])
+  }
+  Note: '[rec] 역할별 배치. 상태 변경은 새 행 → 승격·되돌리기 이력.'
+}
+
+Table "rule_candidates" {
+  "tenant_id" int [not null]
+  "candidate_id" int [increment]
+  "title" text [not null]
+  "sql" text [not null]
+  "origin" text
+  "backtest" jsonb
+  "status" text [not null, check: `status in ('draft','approved','rejected')`, default: 'draft']
+  "proposed_by" text
+  "decided_by" text
+  "decided_at" timestamptz
+  "created_at" timestamptz [not null, default: `now()`]
+
+  Indexes {
+    (tenant_id, candidate_id) [pk]
+  }
+}
+
+Table "precedents" {
+  "tenant_id" int
+  "precedent_id" text [not null]
+  "kind" text [not null, check: `kind in ('case','review')`]
+  "title" text [not null]
+  "summary" text
+  "cues" "text[]" [not null, default: '{}']
+  "rule_ids" "text[]" [not null, default: '{}']
+  "account" text
+  "mcc_group" text
+  "amount_band" text
+  "outcome" text
+  "source" text
+
+  Indexes {
+    precedent_id [pk]
+  }
+}
+
+Table "audit_events" {
+  "tenant_id" int [not null]
+  "event_id" bigint [increment]
+  "actor" text
+  "event" text [not null]
+  "payload" jsonb
+  "ts" timestamptz [not null, default: `now()`]
+
+  Indexes {
+    (tenant_id, event_id) [pk]
+    (tenant_id, ts [desc])
+  }
+}
+
+Ref:"tenants"."tenant_id" <? "reviewers"."tenant_id"
+
+Ref:"tenants"."tenant_id" <? "data_sources"."tenant_id"
+
+Ref:"tenants"."tenant_id" <? "rule_settings"."tenant_id"
+
+Ref:"tenants"."tenant_id" <? "loads"."tenant_id"
+
+Ref:"data_sources".("tenant_id", "source_id") <? "loads".("tenant_id", "source_id")
+
+Ref:"tenants"."tenant_id" <? "transactions"."tenant_id"
+
+Ref:"loads".("tenant_id", "load_id") <? "transactions".("tenant_id", "load_id")
+
+Ref:"tenants"."tenant_id" <? "employees"."tenant_id"
+
+Ref:"tenants"."tenant_id" <? "access_logs"."tenant_id"
+
+Ref:"tenants"."tenant_id" <? "policy_accounts"."tenant_id"
+
+Ref:"tenants"."tenant_id" <? "rule_runs"."tenant_id"
+
+Ref:"tenants"."tenant_id" <? "flags"."tenant_id"
+
+Ref:"rule_runs".("tenant_id", "run_id") <? "flags".("tenant_id", "run_id")
+
+Ref:"transactions".("tenant_id", "tx_id") <? "flags".("tenant_id", "tx_id")
+
+Ref:"tenants"."tenant_id" <? "tx_features"."tenant_id"
+
+Ref:"transactions".("tenant_id", "tx_id") <? "tx_features".("tenant_id", "tx_id")
+
+Ref:"tenants"."tenant_id" <? "labels"."tenant_id"
+
+Ref:"transactions".("tenant_id", "tx_id") <? "labels".("tenant_id", "tx_id")
+
+Ref:"tenants"."tenant_id" <? "model_versions"."tenant_id"
+
+Ref:"tenants"."tenant_id" <? "tx_scores"."tenant_id"
+
+Ref:"model_versions".("tenant_id", "model_version") <? "tx_scores".("tenant_id", "model_version")
+
+Ref:"transactions".("tenant_id", "tx_id") <? "tx_scores".("tenant_id", "tx_id")
+
+Ref:"tenants"."tenant_id" <? "queues"."tenant_id"
+
+Ref:"tenants"."tenant_id" <? "queue_items"."tenant_id"
+
+Ref:"queues".("tenant_id", "queue_id") <? "queue_items".("tenant_id", "queue_id")
+
+Ref:"transactions".("tenant_id", "tx_id") <? "queue_items".("tenant_id", "tx_id")
+
+Ref:"tenants"."tenant_id" <? "reviews"."tenant_id"
+
+Ref:"transactions".("tenant_id", "tx_id") <? "reviews".("tenant_id", "tx_id")
+
+Ref:"reviewers".("tenant_id", "reviewer_id") <? "reviews".("tenant_id", "reviewer_id")
+
+Ref:"tenants"."tenant_id" <? "model_bindings"."tenant_id"
+
+Ref:"model_versions".("tenant_id", "model_version") <? "model_bindings".("tenant_id", "model_version")
+
+Ref:"tenants"."tenant_id" <? "rule_candidates"."tenant_id"
+
+Ref:"tenants"."tenant_id" <? "audit_events"."tenant_id"
+
+
+TableGroup "회사·설정 (cfg)" { tenants reviewers data_sources rule_settings }
+
+TableGroup "원천 (src)" { loads transactions employees access_logs policy_accounts }
+
+TableGroup "파생 (der)" { rule_runs flags tx_features labels model_versions tx_scores }
+
+TableGroup "기록 (rec)" { queues queue_items reviews model_bindings rule_candidates precedents audit_events }

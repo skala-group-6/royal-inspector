@@ -1,7 +1,7 @@
 # ERD — Postgres 단독, 회사(테넌트) 층 포함 (2026-11-05)
 
 **진실은 `db/schema.sql`**(Postgres DDL, 표 22개·뷰 3개, Docker Postgres 17에서 적용·제약 검증: `tests/test_schema.py`).
-그림이 필요하면 그 파일을 **dbdiagram.io 또는 drawDB에 붙여넣으면** 확대·클릭되는 ERD가 바로 나온다(손그림 `docs/design/erd.html`은 개념도). 계획 3에서 실제 DB가 뜨면 DBeaver로 연결해 본다. 결정 배경: `docs/STORAGE_ARCHITECTURE.md` §0.
+그림이 필요하면 **`db/schema.dbml`을 dbdiagram.io 왼쪽 편집창에 붙여넣으면** 확대·클릭되는 ERD가 바로 나온다(SQL을 직접 넣으면 안 됨 — 그 창은 DBML 전용. SQL은 Import → PostgreSQL 메뉴). `schema.dbml`은 `sql2dbml`로 생성하며 `schema.sql`을 바꾸면 다시 만든다(손그림 `docs/design/erd.html`은 개념도). 계획 3에서 실제 DB가 뜨면 DBeaver로 연결해 본다. 결정 배경: `docs/STORAGE_ARCHITECTURE.md` §0.
 이 문서의 §1~6은 요약이며, 열 이름·타입·제약이 다르면 `db/schema.sql`이 맞다.
 
 ## 0. 설계 원칙 (시니어 관점에서 먼저 정한 것)
