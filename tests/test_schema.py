@@ -24,13 +24,14 @@ def pg():
 def test_schema_applies(pg):
     r = pg(file="/db/schema.sql"); assert r.returncode == 0, r.stderr
     n = pg("select count(*) from information_schema.tables where table_schema='ri' and table_type='BASE TABLE'").stdout.strip()
-    assert int(n) == 22
+    assert int(n) == 24
 
 def test_guards_and_views(pg):
     seed = """set search_path to ri;
       insert into tenants(name) values ('t1'); insert into reviewers(tenant_id,name,role,counts_as_label) values (1,'dev','dev',false);
       insert into data_sources(tenant_id,kind,name) values (1,'card_tx','x'); insert into loads(tenant_id,source_id,file_hash) values (1,1,'h');
       insert into transactions(tenant_id,tx_id,load_id,tx_ts,tx_date,total) values (1,-1,1,'2025-03-10 22:56+09','2025-03-10',1000);
+      select set_config('ri.tenant_id','1',false);
       insert into model_versions(tenant_id,model_version,model_id,plug,label_source) values (1,'v1','m','models.x','weak');
       insert into model_bindings(tenant_id,role,model_version,state,set_by) values (1,'rank','v1','shadow','a'),(1,'rank','v1','serving','a');
       insert into reviews(tenant_id,review_id,tx_id,decision,reviewer_id) values (1,'r1',-1,'ok',1);

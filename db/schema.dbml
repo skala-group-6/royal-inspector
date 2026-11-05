@@ -18,6 +18,7 @@ Table "reviewers" {
 
   Indexes {
     (tenant_id, reviewer_id) [pk]
+    (tenant_id, name) [unique]
   }
 }
 
@@ -53,10 +54,22 @@ Table "rule_settings" {
   Note: '[cfg] 공통 규칙 카탈로그 위 회사별 덮어쓰기. 변경마다 새 version 행.'
 }
 
+Table "account_map" {
+  "tenant_id" int [not null]
+  "account_raw" text [not null]
+  "account_policy" text
+  "method" text
+
+  Indexes {
+    (tenant_id, account_raw) [pk]
+  }
+  Note: '[cfg] 원장 계정명 → 규정 계정명 매핑 (적재가 생성, 수동 결정 포함).'
+}
+
 Table "loads" {
   "tenant_id" int [not null]
   "load_id" int [increment]
-  "source_id" int [not null]
+  "source_id" int
   "file_name" text
   "file_hash" text [not null]
   "n_rows" int
@@ -71,44 +84,74 @@ Table "loads" {
 Table "transactions" {
   "tenant_id" int [not null]
   "tx_id" bigint [not null]
-  "load_id" int [not null]
-  "emp_id" int
-  "tx_ts" timestamptz [not null]
-  "tx_date" date [not null]
-  "total" numeric(14,0)
-  "net_total" numeric(14,0)
-  "merchant" text
-  "merchant_addr" text
-  "mcc_code" int
-  "mcc_name" text
+  "load_id" int
+  "sap_doc_no" text
+  "settle_type" text
   "account_raw" text
   "account_policy" text
+  "mid_account" text
   "dept" text
-  "rank" text
+  "emp_id" int
+  "emp_name" text
+  "reviewer" text
+  "approver" text
   "approver_id" int
-  "sap_doc_no" text
   "approval_no" bigint
+  "acquirer_no" text
+  "tx_date" date [not null]
+  "tx_time" text
+  "tx_ts" timestamptz [not null]
+  "time_is_dummy" boolean [not null, default: false]
+  "created_date" date
+  "approved_date" date
+  "merchant" text
+  "merchant_addr" text
+  "project_no" text
+  "project_name" text
+  "amount" numeric(14,2)
+  "vat" numeric(14,2)
+  "total" numeric(14,2)
+  "prepaid" numeric(14,2)
+  "net_total" numeric(14,2)
+  "cost_center" text
   "memo" text
+  "mcc_code" int
+  "mcc_name" text
   "has_attachment" boolean
+  "is_mobile" boolean
+  "rank" text
+  "title" text
+  "main_dept" text
+  "weekday" text
   "is_holiday" boolean
+  "is_remote" boolean
   "is_leave" boolean
-  "leave_type" text
-  "leave_hours" numeric(5,2)
+  "work_start" text
+  "work_end" text
+  "work_hours" numeric(6,2)
+  "night_start" text
+  "night_end" text
+  "night_hours" numeric(6,2)
   "trip_type" text
   "trip_start" date
   "trip_end" date
-  "time_is_dummy" boolean [not null, default: false]
+  "leave_type" text
+  "leave_hours" numeric(6,2)
+  "home_addr" text
+  "approver_addr" text
+  "work_site" text
+  "work_site_addr" text
   "exclude_reason" text
+  "is_partial_cancel" boolean [not null, default: false]
   "cancel_of_tx_id" bigint
   "is_synthetic" boolean [not null, default: false]
   "case_id" int
-  "extra" jsonb
 
   Indexes {
     (tenant_id, tx_id) [pk]
     (tenant_id, emp_id, tx_ts)
     (tenant_id, tx_date)
-    (tenant_id, account_policy, mcc_name)
+    (tenant_id, account_policy, mcc_name, tx_ts)
   }
   Note: '[src] 표준 거래. tx_id는 내용 해시.'
 }
@@ -116,13 +159,16 @@ Table "transactions" {
 Table "employees" {
   "tenant_id" int [not null]
   "emp_id" int [not null]
-  "name" text
-  "dept" text
+  "emp_name" text
   "rank" text
   "title" text
-  "home_sigungu" text
+  "main_dept" text
+  "home_addr" text
   "work_site" text
-  "work_sigungu" text
+  "work_site_addr" text
+  "n_tx" int
+  "n_home_variants" int
+  "n_site_variants" int
   "is_synthetic" boolean [not null, default: false]
 
   Indexes {
@@ -133,12 +179,16 @@ Table "employees" {
 Table "access_logs" {
   "tenant_id" int [not null]
   "access_id" bigint [increment]
-  "emp_id" int [not null]
   "access_ts" timestamptz [not null]
+  "weekday" text
   "gate" text
-  "site" text
+  "emp_name" text
+  "emp_id" int
+  "dept" text
+  "title" text
   "event" text
-  "direction" text [check: `direction in ('in','out')`]
+  "site" text
+  "direction" text
   "is_synthetic" boolean [not null, default: false]
 
   Indexes {
@@ -158,6 +208,32 @@ Table "policy_accounts" {
   Indexes {
     (tenant_id, account) [pk]
   }
+}
+
+Table "geocode" {
+  "tenant_id" int [not null]
+  "addr" text [not null]
+  "lat" doubleprecision
+  "lon" doubleprecision
+  "geocoded_at" timestamptz
+
+  Indexes {
+    (tenant_id, addr) [pk]
+  }
+  Note: '[src] 주소 → 좌표 캐시 (API 비용 때문에 보존).'
+}
+
+Table "ground_truth" {
+  "tenant_id" int [not null]
+  "tx_id" bigint [not null]
+  "case_id" int [not null]
+  "rule_id" text [not null]
+  "emp_id" int
+
+  Indexes {
+    (tenant_id, tx_id, rule_id) [pk]
+  }
+  Note: '[der] 합성 사례의 정답 (scripts/synth.py). 규칙 재현율 게이트의 분모.'
 }
 
 Table "rule_runs" {
@@ -188,19 +264,7 @@ Table "flags" {
     (tenant_id, tx_id)
     (tenant_id, run_id, rule_id)
   }
-  Note: '[der] 규칙 적중. 실행(run_id)마다 쌓임. 화면은 최신 run만 읽음.'
-}
-
-Table "tx_features" {
-  "tenant_id" int [not null]
-  "tx_id" bigint [not null]
-  "features_version" int [not null]
-  "features" jsonb [not null]
-  "computed_at" timestamptz [not null, default: `now()`]
-
-  Indexes {
-    (tenant_id, tx_id, features_version) [pk]
-  }
+  Note: '[der] 규칙 적중. 실행(run_id)마다 쌓임. 읽기는 current_flags 뷰(최신 run).'
 }
 
 Table "labels" {
@@ -208,7 +272,9 @@ Table "labels" {
   "tx_id" bigint [not null]
   "label_source" text [not null, check: `label_source in ('weak','reviews','import')`]
   "source_version" text [not null]
-  "prob" numeric(5,4) [not null, check: `prob between 0 and 1`]
+  "prob" doubleprecision [not null, check: `prob between 0 and 1`]
+  "n_votes" int [not null, default: 0]
+  "clusters_hit" "text[]" [not null, default: '{}']
   "created_at" timestamptz [not null, default: `now()`]
 
   Indexes {
@@ -242,8 +308,8 @@ Table "tx_scores" {
   "tenant_id" int [not null]
   "model_version" text [not null]
   "tx_id" bigint [not null]
-  "score" numeric(7,6) [not null]
-  "rank_pct" numeric(5,2)
+  "score" doubleprecision [not null]
+  "rank_pct" doubleprecision
   "top_features" jsonb [not null, default: `'[]'::jsonb`]
   "scored_at" timestamptz [not null, default: `now()`]
 
@@ -273,7 +339,7 @@ Table "queue_items" {
   "queue_id" text [not null]
   "tx_id" bigint [not null]
   "source" text [not null, check: `source in ('rule','model','random')`]
-  "selection_prob" numeric(8,6) [not null]
+  "selection_prob" doubleprecision [not null]
   "rank_in_source" int
   "model_version" text
 
@@ -377,19 +443,27 @@ Ref:"tenants"."tenant_id" <? "data_sources"."tenant_id"
 
 Ref:"tenants"."tenant_id" <? "rule_settings"."tenant_id"
 
+Ref:"tenants"."tenant_id" <? "account_map"."tenant_id"
+
 Ref:"tenants"."tenant_id" <? "loads"."tenant_id"
 
-Ref:"data_sources".("tenant_id", "source_id") <? "loads".("tenant_id", "source_id")
+Ref:"data_sources".("tenant_id", "source_id") ?<? "loads".("tenant_id", "source_id")
 
 Ref:"tenants"."tenant_id" <? "transactions"."tenant_id"
 
-Ref:"loads".("tenant_id", "load_id") <? "transactions".("tenant_id", "load_id")
+Ref:"loads".("tenant_id", "load_id") ?<? "transactions".("tenant_id", "load_id")
 
 Ref:"tenants"."tenant_id" <? "employees"."tenant_id"
 
 Ref:"tenants"."tenant_id" <? "access_logs"."tenant_id"
 
 Ref:"tenants"."tenant_id" <? "policy_accounts"."tenant_id"
+
+Ref:"tenants"."tenant_id" <? "geocode"."tenant_id"
+
+Ref:"tenants"."tenant_id" <? "ground_truth"."tenant_id"
+
+Ref:"transactions".("tenant_id", "tx_id") <? "ground_truth".("tenant_id", "tx_id")
 
 Ref:"tenants"."tenant_id" <? "rule_runs"."tenant_id"
 
@@ -398,10 +472,6 @@ Ref:"tenants"."tenant_id" <? "flags"."tenant_id"
 Ref:"rule_runs".("tenant_id", "run_id") <? "flags".("tenant_id", "run_id")
 
 Ref:"transactions".("tenant_id", "tx_id") <? "flags".("tenant_id", "tx_id")
-
-Ref:"tenants"."tenant_id" <? "tx_features"."tenant_id"
-
-Ref:"transactions".("tenant_id", "tx_id") <? "tx_features".("tenant_id", "tx_id")
 
 Ref:"tenants"."tenant_id" <? "labels"."tenant_id"
 
@@ -439,35 +509,65 @@ Ref:"tenants"."tenant_id" <? "audit_events"."tenant_id"
 
 
 TableGroup "회사·설정 (cfg)" {
+
   tenants
+
   reviewers
+
   data_sources
+
   rule_settings
+
+  account_map
+
 }
 
 TableGroup "원천 (src)" {
+
   loads
+
   transactions
+
   employees
+
   access_logs
+
   policy_accounts
+
+  geocode
+
 }
 
 TableGroup "파생 (der)" {
+
+  ground_truth
+
   rule_runs
+
   flags
-  tx_features
+
   labels
+
   model_versions
+
   tx_scores
+
 }
 
 TableGroup "기록 (rec)" {
+
   queues
+
   queue_items
+
   reviews
+
   model_bindings
+
   rule_candidates
+
   precedents
+
   audit_events
+
 }
