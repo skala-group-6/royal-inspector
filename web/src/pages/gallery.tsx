@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react"
+import { useState, type CSSProperties } from "react"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { CheckListIcon, Database01Icon, Layers01Icon, ChartHistogramIcon, ShieldKeyIcon, SidebarLeftIcon } from "@hugeicons/core-free-icons"
 import { Badge } from "@/components/ui/badge"
@@ -6,6 +6,9 @@ import { Link } from "@tanstack/react-router"
 import { SCENARIOS, scenarioTx } from "@/lib/scenarios"
 import { mock } from "@/mock"
 import { mmdd, hhmm } from "@/lib/format"
+import { CasePanel } from "@/components/case/case-panel"
+import { CasePanelV3 } from "@/components/case/case-panel-v3"
+import type { CaseBundle } from "@/types"
 
 /**
  * Design decision page (dev only, not in the rail): surface layers without lines.
@@ -110,6 +113,30 @@ function Swatches({ s }: { s: Surfaces }) {
   )
 }
 
+/** Proposal v3 (2026-11-06): the "넘기는 화면" — three layers, plain sentence first, details folded. Side by side with the current panel on the same case. */
+function V3Section() {
+  const items = SCENARIOS.map((sc) => ({ ...sc, tx: scenarioTx(sc.slug) })).filter((sc) => sc.tx)
+  const [slug, setSlug] = useState(items[0]?.slug)
+  const cur = items.find((sc) => sc.slug === slug)
+  const c = cur?.tx ? (mock.cases[cur.tx] as CaseBundle) : undefined
+  const source = cur?.tx ? mock.queue.find((r) => r.tx_id === cur.tx)?.queue_source : undefined
+  return (
+    <section className="mb-12">
+      <h2 className="text-base font-semibold">검토 화면 v3 제안 — "읽는 화면"에서 "넘기는 화면"으로</h2>
+      <p className="mt-1 text-sm text-muted-foreground">첫 3초: 사람 말 한 문장 + 금액 + 누가·어디서. 다음 7초: 규칙 한 줄씩(관측값 · 기준). 그 밖은 접힘 — 규칙이 필요로 하는 것만 저절로 열림. 왼쪽이 지금, 오른쪽이 제안.</p>
+      <div className="mt-3 flex flex-wrap gap-1">
+        {items.map((sc) => <Badge key={sc.slug} variant={sc.slug === slug ? "default" : "outline"} className="cursor-pointer" onClick={() => setSlug(sc.slug)}>{sc.title}</Badge>)}
+      </div>
+      {c && (
+        <div className="mt-4 grid grid-cols-1 gap-4 2xl:grid-cols-2">
+          <div className="h-[760px] overflow-hidden rounded-2xl bg-surface-card shadow-sm"><div className="px-8 pt-4 type-meta">지금</div><CasePanel c={c} source={source} /></div>
+          <div className="h-[760px] overflow-hidden rounded-2xl bg-surface-card shadow-sm ring-2 ring-primary/30"><div className="px-8 pt-4 type-meta">제안 v3</div><CasePanelV3 c={c} source={source} /></div>
+        </div>
+      )}
+    </section>
+  )
+}
+
 /** Case panel review happens on the real screen: each scenario opens /review/$txId with the matching case selected in the list. */
 function CaseSection() {
   return (
@@ -134,6 +161,7 @@ function CaseSection() {
 export function GalleryPage() {
   return (
     <div className="p-6">
+      <V3Section />
       <CaseSection />
       <h2 className="text-base font-semibold">면의 층 비교 — 선 없이 구분 · 채택: 제안 라이트 + 다크 A (2026-11-04, index.css surface-*)</h2>
       <p className="mt-1 text-sm text-muted-foreground">선택 행은 첫 줄, 호버 상태는 셋째 줄. 근거 목록은 패널과 같은 보조 면을 씁니다.</p>
