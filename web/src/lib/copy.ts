@@ -1,4 +1,4 @@
-import type { CaseBundle, Evidence, QueueSource } from "@/types"
+import type { CaseBundle, QueueSource } from "@/types"
 
 /**
  * The first thing a reviewer reads: one plain-Korean sentence saying what kind of case this is, in the words a colleague would use.
@@ -57,10 +57,4 @@ export function humanLine(c: CaseBundle, source?: QueueSource): { head: string; 
   const second = sorted.slice(1).find((e) => TAIL[e.rule_id.slice(0, 3)])
   const tail = second ? TAIL[second.rule_id.slice(0, 3)](second.evidence) : undefined
   return { head, tail }
-}
-
-/** One plain sentence for a single finding (card title in the v4 layout). */
-export function claimFor(e: Evidence, c: CaseBundle): string {
-  const k = e.rule_id.slice(0, 3)
-  return (HEAD[k] ?? (() => e.headline))(c, e.evidence)
 }

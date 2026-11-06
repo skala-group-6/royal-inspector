@@ -6,8 +6,8 @@ import { Link } from "@tanstack/react-router"
 import { SCENARIOS, scenarioTx } from "@/lib/scenarios"
 import { mock } from "@/mock"
 import { mmdd, hhmm } from "@/lib/format"
+import { CasePanel } from "@/components/case/case-panel"
 import { CasePanelV3 } from "@/components/case/case-panel-v3"
-import { CasePanelV4 } from "@/components/case/case-panel-v4"
 import type { CaseBundle } from "@/types"
 
 /**
@@ -122,15 +122,15 @@ function V3Section() {
   const source = cur?.tx ? mock.queue.find((r) => r.tx_id === cur.tx)?.queue_source : undefined
   return (
     <section className="mb-12">
-      <h2 className="text-base font-semibold">검토 화면 제안 — v3 "넘기는 화면" vs v4 "요소 카드"</h2>
-      <p className="mt-1 text-sm text-muted-foreground">v4: 문제 요소마다 카드 하나, 모든 카드가 같은 틀(주장 → 사실 → 자료 칩 → 근거 → 판단). 자료는 그 요소를 판단하는 데 필요한 것만 칩으로 붙고, 카드 안에서 펼쳐짐. 요소 판단이 모이면 판정 바에 권고가 뜨고, 버튼은 사람이 누름. 규칙이 자료를 고르는 표만 팩에 속하고 카드 틀은 범용.</p>
+      <h2 className="text-base font-semibold">검토 화면 v3 제안 — "읽는 화면"에서 "넘기는 화면"으로</h2>
+      <p className="mt-1 text-sm text-muted-foreground">첫 3초: 사람 말 한 문장 + 금액 + 누가·어디서. 다음 7초: 규칙 한 줄씩(관측값 · 기준). 그 밖은 접힘 — 규칙이 필요로 하는 것만 저절로 열림. 왼쪽이 지금, 오른쪽이 제안.</p>
       <div className="mt-3 flex flex-wrap gap-1">
         {items.map((sc) => <Badge key={sc.slug} variant={sc.slug === slug ? "default" : "outline"} className="cursor-pointer" onClick={() => setSlug(sc.slug)}>{sc.title}</Badge>)}
       </div>
       {c && (
         <div className="mt-4 grid grid-cols-1 gap-4 2xl:grid-cols-2">
-          <div className="h-[820px] overflow-hidden rounded-2xl bg-surface-card shadow-sm"><div className="px-8 pt-4 type-meta">제안 v3</div><CasePanelV3 c={c} source={source} /></div>
-          <div className="h-[820px] overflow-hidden rounded-2xl bg-surface-card shadow-sm ring-2 ring-primary/30"><div className="px-8 pt-4 type-meta">제안 v4</div><CasePanelV4 c={c} source={source} /></div>
+          <div className="h-[760px] overflow-hidden rounded-2xl bg-surface-card shadow-sm"><div className="px-8 pt-4 type-meta">지금</div><CasePanel c={c} source={source} /></div>
+          <div className="h-[760px] overflow-hidden rounded-2xl bg-surface-card shadow-sm ring-2 ring-primary/30"><div className="px-8 pt-4 type-meta">제안 v3</div><CasePanelV3 c={c} source={source} /></div>
         </div>
       )}
     </section>
