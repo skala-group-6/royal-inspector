@@ -10,8 +10,8 @@ import { finding } from "@/lib/findings"
 import { won, hhmm, mmdd } from "@/lib/format"
 import type { CaseBundle, Decision, QueueSource } from "@/types"
 
-const AmountBullet = lazy(() => import("@/components/charts/amount-bullet").then((m) => ({ default: m.AmountBullet })))
-const AmountDistribution = lazy(() => import("@/components/charts/amount-distribution").then((m) => ({ default: m.AmountDistribution })))
+const AmountBars = lazy(() => import("@/components/charts/amount-bars").then((m) => ({ default: m.AmountBars })))
+const AmountDots = lazy(() => import("@/components/charts/amount-dots").then((m) => ({ default: m.AmountDots })))
 const DayTimeline = lazy(() => import("@/components/charts/day-timeline").then((m) => ({ default: m.DayTimeline })))
 const HistoryWeeks = lazy(() => import("@/components/charts/history-weeks").then((m) => ({ default: m.HistoryWeeks })))
 const Fallback = <div className="h-20 animate-pulse rounded-lg bg-surface-panel" />
@@ -54,8 +54,8 @@ export function CasePanelV3({ c, source, onVerdict }: { c: CaseBundle; source?: 
         {c.profile.amount.user.n > 0 && (
           <div className="mt-6">
             <AmountSimple c={c} />
-            <Section title="금액 분포 상세" open={needAmount} nested>
-              <Suspense fallback={Fallback}><AmountDistribution profile={c.profile} peerPercentile={c.context.peer?.percentile_of_this} className="rounded-lg bg-surface-panel px-4 py-3" /></Suspense>
+            <Section title="본인 최근 거래와 비교" open={needAmount} nested>
+              <Suspense fallback={Fallback}><AmountDots c={c} className="rounded-lg bg-surface-panel px-4 py-3" /></Suspense>
             </Section>
           </div>
         )}
@@ -112,7 +112,7 @@ function AmountSimple({ c }: { c: CaseBundle }) {
   return (
     <div className="rounded-lg bg-surface-panel px-4 py-3">
       <p className="text-sm font-medium">{parts.length ? `${parts.join(", ")} 금액` : "비교할 과거 기록이 적음"}</p>
-      <Suspense fallback={Fallback}><AmountBullet profile={c.profile} className="mt-2" /></Suspense>
+      <Suspense fallback={Fallback}><AmountBars profile={c.profile} className="mt-2" /></Suspense>
     </div>
   )
 }
