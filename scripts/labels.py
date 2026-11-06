@@ -1,5 +1,5 @@
 """Step 3.7: labels for the prioritization model. One script, three sources — the label source is mandatory.
-  --label-source weak     rule votes → noisy-OR probability per tx (pack weak_labels.yaml). No human labels needed.
+  --label-source weak     rule votes → noisy-OR probability per tx (pack weak_labels.yaml; clusters from rules/catalog.yaml). No human labels needed.
   --label-source reviews  --reviewers A,B : latest non-superseded auditor decisions (violation=1, ok=0, hold dropped)
   --label-source import   --file F        : past audit outcomes (xlsx/csv). Columns: tx_id OR (emp_id, tx_ts|tx_date, total); decision; decided_at; reason
 Output table labels (current tenant), replaced per source. Flags are read from current_flags (latest rule run).
@@ -18,14 +18,10 @@ FLAGS = "current_flags"
 # ---------- config ----------
 def load_weak_cfg(path=WEAK_CFG, rules_path=RULES_CFG) -> dict:
     cfg = yaml.safe_load(open(path)); rules = yaml.safe_load(open(rules_path))
-    rule_ids = set(rules["rules"]); seen = {}
-    for c, members in cfg["clusters"].items():
-        for r in members:
-            if r not in rule_ids: raise ValueError(f"cluster {c}: unknown rule {r}")
-            if r in seen: raise ValueError(f"rule {r} in two clusters: {seen[r]}, {c}")
-            seen[r] = c
-    missing = rule_ids - set(seen)
-    if missing: raise ValueError(f"rules without a cluster: {sorted(missing)}")
+    rule_ids = set(rules["rules"])
+    seen = {r: v.get("cluster") for r, v in rules["rules"].items()}          # cluster lives in the rule catalog (one place)
+    missing = [r for r, c in seen.items() if not c]
+    if missing: raise ValueError(f"rules without a cluster in the catalog: {sorted(missing)}")
     for k, v in list(cfg["p_tier"].items()) + list(cfg.get("p_rule", {}).items()) + [("prior", cfg["prior"])]:
         if not (0 < float(v) < 1): raise ValueError(f"{k}: probability must be in (0,1), got {v}")
     for r in cfg.get("p_rule", {}):

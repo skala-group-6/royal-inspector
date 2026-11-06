@@ -10,7 +10,7 @@ packs/<name>/
   rules/sql/R*.sql     규칙 1개 = SQL 1장. 출력 계약 고정 (아래 4)
   rules/functions.sql  (선택) PostgreSQL SQL 함수(sido_of 등). 규칙·피처가 공유. bootstrap_db.py가 schema 다음에 적용
   features.yaml        피처 선언: {entity}__{window}__{what}, 시점 기준(point-in-time) 집계. docs/FEATURES.md
-  weak_labels.yaml     약한 라벨: 규칙 클러스터·p_tier·prior (noisy-OR). docs/MODEL.md
+  weak_labels.yaml     약한 라벨: p_tier·prior·p_rule (noisy-OR). 묶음(cluster)은 rules/catalog.yaml의 cluster 필드. docs/MODEL.md
   cases.yaml           선례·합성 사례 명세(징계사례 등). docs/PRECEDENTS.md
 ```
 적재 스크립트(엑셀 → 계약 테이블)와 합성 생성기는 지금 `scripts/load.py`, `scripts/synth.py`에 있다(파이썬은 `scripts/`에 둔다 — `python -I` sys.path 관례). 두 번째 팩은 `scripts/load_<name>.py`를 추가하고 pack.yaml의 `raw_glob`으로 원본을 가리킨다.

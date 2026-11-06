@@ -1,13 +1,13 @@
 import { Badge } from "@/components/ui/badge"
-import { humanLine } from "@/pack/corp_card"
+import { humanLine, violationClusters } from "@/pack/corp_card"
 import { won, hhmm, mmdd } from "@/lib/format"
 import type { CaseBundle, QueueSource } from "@/types"
 
-/** Layer 1: one plain sentence (strongest rule + one supporting clause), the amount, who/when/where, count of policy-backed hits. Never a verdict. */
+/** Layer 1: one plain sentence (strongest rule + one supporting clause), the amount, who/when/where, count of policy-backed situations (clusters). Never a verdict. */
 export function Conclusion({ c, source }: { c: CaseBundle; source?: QueueSource }) {
   const t = c.transaction
   const { head, tail } = humanLine(c, source)
-  const vio = c.evidences.filter((e) => e.severity === "violation").length
+  const vio = violationClusters(c.evidences)
   return (
     <div data-slot="case-conclusion" className="flex items-start justify-between gap-6">
       <div className="min-w-0">

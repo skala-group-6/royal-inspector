@@ -127,3 +127,19 @@ export function briefFor(e: Evidence): Brief {
   const f = BRIEF[e.rule_id.slice(0, 3)]
   return f ? f(e.evidence) : { value: e.detail, verdict: "" }
 }
+
+/** Rules that fired on the same situation (catalog cluster), ordered by strength; the lead is the strongest rule of each cluster. */
+export function groupByCluster(evs: Evidence[]): { cluster: string; lead: Evidence; others: Evidence[] }[] {
+  const rank = (e: Evidence) => (e.severity === "violation" ? 0 : 100) + Math.max(0, ORDER.indexOf(e.rule_id.slice(0, 3)))
+  const by = new Map<string, Evidence[]>()
+  for (const e of [...evs].sort((a, b) => rank(a) - rank(b))) { const k = e.cluster ?? e.rule_id; by.set(k, [...(by.get(k) ?? []), e]) }
+  return [...by.entries()].map(([cluster, list]) => ({ cluster, lead: list[0], others: list.slice(1) }))
+}
+/** Same count for a list row, which only carries rule ids: needs the rule catalog (GET /rules) for tier and cluster. */
+export type RuleInfo = { rule_id: string; tier: "violation" | "advisory"; cluster: string }
+export function violationClustersOf(ruleIds: string[], rules: RuleInfo[]): number {
+  const by = new Map(rules.map((r) => [r.rule_id, r]))
+  return new Set(ruleIds.map((id) => by.get(id)).filter((r) => r?.tier === "violation").map((r) => r!.cluster)).size
+}
+/** How many policy-backed situations (clusters with a violation-tier rule) this case has — the number the "위반 n" badge shows. */
+export const violationClusters = (evs: Evidence[]) => new Set(evs.filter((e) => e.severity === "violation").map((e) => e.cluster ?? e.rule_id)).size

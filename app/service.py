@@ -42,10 +42,11 @@ def mask(name): return name if not isinstance(name, str) or len(name) < 2 else n
 def rule_tier(rid): return RULES.get(rid, {}).get("tier", "advisory")
 def rule_class(rid): return TIER_LABEL[rule_tier(rid)]
 def rule_explain(rid): return RULES.get(rid, {}).get("explain", "")
+def rule_cluster(rid): return RULES.get(rid, {}).get("cluster", rid)   # catalog cluster; a rule without one is its own cluster
 
 # ---------- rules ----------
 def list_rules() -> pd.DataFrame:
-    return pd.DataFrame([dict(rule_id=k, name=v["name"], tier=v["tier"], rule_class=TIER_LABEL[v["tier"]], data_ready=v["data_ready"],
+    return pd.DataFrame([dict(rule_id=k, name=v["name"], tier=v["tier"], cluster=v.get("cluster", k), rule_class=TIER_LABEL[v["tier"]], data_ready=v["data_ready"],
                               params=json.dumps(v["params"], ensure_ascii=False), explain=v.get("explain", ""), policy_ref=v.get("policy_ref", "")) for k, v in RULES.items()])
 RULE_NAME = {r.rule_id: r.name for r in list_rules().itertuples()}
 
@@ -122,7 +123,7 @@ def get_evidence(tx_id) -> list[dict]:
     for r in df.itertuples():
         ev = json.loads(r.evidence) if isinstance(r.evidence, str) else r.evidence
         rel = list_flags_by_ids([int(x) for x in (r.related_tx_ids if r.related_tx_ids is not None else [])])
-        out.append(dict(rule_id=r.rule_id, rule_name=RULE_NAME.get(r.rule_id, r.rule_id), rule_class=rule_class(r.rule_id), severity=r.severity,
+        out.append(dict(rule_id=r.rule_id, rule_name=RULE_NAME.get(r.rule_id, r.rule_id), rule_class=rule_class(r.rule_id), severity=r.severity, cluster=rule_cluster(r.rule_id),
                         evidence=ev, evidence_text=evidence_text(r.rule_id, ev), related_tx=rel, rule_version=r.rule_version))
     return out
 

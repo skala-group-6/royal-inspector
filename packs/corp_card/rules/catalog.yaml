@@ -1,5 +1,6 @@
 # 규칙 카탈로그 — 규칙에 관한 설정은 이 파일 한 곳에만 둔다.
 #  tier:        violation(빨강: 규정에 근거가 있어 걸리면 확인 대상) | advisory(회색: 통계·가설 기반, 참고)
+#  cluster:     같은 상황에서 함께 걸리는 묶음(time, location, entertain …). 약한 라벨은 묶음당 1표(max), 검토 화면은 묶음당 1줄. 진실은 여기 한 곳(weak_labels.yaml에서 옮김, 2026-11-06)
 #  data_ready:  now / geo(지오코딩 후 정밀화) / partial(후보까지) / no(증빙 파일 필요)
 #  params:      임계치. 2026-10-31 초기값 고정(민감도: docs/RULES.md). 변경 시 version을 올리고 changelog에 사유를 적는다.
 #  explain:     검토 화면의 "왜 걸렸나?" 링크에 보이는 설명
@@ -12,6 +13,7 @@ rules:
   R01_holiday_use:
     name: 휴일 사용
     tier: violation
+    cluster: time
     data_ready: now
     params: {}
     explain: "거래일이 토·일·공휴일이고 출장 기록이 없는 거래. 휴일 사용은 사전 승인 또는 소명이 필요한 사적 사용 의심 시나리오."
@@ -19,6 +21,7 @@ rules:
   R02_leave_use:
     name: 휴가 중 사용
     tier: violation
+    cluster: time
     data_ready: now
     params: {}
     explain: "HR 휴가 기록(연차·반차 등)이 있는 날의 거래. 휴가 중에는 업무 지출이 발생하기 어렵다."
@@ -26,6 +29,7 @@ rules:
   R03_split_payment:
     name: 분할결제
     tier: violation
+    cluster: split_prepay
     data_ready: now
     params: {window_min: 60, min_count: 2, min_sum: 100000, near_limit: 500000}
     explain: "같은 사람이 같은 가맹점에서 짧은 시간 안에 여러 번 결제. 승인 한도(건당 50만원 등)를 피하려고 나눠 긁는 패턴. 합계가 기준에 가까울수록 의심."
@@ -33,6 +37,7 @@ rules:
   R04_prepayment:
     name: 선결제
     tier: violation
+    cluster: split_prepay
     data_ready: now
     params: {min_amount: 200000, round_to: 50000}
     explain: "식당·카페에 30만, 50만원처럼 딱 떨어지는 큰 금액을 결제. 장부를 달아 두고 쓰는 선결제 의심."
@@ -40,6 +45,7 @@ rules:
   R05_near_home:
     name: 거주지 인근 사용
     tier: violation
+    cluster: location
     data_ready: geo
     params: {match_level: sigungu}
     explain: "가맹점이 사용자 주거지와 같은 시·군·구에 있고 근무지와는 다른 곳. 지오코딩 전까지는 주소 문자열의 시·군·구 일치로 판정."
@@ -47,6 +53,7 @@ rules:
   R06_same_time_diff_place:
     name: 동일인 동시간 다른 장소
     tier: violation
+    cluster: location
     data_ready: geo
     params: {window_min: 15, level: sigungu}
     explain: "같은 카드가 15분 안에 서로 다른 시·군·구에서 결제되거나, 적요에 적힌 동석자가 같은 시각 다른 지역에서 결제. 물리적으로 한 사람이 있을 수 없는 조합."
@@ -54,6 +61,7 @@ rules:
   R07_outside_trip_area:
     name: 출장 중 출장지 밖 사용
     tier: advisory
+    cluster: trip
     data_ready: geo
     params: {level: sido}
     explain: "출장 기간 중 거래인데 가맹점이 출장지가 아닌 곳(해외출장 중 국내, 국내출장 중 자택 인근). 출장이 실제로 이루어졌는지, 카드를 다른 사람이 썼는지 확인 대상."
@@ -61,6 +69,7 @@ rules:
   R08_banned_mcc:
     name: 금지 업종
     tier: violation
+    cluster: entertain
     data_ready: now
     params: {mcc_names: [일반주점, 주점, 유흥주점, 단란주점, 노래방, 골프장, 골프연습장, 안마]}
     explain: "유흥주점·골프장 등 사용이 제한된 업종. 계정별 규정의 Don'ts에 명시되어 있고, 접대비라도 사전 품의와 상대방 정보가 필요."
@@ -68,6 +77,7 @@ rules:
   R09_excess_fuel:
     name: 과다 주유
     tier: advisory
+    cluster: fuel
     data_ready: now
     params: {per_day: 2, window_days: 14, per_window: 3}
     explain: "같은 날 주유 2회 이상, 또는 14일 안에 3회 이상. 차량 한 대가 쓰기 어려운 빈도로, 타인 차량 주유 의심."
@@ -75,6 +85,7 @@ rules:
   R10_missing_evidence:
     name: 증빙 필수 업종 증빙 누락
     tier: violation
+    cluster: evidence
     data_ready: now
     params: {}
     explain: "마트·백화점·인터넷쇼핑처럼 구매 품목을 알 수 없는 업종인데 세부 영수증이 첨부되지 않음."
@@ -82,6 +93,7 @@ rules:
   R11_account_mismatch:
     name: 업종-계정 불일치
     tier: violation
+    cluster: entertain
     data_ready: now
     params: {}
     explain: "업종이 그 계정에서 허용되지 않음. 예: 주점·골프를 접대비가 아닌 의욕관리비로, 해외출장 중 식사를 출장비 외 계정으로."
@@ -89,6 +101,7 @@ rules:
   R12_card_lending:
     name: 타인 카드 대여 의심
     tier: advisory
+    cluster: location
     data_ready: partial
     params: {lookback_min: 45, min_repeat: 3}
     explain: "카드 주인이 사옥에 입문한 직후(45분 내)에 멀리 떨어진 시도에서 결제가 반복됨. 본인이 결제했을 수 없는 위치 모순. 3회 이상 반복될 때만 표시."
@@ -96,6 +109,7 @@ rules:
   R13_personal_item:
     name: 개인 귀속 물품 의심
     tier: advisory
+    cluster: evidence
     data_ready: partial
     params: {accounts: [잡비, 사무용품비, 전산소모품비, 소모품비-기타, 기념행사비], keywords: [케이블, 선풍기, 화장품, 배터리, 밧데리, 이어폰, 텀블러, 슬리퍼, 마우스, 키보드, 충전]}
     explain: "소모품 계정에서 쇼핑성 업종 결제이면서 적요에 개인물품 키워드, 심야·휴일, 증빙 없음 중 신호가 겹침. 점수가 높을수록 의심."
@@ -103,6 +117,7 @@ rules:
   R14_trip_meal_double:
     name: 출장 중 식사 카드 결제
     tier: advisory
+    cluster: trip
     data_ready: now
     params: {}
     explain: "출장 기간 중 식당·카페 결제. 일당(식비 포함)을 받으면서 식사를 카드로도 결제하면 이중 지급. 일당 지급 방식에 따라 정상일 수 있어 참고용."
@@ -110,6 +125,7 @@ rules:
   R15_trip_period_mismatch:
     name: 출장 기간-복귀 교통편 불일치
     tier: advisory
+    cluster: trip
     data_ready: now
     params: {min_days_early: 3}
     explain: "출장 종료일보다 3일 이상 전에 복귀 교통편(철도·항공)을 결제했고 이후 출장지 소비가 없음. 조기 복귀 후 일당을 그대로 받았을 가능성."
@@ -117,6 +133,7 @@ rules:
   R16_amount_outlier:
     name: 동료 대비 금액 과다
     tier: advisory
+    cluster: amount
     data_ready: now
     params: {ratio: 2.0, min_group: 30, min_amount: 30000}
     explain: "같은 계정·업종 조합에서 다른 사람들의 중앙값보다 2배 이상 큰 금액. 통계적 이상치이며 정당한 사유가 흔하므로 참고용."
@@ -124,6 +141,7 @@ rules:
   R17_route_mismatch:
     name: 자택방문교통비 경로 밖 사용
     tier: violation
+    cluster: fuel
     data_ready: geo
     params: {}
     explain: "자택방문교통비로 정산했는데 톨게이트·주유소 위치가 자택과 근무지 어느 시도에도 속하지 않음."
@@ -131,6 +149,7 @@ rules:
   R18_approver_conflict:
     name: 승인자 이해충돌
     tier: violation
+    cluster: entertain
     data_ready: now
     params: {min_amount: 100000}
     explain: "저녁·휴일의 식당·주점 결제인데 가맹점이 승인자 주거지와 같은 시·군·구. 승인자가 동석했을 가능성이 있어 승인의 독립성이 의심됨."
@@ -138,6 +157,7 @@ rules:
   R19_duplicate_evidence:
     name: 증빙 중복 첨부
     tier: violation
+    cluster: evidence_file
     data_ready: "no"
     params: {}
     explain: "같은 증빙 파일이 여러 정산에 첨부됨. 영수증 파일이 있어야 판정 가능."
@@ -145,6 +165,7 @@ rules:
   R20_evidence_forgery:
     name: 증빙 위변조
     tier: violation
+    cluster: evidence_file
     data_ready: "no"
     params: {}
     explain: "증빙 파일의 수정 흔적(해시·메타데이터·픽셀). 영수증 파일이 있어야 판정 가능."
@@ -152,6 +173,7 @@ rules:
   R21_kickback_candidate:
     name: 고액 식사 페이백 후보
     tier: advisory
+    cluster: kickback
     data_ready: partial
     params: {min_amount: 400000, max_attendees: 3}
     explain: "소수 인원 식사에 40만원 이상. 결제 후 현금을 돌려받는 페이백은 거래 데이터만으로 확정할 수 없어 후보만 표시."

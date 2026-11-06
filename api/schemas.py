@@ -22,7 +22,7 @@ class RelatedTx(BaseModel):
     tx_id: TxId; tx_ts: str; emp_name: str | None; account_policy: str | None; merchant: str | None; mcc_name: str | None; total: float
 
 class Evidence(BaseModel):
-    rule_id: str; rule_name: str; rule_class: str; severity: Literal["violation", "advisory"]
+    rule_id: str; rule_name: str; rule_class: str; severity: Literal["violation", "advisory"]; cluster: str
     evidence: dict[str, Any]; evidence_text: str; headline: str; detail: str; citation: str; explain: str
     related_tx: list[RelatedTx]; rule_version: int
 
@@ -66,7 +66,7 @@ class CaseBundle(BaseModel):
     precedents: Precedents; score: Score | None; policy: Policy | None; reviews: list[Review]; profile: Profile
 
 class Rule(BaseModel):
-    rule_id: str; name: str; tier: Literal["violation", "advisory"]; rule_class: str; data_ready: str | None = None
+    rule_id: str; name: str; tier: Literal["violation", "advisory"]; cluster: str; rule_class: str; data_ready: str | None = None
     params: str | None = None; explain: str; policy_ref: str
 
 class ReasonCode(BaseModel): code: str; label: str

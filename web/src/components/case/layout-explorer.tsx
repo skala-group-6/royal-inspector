@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Kbd } from "@/components/ui/kbd"
 import { ListGroup, ListItem, ListMeta } from "@/components/layout/list"
 import { Conclusion, Context, Findings, Basis, SecondOpinion, More, Verdict } from "@/components/case/case-v3"
-import { humanLine, strongestRule } from "@/pack/corp_card"
+import { humanLine, strongestRule, violationClusters } from "@/pack/corp_card"
 import { won, hhmm, mmdd } from "@/lib/format"
 import type { CaseBundle, QueueRow } from "@/types"
 
@@ -67,7 +67,7 @@ function MiniList({ rows, cases, sel, onSel, expanded }: { rows: QueueRow[]; cas
       <ListMeta><span>2025-03 큐 · {rows.length}건</span><span>미검토 {rows.filter((r) => r.review_status === "unreviewed").length}</span></ListMeta>
       <ListGroup>
         {rows.map((r) => {
-          const c = cases[r.tx_id]; const vio = c?.evidences.filter((e) => e.severity === "violation").length ?? 0
+          const c = cases[r.tx_id]; const vio = c ? violationClusters(c.evidences) : 0
           const line = c ? humanLine(c, r.queue_source).head : ""
           return (
             <ListItem key={r.tx_id} active={sel === r.tx_id} onClick={() => onSel(r.tx_id)} className={`grid cursor-pointer grid-cols-[1fr_auto] gap-x-3 gap-y-0.5 ${expanded ? "py-2.5" : ""}`}>
@@ -140,7 +140,7 @@ function Panel({ k, c, row }: { k: Key; c: CaseBundle; row?: QueueRow }) {
     )
   }
   // D: the list already said what it is; the panel starts at the context, with a one-line strip for amount + count
-  const vio = c.evidences.filter((e) => e.severity === "violation").length
+  const vio = violationClusters(c.evidences)
   return (
     <div className="flex h-full min-h-0 flex-col">
       <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-auto px-8 pt-6 pb-6">

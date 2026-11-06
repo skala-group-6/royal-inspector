@@ -2,13 +2,14 @@ import { Link, useParams } from "@tanstack/react-router"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { ListGroup, ListItem, ListMeta } from "@/components/layout/list"
-import { QUEUE_PAGE, useCurrentPeriod, useQueue } from "@/api/queries"
+import { QUEUE_PAGE, useCurrentPeriod, useQueue, useRules } from "@/api/queries"
+import { violationClustersOf, type RuleInfo } from "@/pack/corp_card"
 import { mmdd, hhmm } from "@/lib/format"
 import type { QueueRow } from "@/types"
 
-/** Per-row badges: violation count when the row has a policy-backed rule (sev 2), otherwise advisory count; provenance for model/random; status when reviewed. */
-function badges(r: QueueRow) {
-  const v = r.sev === 2 ? r.n_rules : 0, a = r.sev === 2 ? 0 : r.n_rules
+/** Per-row badges: policy-backed situations (clusters, same count as the panel), else advisory count; provenance for model/random; status when reviewed. */
+function badges(r: QueueRow, rules: RuleInfo[]) {
+  const v = rules.length ? violationClustersOf(r.rules, rules) : r.sev === 2 ? r.n_rules : 0, a = v ? 0 : r.n_rules
   const out: { label: string; variant: "destructive" | "outline" | "default" }[] = []
   if (v) out.push({ label: `위반 ${v}`, variant: "destructive" })
   if (a) out.push({ label: `참고 ${a}`, variant: "outline" })
@@ -22,6 +23,7 @@ export function QueueList() {
   const { txId } = useParams({ strict: false }) as { txId?: string }
   const { period } = useCurrentPeriod()
   const { data: rows, isPending, error } = useQueue(period?.period_from, period?.period_to)
+  const { data: rules = [] } = useRules()
   if (error) return <ListMeta><span className="text-destructive">목록을 불러오지 못했습니다. API 서버가 켜져 있는지 확인하세요.</span></ListMeta>
   if (!period || isPending || !rows) return <div className="space-y-2 p-3">{Array.from({ length: 8 }, (_, i) => <Skeleton key={i} className="h-10" />)}</div>
   return (
@@ -40,7 +42,7 @@ export function QueueList() {
                 <span className={`text-right type-value ${done ? "text-muted-foreground" : ""}`}>{Math.round(r.total).toLocaleString("ko-KR")}</span>
                 <span className="truncate type-meta">{mmdd(r.tx_ts)} {hhmm(r.tx_ts)} · {r.merchant}</span>
                 <span className="flex justify-end gap-1">
-                  {badges(r).map((b) => <Badge key={b.label} variant={b.variant} className="h-4 px-1.5 text-[10px]">{b.label}</Badge>)}
+                  {badges(r, rules).map((b) => <Badge key={b.label} variant={b.variant} className="h-4 px-1.5 text-[10px]">{b.label}</Badge>)}
                 </span>
               </Link>
             </ListItem>

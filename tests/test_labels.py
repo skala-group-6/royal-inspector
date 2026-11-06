@@ -19,13 +19,13 @@ def test_requires_label_source():
 def test_config_covers_all_rules(tmp_path):
     cfg = L.load_weak_cfg(); rules = yaml.safe_load(open(L.RULES_CFG))["rules"]
     assert set(cfg["_rule_p"].rule_id) == set(rules)
-    base = yaml.safe_load(open(L.WEAK_CFG))
-    bad1 = dict(base); bad1["clusters"] = {**base["clusters"], "dup": ["R01_holiday_use"]}
-    bad2 = dict(base); bad2["clusters"] = {k: v for k, v in base["clusters"].items() if k != "time"}
+    base = yaml.safe_load(open(L.WEAK_CFG)); cat = yaml.safe_load(open(L.RULES_CFG))
+    bad_cat = dict(cat); bad_cat["rules"] = {k: ({kk: vv for kk, vv in v.items() if kk != "cluster"} if k == "R01_holiday_use" else v) for k, v in cat["rules"].items()}
+    pc = tmp_path / "cat.yaml"; pc.write_text(yaml.safe_dump(bad_cat, allow_unicode=True))
+    with pytest.raises(ValueError): L.load_weak_cfg(L.WEAK_CFG, pc)                      # a rule without a cluster
     bad3 = dict(base); bad3["p_tier"] = {"violation": 1.0, "advisory": 0.2}
-    for i, b in enumerate((bad1, bad2, bad3)):
-        p = tmp_path / f"bad{i}.yaml"; p.write_text(yaml.safe_dump(b, allow_unicode=True))
-        with pytest.raises(ValueError): L.load_weak_cfg(p)
+    p = tmp_path / "bad3.yaml"; p.write_text(yaml.safe_dump(bad3, allow_unicode=True))
+    with pytest.raises(ValueError): L.load_weak_cfg(p)                                   # probability out of (0,1)
 
 def test_rows_bounds_and_prior(con):
     c, cfg = con

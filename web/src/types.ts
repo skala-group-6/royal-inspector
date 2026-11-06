@@ -13,7 +13,7 @@ export interface QueueRow {
   score: number | null; score_learned: number | null
 }
 export interface Evidence {
-  rule_id: string; rule_name: string; rule_class: string; severity: "violation" | "advisory"
+  rule_id: string; rule_name: string; rule_class: string; severity: "violation" | "advisory"; cluster: string
   evidence: Record<string, unknown>; evidence_text: string; headline: string; detail: string; citation: string; explain: string
   related_tx: { tx_id: TxId; tx_ts: string; emp_name: string; account_policy: string; merchant: string; mcc_name: string; total: number }[]
   rule_version: number
@@ -43,7 +43,7 @@ export interface CaseBundle {
 }
 export interface MockData {
   period: { period_from: string; period_to: string }; queue: QueueRow[]; cases: Record<string, CaseBundle>
-  rules: { rule_id: string; name: string; tier: "violation" | "advisory"; rule_class: string; explain: string; policy_ref: string }[]
+  rules: { rule_id: string; name: string; tier: "violation" | "advisory"; cluster: string; rule_class: string; explain: string; policy_ref: string }[]
   reason_codes: { code: string; label: string }[]
   summary: { source: QueueSource; n: number; reviewed: number; violation: number; ok: number; hold: number; hit_rate_pct: number | null; selection_prob: number; est_missed: number | null }[]
 }
