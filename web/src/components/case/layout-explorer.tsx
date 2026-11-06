@@ -22,6 +22,7 @@ const Fallback = <div className="h-16 animate-pulse rounded-lg bg-surface-panel"
  * ← → or the buttons switch. Nothing here is wired to the API; it reads the mock snapshot.
  */
 export const LAYOUTS = [
+  { key: "A1", title: "한 칸 · 글 먼저", note: "A의 순서(결론 → 규칙 → 근거)를 한 칸으로. 그림(맥락)과 모델은 그 아래" },
   { key: "A", title: "두 칸", note: "글은 왼쪽, 그림은 오른쪽. 넓은 화면에서 스크롤 없이 한눈에" },
   { key: "B", title: "고정 머리", note: "결론과 판정 바를 고정, 가운데만 스크롤. 어디를 보든 무엇을 판정 중인지 보임" },
   { key: "C", title: "이야기 순서", note: "그날 동선을 맨 위에, 그 위에 규칙 적중을 핀으로. 장소·시간형 위반에 강함" },
@@ -95,6 +96,14 @@ function MiniList({ rows, cases, sel, onSel, expanded }: { rows: QueueRow[]; cas
 
 function Panel({ k, c, row }: { k: Key; c: CaseBundle; row?: QueueRow }) {
   const source = row?.queue_source
+  if (k === "A1") return (
+    <div className="flex h-full min-h-0 flex-col">
+      <div className="flex min-h-0 flex-1 flex-col gap-5 overflow-auto px-8 pt-7 pb-6">
+        <Conclusion c={c} source={source} /><Findings c={c} /><Basis c={c} /><Context c={c} source={source} /><SecondOpinion c={c} /><More c={c} />
+      </div>
+      <Verdict current={c.reviews[0]?.decision} />
+    </div>
+  )
   if (k === "A") return (
     <div className="flex h-full min-h-0 flex-col">
       <div className="grid min-h-0 flex-1 grid-cols-[3fr_2fr] gap-8 overflow-auto px-8 pt-7 pb-6">
