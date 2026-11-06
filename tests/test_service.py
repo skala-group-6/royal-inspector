@@ -1,5 +1,7 @@
 import sys, pathlib; sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
+import pytest
 from app import service as s
+pytestmark = pytest.mark.usefixtures("pgdb")
 
 def test_rules_and_summary():
     assert len(s.list_rules()) >= 19
@@ -26,7 +28,7 @@ def test_review_roundtrip():
     assert rv[rv.review_id == r1["review_id"]].superseded.iloc[0] and not rv[rv.review_id == r2["review_id"]].superseded.iloc[0]
     assert s.list_flags(review_status="reviewed", synthetic_only=True).tx_id.isin([tx]).any()
     # cleanup
-    s.con().execute("delete from reviews where reviewer='tester'").fetchall()
+    s.execute("delete from reviews where tenant_id = tenant() and reviewer_id = %s", [s.reviewer_id("tester")])
 
 
 def test_tier_and_citation():
@@ -51,9 +53,9 @@ def test_profile():
     assert len(p["weekly"]) == 13 and list(p["weekly"].columns) == ["week_start", "flagged", "violations"]
     assert (p["weekly"].violations <= p["weekly"].flagged).all()
     # point-in-time: user n must equal the feature table's prior-tx count for this tx
-    f = s.q("select user__all__n_tx from tx_features where tx_id=?", [tx])
+    f = s.q("select user__all__n_tx from tx_features where tenant_id = tenant() and tx_id = %s", [tx])
     if len(f) and f.iloc[0, 0] is not None: assert p["amount"]["user"]["n"] == int(f.iloc[0, 0])
     # no future rows: the tx itself is excluded
-    row = s.q("select emp_id, tx_ts from transactions where tx_id=?", [tx]).iloc[0]
-    n_strict = int(s.q("select count(*) from tx_active where emp_id=? and tx_ts<? and total>0", [int(row.emp_id), row.tx_ts]).iloc[0, 0])
+    row = s.q("select emp_id, tx_ts from transactions where tenant_id = tenant() and tx_id = %s", [tx]).iloc[0]
+    n_strict = int(s.one("select count(*) from tx_active where emp_id = %s and tx_ts < %s and total>0", [int(row.emp_id), row.tx_ts]))
     assert p["amount"]["user"]["n"] == n_strict

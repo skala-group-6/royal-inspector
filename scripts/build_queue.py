@@ -1,5 +1,5 @@
 """Step 3.95: build the review queue for a period = rule rows (score order) + model top-M unflagged + random p% of unflagged.
-Usage: build_queue.py --from 2025-03-01 --to 2025-03-31 [--p-random 0.10] [--m-model 20] [--seed 42] [--min-random 10] [--force]. Honors ROYAL_DB."""
+Usage: build_queue.py --from 2025-03-01 --to 2025-03-31 [--p-random 0.10] [--m-model 20] [--seed 42] [--min-random 10] [--force]. Uses DATABASE_URL (current tenant)."""
 import sys, os, argparse
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))

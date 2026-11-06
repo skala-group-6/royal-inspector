@@ -1,5 +1,7 @@
 import sys, pathlib; sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
+import pytest
 from app import service as s
+pytestmark = pytest.mark.usefixtures("pgdb")
 
 def test_precedents_shape_and_hidden_when_no_overlap():
     tx = int(s.list_flags(rule_ids=["R08_banned_mcc"], synthetic_only=True, page_size=1).tx_id.iloc[0])
@@ -9,7 +11,7 @@ def test_precedents_shape_and_hidden_when_no_overlap():
 
 def test_source_case_ranks_first_for_planted_violations():
     """Planted violations know their origin case; that case should be the top precedent for most of them."""
-    df = s.q("select distinct t.tx_id, t.case_id from transactions t join ground_truth g using(tx_id) where t.is_synthetic")
+    df = s.q("select distinct t.tx_id, t.case_id from transactions t join ground_truth g on g.tenant_id = t.tenant_id and g.tx_id = t.tx_id where t.tenant_id = tenant() and t.is_synthetic")
     hits = top3 = 0
     for tx_id, case_id in df.itertuples(index=False):
         cases = s.get_precedents(int(tx_id), k=3)["cases"]
