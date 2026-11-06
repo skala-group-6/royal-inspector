@@ -52,6 +52,7 @@
 `tests/test_design_rules.py`가 `web/src`(단, `components/ui/`와 `pages/gallery.tsx` 제외)에서 다음을 찾으면 실패한다: 구분용 테두리 클래스(`border`, `border-t/r/b/l/x/y`), `divide-*`, `Separator`(드롭다운 메뉴의 `DropdownMenuSeparator`는 허용), 왼쪽 막대 선택 표시(`shadow-[inset`). 테두리를 없애는 `border-*-0`은 허용.
 
 ## 8. 차트 (recharts + shadcn chart, `dataviz` 스킬 규칙 적용)
+- "한 값을 기준과 견준다"(이 건 vs 본인 평소 vs 동료 평소)는 **가로 막대 3개 + 끝 라벨**(shadcn Bar Horizontal + Label). 띠·눈금·로그축이 섞인 불릿·상자 그림은 쓰지 않는다(2026-11-06, 갤러리 비교 후). 분포 자체를 보여줄 때는 실제 거래를 점으로(Scatter 스트립), 이 건만 강조색.
 - **차트는 판단 질문 하나에 하나.** 케이스 패널의 세 질문(평소 대비·그날·반복)에만. 점수·개수·비율 하나짜리 값은 숫자로.
 - **숫자 병기.** 그림 옆에 항상 정확한 값(이 건, 중앙값, 배수, 상위 %). 그림은 속도, 숫자는 정확.
 - **색은 역할로만.** 이 건·위반 확정 = `destructive`(상태색), 나머지 마크 = `muted-foreground`(비강조), 면 = `surface-*`. `--chart-1..5`는 쓰지 않는다. 색만으로 뜻을 전하지 않는다: 범례 글자, 라벨, 툴팁 병행.

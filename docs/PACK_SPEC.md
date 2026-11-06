@@ -62,3 +62,4 @@ PostgreSQL 한 곳(`db/schema.sql`). 파생: `rule_runs`·`flags`(현재 실행�
 - 엔진 코드(`scripts/*.py` 중 load/synth 제외, `features/executor.py`, `models/`, `app/service.py` 범용 부분, `web/`)에 팩 이름이나 도메인 열을 넣지 않는다. 예외는 계획 3에서 `presentation`으로 뺀다.
 - 팩은 엔진 테이블(flags 등)의 스키마를 바꾸지 않는다.
 - 판정은 사람. 팩도 에이전트도 `reviews`에 직접 쓰지 않는다.
+- 검토 화면의 **다섯 층(결론 → 맥락 → 해석 → 근거 → 제2의견)의 순서와 틀은 엔진**이 정한다. 팩이 정하는 것은 두 가지: 규칙마다 2층에 들어갈 **맥락 종류**(그날 동선 / 금액 비교 / 없음)와 4층의 **확인할 문서 목록**(품의서·영수증 등). 규칙 카탈로그의 `context`·`documents` 항목으로 선언한다(계획: 지금은 `web/src/lib/copy.ts`와 패널 코드의 규칙 접두 표). 사람 말 결론 문장의 템플릿도 팩 소유.
