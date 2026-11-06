@@ -47,18 +47,18 @@ export function CasePanelV3({ c, source, onVerdict }: { c: CaseBundle; source?: 
           </div>
         </div>
 
-        {/* Layer 2 */}
-        {c.evidences.length > 0 && <ul className="mt-6 flex flex-col gap-0.5">{c.evidences.map((e) => <RuleLine key={e.rule_id} e={e} />)}</ul>}
-
-        {/* Amount, as a sentence and one scale */}
+        {/* Amount first: the picture answers "how unusual" before the rules explain why */}
         {c.profile.amount.user.n > 0 && (
-          <div className="mt-6">
+          <div className="mt-5">
             <AmountSimple c={c} />
             <Section title="본인 최근 거래와 비교" open={needAmount} nested>
               <Suspense fallback={Fallback}><AmountDots c={c} className="rounded-lg bg-surface-panel px-4 py-3" /></Suspense>
             </Section>
           </div>
         )}
+
+        {/* Layer 2 */}
+        {c.evidences.length > 0 && <ul className="mt-5 flex flex-col gap-0.5">{c.evidences.map((e) => <RuleLine key={e.rule_id} e={e} />)}</ul>}
 
         {/* Layer 3: only sections that have something */}
         <div className="mt-4 flex flex-col gap-0.5">
