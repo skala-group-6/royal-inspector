@@ -3,7 +3,7 @@ Streamlit calls these directly today; FastAPI will wrap the same functions later
 Every read is tenant-scoped: views (tx_active, current_flags, latest_reviews, current_bindings) filter on the session tenant,
 base tables are filtered explicitly. Reviewer names map to reviewers.reviewer_id (auto-created as role dev, counts_as_label false)."""
 from __future__ import annotations
-import json, datetime as dt, uuid
+import json, re, datetime as dt, uuid
 from pathlib import Path
 import pandas as pd, yaml
 
@@ -43,6 +43,37 @@ def rule_tier(rid): return RULES.get(rid, {}).get("tier", "advisory")
 def rule_class(rid): return TIER_LABEL[rule_tier(rid)]
 def rule_explain(rid): return RULES.get(rid, {}).get("explain", "")
 def rule_cluster(rid): return RULES.get(rid, {}).get("cluster", rid)   # catalog cluster; a rule without one is its own cluster
+
+class _Safe(dict):
+    def __missing__(self, k): return "—"
+_SIDO = re.compile(r"^(서울|경기|인천|부산|대구|광주|대전|울산|세종|강원|충북|충남|전북|전남|경북|경남|제주)\s+")
+def _derived(ev: dict) -> dict:
+    """Evidence + a few derived keys the catalog templates may use. Values are plain strings; numbers are formatted for people."""
+    d = {}
+    for k, v in ev.items():
+        if isinstance(v, bool): d[k] = "O" if v else "X"
+        elif isinstance(v, float) and v.is_integer(): d[k] = f"{int(v):,}"
+        elif isinstance(v, (int, float)): d[k] = f"{v:,}" if isinstance(v, int) else str(v)
+        elif v is None: d[k] = "—"
+        else: d[k] = str(v)
+    if isinstance(ev.get("total"), (int, float)): d["total_won"] = f"{ev['total']:,.0f}원"
+    if ev.get("date"): d["date_md"] = str(ev["date"])[5:]
+    if ev.get("leave_type"): d["leave_type"] = str(ev["leave_type"]).strip()
+    for k in ("merchant_sigungu", "approver_sigungu", "home_sigungu", "work_sigungu"):
+        if ev.get(k): d[k + "_short"] = _SIDO.sub("", str(ev[k]))
+    for k in ("same_day_count", "count_in_14d"):
+        if ev.get(k) is None: d[k] = "1"
+    if ev.get("attendees_in_memo") is None: d["attendees_in_memo"] = "?"
+    return d
+
+def render(template: str, ev: dict) -> str:
+    """Catalog template → sentence. Unknown placeholders become '—' instead of failing (a pack typo must not break the screen)."""
+    try: return str(template).format_map(_Safe(_derived(ev)))
+    except (ValueError, IndexError): return str(template)
+
+def rule_fact(rid, ev: dict) -> str: return render(RULES.get(rid, {}).get("fact", RULE_NAME.get(rid, rid)), ev)
+def rule_brief(rid, ev: dict) -> tuple[str, str]:
+    b = RULES.get(rid, {}).get("brief") or {}; return render(b.get("value", ""), ev), render(b.get("verdict", ""), ev)
 
 # ---------- rules ----------
 def list_rules() -> pd.DataFrame:
@@ -94,6 +125,7 @@ def get_transaction(tx_id) -> dict:
     r = q("select * from transactions where tenant_id = tenant() and tx_id = %s", [tx_id]).iloc[0].to_dict(); r["emp_name"] = mask(r["emp_name"]); return r
 
 def evidence_text(rule_id, ev: dict) -> str:
+    """Deprecated (Streamlit / panel v2): the catalog `fact` template is the sentence now (rule_fact)."""
     g = lambda k, d="": ev.get(k, d)
     T = {"R01": lambda: f"{g('date')}({g('weekday')}) 휴일에 {g('mcc')}에서 {g('total'):,}원 ({g('account')})",
          "R02": lambda: f"{g('leave_type')} {g('leave_hours')}시간 휴가일 {g('time')}에 {g('mcc')} {g('total'):,}원",
@@ -123,7 +155,9 @@ def get_evidence(tx_id) -> list[dict]:
     for r in df.itertuples():
         ev = json.loads(r.evidence) if isinstance(r.evidence, str) else r.evidence
         rel = list_flags_by_ids([int(x) for x in (r.related_tx_ids if r.related_tx_ids is not None else [])])
+        bv, bd = rule_brief(r.rule_id, ev)
         out.append(dict(rule_id=r.rule_id, rule_name=RULE_NAME.get(r.rule_id, r.rule_id), rule_class=rule_class(r.rule_id), severity=r.severity, cluster=rule_cluster(r.rule_id),
+                        fact=rule_fact(r.rule_id, ev), brief_value=bv, brief_verdict=bd,
                         evidence=ev, evidence_text=evidence_text(r.rule_id, ev), related_tx=rel, rule_version=r.rule_version))
     return out
 
@@ -194,7 +228,7 @@ def log_event(reviewer, event, payload=None):
 
 
 
-# ---------- conclusion-first headlines (two lines per rule: what / numbers) ----------
+# ---------- conclusion-first headlines (two lines per rule: what / numbers) — deprecated (Streamlit / panel v2); see rule_fact / rule_brief ----------
 def evidence_headline(rule_id, ev: dict, t: dict) -> tuple[str, str]:
     g = lambda k, d="": ev.get(k, d)
     won = lambda v: f"{v:,.0f}원" if isinstance(v, (int, float)) else str(v)

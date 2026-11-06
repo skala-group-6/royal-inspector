@@ -73,7 +73,7 @@ with left:
     ctx = s.get_context(tx_id); p = ctx["peer"]
     if not evs: st.info("걸린 규칙 없음. 이 거래는 큐 출처(모델 추천 또는 무작위 표본)로 올라왔습니다. 거래 자체와 아래 정황을 보고 판단하세요.")
     for e in evs:
-        head, detail = s.evidence_headline(e["rule_id"], e["evidence"], t); cite = s.policy_citation(e["rule_id"], t)
+        head, detail = e["fact"], f"{e['brief_value']} · {e['brief_verdict']}"; cite = s.policy_citation(e["rule_id"], t)
         a, b, c = st.columns([6, 1, 1])
         a.markdown(f"{DOT[e['severity']]} **{head}**  \n<span class='sub'>{detail} · {e['rule_id'][:3]} {e['rule_name']}</span>" + (f"  \n<span class='cite'>근거: {cite}</span>" if cite else ""), unsafe_allow_html=True)
         with b.popover("왜?", help="이 규칙이 무엇을 보는지"): st.write(s.rule_explain(e["rule_id"]))

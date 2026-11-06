@@ -6,7 +6,7 @@
 ```
 packs/<name>/
   pack.yaml            매니페스트 (아래 2)
-  rules/catalog.yaml   규칙 카탈로그 v2: id, name, tier(violation|advisory), params, explain, policy_ref
+  rules/catalog.yaml   규칙 카탈로그 v2: id, name, tier(violation|advisory), cluster(같은 상황 묶음), params, fact(규칙 줄 한 문장, 사실만), brief{value, verdict}(관측값 · 판단어), explain, policy_ref. fact·brief는 서버가 evidence로 렌더(service.rule_fact)
   rules/sql/R*.sql     규칙 1개 = SQL 1장. 출력 계약 고정 (아래 4)
   rules/functions.sql  (선택) PostgreSQL SQL 함수(sido_of 등). 규칙·피처가 공유. bootstrap_db.py가 schema 다음에 적용
   features.yaml        피처 선언: {entity}__{window}__{what}, 시점 기준(point-in-time) 집계. docs/FEATURES.md

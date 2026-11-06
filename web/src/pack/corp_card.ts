@@ -90,44 +90,6 @@ export function strongestRule(c: CaseBundle): Evidence | undefined {
   return [...pool].sort((a, b) => ORDER.indexOf(a.rule_id.slice(0, 3)) - ORDER.indexOf(b.rule_id.slice(0, 3)))[0]
 }
 
-/** Layer 3 row title: one plain sentence per finding (same templates as the conclusion). */
-export function claimFor(e: Evidence, c: CaseBundle): string {
-  return (HEAD[e.rule_id.slice(0, 3)] ?? (() => e.headline))(c, e.evidence)
-}
-
-/**
- * Layer 3 row brief — one grammar for every rule: `관측값 · 판단어`. The value is the number when there is one, else the place /
- * category / account; the verdict word is one of five (같음 · 금지 · 아님 · 초과 · 없음, plus 휴일/휴가일/동시/출장 중 for time rules).
- * Details (baseline numbers, place names of the baseline) belong to the expanded row, not here.
- */
-export type Brief = { value: string; verdict: string }
-const sg = (v: unknown) => s(v).replace(/^(서울|경기|인천|부산|대구|광주|대전|울산|세종|강원|충북|충남|전북|전남|경북|경남|제주)\s+/, "")
-const BRIEF: Record<string, (ev: Record<string, unknown>) => Brief> = {
-  R01: (ev) => ({ value: `${s(ev.date).slice(5)} (${s(ev.weekday)})`, verdict: "휴일" }),
-  R02: (ev) => ({ value: `${s(ev.leave_type).trim() || "휴가"} ${s(ev.leave_hours)}h`, verdict: "휴가일" }),
-  R03: (ev) => ({ value: `${s(ev.window_min)}분 안 ${s(ev.count_in_window)}건`, verdict: "분할" }),
-  R04: (ev) => ({ value: `${Number(ev.total).toLocaleString("ko-KR")}원`, verdict: "단위 금액" }),
-  R05: (ev) => ({ value: sg(ev.merchant_sigungu), verdict: "집과 같음" }),
-  R06: (ev) => ({ value: `${s(ev.window_min)}분 안 2곳`, verdict: "동시" }),
-  R07: (ev) => ({ value: s(ev.merchant_sido), verdict: "출장지 밖" }),
-  R08: (ev) => ({ value: s(ev.mcc), verdict: "금지 업종" }),
-  R09: (ev) => ({ value: `당일 ${s(ev.same_day_count, "1")}회 · 14일 ${s(ev.count_in_14d, "1")}회`, verdict: "초과" }),
-  R10: (ev) => ({ value: s(ev.mcc), verdict: "증빙 없음" }),
-  R11: (ev) => ({ value: s(ev.account), verdict: ev.reason === "overseas_trip_meal_not_trip_account" ? "출장비 아님" : "접대비 아님" }),
-  R12: (ev) => ({ value: `입문 ${s(ev.minutes_before_purchase)}분 뒤 ${s(ev.merchant_sido)}`, verdict: `${s(ev.repeat_count)}회 반복` }),
-  R13: (ev) => ({ value: `신호 ${s(ev.score)}/4`, verdict: "개인 물품 의심" }),
-  R14: (ev) => ({ value: s(ev.account), verdict: "출장비 아님" }),
-  R15: (ev) => ({ value: `종료 ${s(ev.days_before_end)}일 전`, verdict: "조기 복귀" }),
-  R16: (ev) => ({ value: `${s(ev.ratio)}배`, verdict: "동료 초과" }),
-  R17: (ev) => ({ value: s(ev.merchant_sido), verdict: "경로 밖" }),
-  R18: (ev) => ({ value: sg(ev.approver_sigungu), verdict: "승인자 집과 같음" }),
-  R21: (ev) => ({ value: `참석 ${s(ev.attendees_in_memo) || "?"}명`, verdict: "금액 초과" }),
-}
-export function briefFor(e: Evidence): Brief {
-  const f = BRIEF[e.rule_id.slice(0, 3)]
-  return f ? f(e.evidence) : { value: e.detail, verdict: "" }
-}
-
 /** Rules that fired on the same situation (catalog cluster), ordered by strength; the lead is the strongest rule of each cluster. */
 export function groupByCluster(evs: Evidence[]): { cluster: string; lead: Evidence; others: Evidence[] }[] {
   const rank = (e: Evidence) => (e.severity === "violation" ? 0 : 100) + Math.max(0, ORDER.indexOf(e.rule_id.slice(0, 3)))

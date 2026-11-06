@@ -59,3 +59,12 @@ def test_profile():
     row = s.q("select emp_id, tx_ts from transactions where tenant_id = tenant() and tx_id = %s", [tx]).iloc[0]
     n_strict = int(s.one("select count(*) from tx_active where emp_id = %s and tx_ts < %s and total>0", [int(row.emp_id), row.tx_ts]))
     assert p["amount"]["user"]["n"] == n_strict
+
+
+def test_every_rule_renders_fact_and_brief():
+    """Catalog fact/brief templates must resolve for a real hit of every rule that fires: no leftover {placeholder}, nothing empty."""
+    hit = s.q("select rule_id, min(tx_id) tx_id from current_flags group by 1")
+    for r in hit.itertuples():
+        e = next(x for x in s.get_evidence(int(r.tx_id)) if x["rule_id"] == r.rule_id)
+        for k in ("fact", "brief_value", "brief_verdict"):
+            assert e[k] and "{" not in e[k] and "—" not in e["fact"], (r.rule_id, k, e[k])

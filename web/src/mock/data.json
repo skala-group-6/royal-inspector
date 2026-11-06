@@ -519,6 +519,9 @@
      "rule_class": "위반 가능",
      "severity": "violation",
      "cluster": "location",
+     "fact": "집과 같은 동네(용인시 수지구)에서 사용",
+     "brief_value": "용인시 수지구",
+     "brief_verdict": "집과 같음",
      "evidence": {
       "mcc": "일반주점",
       "time": "22:56:18",
@@ -541,6 +544,9 @@
      "rule_class": "위반 가능",
      "severity": "violation",
      "cluster": "entertain",
+     "fact": "제한 업종 일반주점 (계정 의욕관리비)",
+     "brief_value": "일반주점",
+     "brief_verdict": "금지 업종",
      "evidence": {
       "mcc": "일반주점",
       "time": "22:56:18",
@@ -562,6 +568,9 @@
      "rule_class": "위반 가능",
      "severity": "violation",
      "cluster": "entertain",
+     "fact": "일반주점 결제를 의욕관리비 계정으로 처리",
+     "brief_value": "의욕관리비",
+     "brief_verdict": "계정 불일치",
      "evidence": {
       "mcc": "일반주점",
       "total": 323657.0,
@@ -583,6 +592,9 @@
      "rule_class": "위반 가능",
      "severity": "violation",
      "cluster": "entertain",
+     "fact": "승인자 집과 같은 동네(용인시 수지구) 가맹점",
+     "brief_value": "용인시 수지구",
+     "brief_verdict": "승인자 집과 같음",
      "evidence": {
       "mcc": "일반주점",
       "time": "22:56:18",
@@ -605,6 +617,9 @@
      "rule_class": "참고",
      "severity": "advisory",
      "cluster": "amount",
+     "fact": "동료 중앙값의 5.1배 금액",
+     "brief_value": "5.1배",
+     "brief_verdict": "동료 초과",
      "evidence": {
       "ratio": 5.1,
       "total": 323657.0,
@@ -1075,6 +1090,9 @@
      "rule_class": "위반 가능",
      "severity": "violation",
      "cluster": "time",
+     "fact": "연차휴가 낸 날(4시간)에 사용",
+     "brief_value": "연차휴가 4h",
+     "brief_verdict": "휴가일",
      "evidence": {
       "mcc": "노래방",
       "time": "22:57:35",
@@ -1096,6 +1114,9 @@
      "rule_class": "위반 가능",
      "severity": "violation",
      "cluster": "entertain",
+     "fact": "제한 업종 노래방 (계정 의욕관리비)",
+     "brief_value": "노래방",
+     "brief_verdict": "금지 업종",
      "evidence": {
       "mcc": "노래방",
       "time": "22:57:35",
@@ -1117,6 +1138,9 @@
      "rule_class": "위반 가능",
      "severity": "violation",
      "cluster": "entertain",
+     "fact": "노래방 결제를 의욕관리비 계정으로 처리",
+     "brief_value": "의욕관리비",
+     "brief_verdict": "계정 불일치",
      "evidence": {
       "mcc": "노래방",
       "total": 590000.0,
@@ -1138,6 +1162,9 @@
      "rule_class": "위반 가능",
      "severity": "violation",
      "cluster": "entertain",
+     "fact": "승인자 집과 같은 동네(성남시 분당구) 가맹점",
+     "brief_value": "성남시 분당구",
+     "brief_verdict": "승인자 집과 같음",
      "evidence": {
       "mcc": "노래방",
       "time": "22:57:35",
@@ -1855,6 +1882,9 @@
      "rule_class": "위반 가능",
      "severity": "violation",
      "cluster": "time",
+     "fact": "휴일(03-09 일)에 사용",
+     "brief_value": "03-09 (일)",
+     "brief_verdict": "휴일",
      "evidence": {
       "mcc": "골프연습장",
       "date": "2025-03-09",
@@ -1876,6 +1906,9 @@
      "rule_class": "위반 가능",
      "severity": "violation",
      "cluster": "location",
+     "fact": "집과 같은 동네(강남구)에서 사용",
+     "brief_value": "강남구",
+     "brief_verdict": "집과 같음",
      "evidence": {
       "mcc": "골프연습장",
       "time": "18:57:56",
@@ -1898,6 +1931,9 @@
      "rule_class": "위반 가능",
      "severity": "violation",
      "cluster": "entertain",
+     "fact": "제한 업종 골프연습장 (계정 지급수수료)",
+     "brief_value": "골프연습장",
+     "brief_verdict": "금지 업종",
      "evidence": {
       "mcc": "골프연습장",
       "time": "18:57:56",
@@ -1919,6 +1955,9 @@
      "rule_class": "위반 가능",
      "severity": "violation",
      "cluster": "entertain",
+     "fact": "골프연습장 결제를 지급수수료 계정으로 처리",
+     "brief_value": "지급수수료",
+     "brief_verdict": "계정 불일치",
      "evidence": {
       "mcc": "골프연습장",
       "total": 500000.0,
@@ -2492,6 +2531,9 @@
      "rule_class": "위반 가능",
      "severity": "violation",
      "cluster": "time",
+     "fact": "휴일(03-09 일)에 사용",
+     "brief_value": "03-09 (일)",
+     "brief_verdict": "휴일",
      "evidence": {
       "mcc": "골프연습장",
       "date": "2025-03-09",
@@ -2513,6 +2555,9 @@
      "rule_class": "위반 가능",
      "severity": "violation",
      "cluster": "location",
+     "fact": "집과 같은 동네(용인시 수지구)에서 사용",
+     "brief_value": "용인시 수지구",
+     "brief_verdict": "집과 같음",
      "evidence": {
       "mcc": "골프연습장",
       "time": "09:17:14",
@@ -2535,6 +2580,9 @@
      "rule_class": "위반 가능",
      "severity": "violation",
      "cluster": "entertain",
+     "fact": "제한 업종 골프연습장 (계정 지급수수료)",
+     "brief_value": "골프연습장",
+     "brief_verdict": "금지 업종",
      "evidence": {
       "mcc": "골프연습장",
       "time": "09:17:14",
@@ -2556,6 +2604,9 @@
      "rule_class": "위반 가능",
      "severity": "violation",
      "cluster": "entertain",
+     "fact": "골프연습장 결제를 지급수수료 계정으로 처리",
+     "brief_value": "지급수수료",
+     "brief_verdict": "계정 불일치",
      "evidence": {
       "mcc": "골프연습장",
       "total": 320000.0,
@@ -3111,6 +3162,9 @@
      "rule_class": "위반 가능",
      "severity": "violation",
      "cluster": "time",
+     "fact": "Refresh 낸 날(1시간)에 사용",
+     "brief_value": "Refresh 1h",
+     "brief_verdict": "휴가일",
      "evidence": {
       "mcc": "일반주점",
       "time": "22:59:00",
@@ -3132,6 +3186,9 @@
      "rule_class": "위반 가능",
      "severity": "violation",
      "cluster": "entertain",
+     "fact": "제한 업종 일반주점 (계정 의욕관리비)",
+     "brief_value": "일반주점",
+     "brief_verdict": "금지 업종",
      "evidence": {
       "mcc": "일반주점",
       "time": "22:59:00",
@@ -3153,6 +3210,9 @@
      "rule_class": "위반 가능",
      "severity": "violation",
      "cluster": "entertain",
+     "fact": "일반주점 결제를 의욕관리비 계정으로 처리",
+     "brief_value": "의욕관리비",
+     "brief_verdict": "계정 불일치",
      "evidence": {
       "mcc": "일반주점",
       "total": 190000.0,
@@ -3174,6 +3234,9 @@
      "rule_class": "참고",
      "severity": "advisory",
      "cluster": "amount",
+     "fact": "동료 중앙값의 2.99배 금액",
+     "brief_value": "2.99배",
+     "brief_verdict": "동료 초과",
      "evidence": {
       "ratio": 2.99,
       "total": 190000.0,
@@ -3524,6 +3587,9 @@
      "rule_class": "위반 가능",
      "severity": "violation",
      "cluster": "time",
+     "fact": "휴일(03-09 일)에 사용",
+     "brief_value": "03-09 (일)",
+     "brief_verdict": "휴일",
      "evidence": {
       "mcc": "PC/인터넷",
       "date": "2025-03-09",
@@ -3858,6 +3924,9 @@
      "rule_class": "위반 가능",
      "severity": "violation",
      "cluster": "time",
+     "fact": "휴일(03-09 일)에 사용",
+     "brief_value": "03-09 (일)",
+     "brief_verdict": "휴일",
      "evidence": {
       "mcc": "PC/인터넷",
       "date": "2025-03-09",
@@ -4206,6 +4275,9 @@
      "rule_class": "참고",
      "severity": "advisory",
      "cluster": "trip",
+     "fact": "국내출장 중인데 출장지 밖(서울)에서 사용",
+     "brief_value": "서울",
+     "brief_verdict": "출장지 밖",
      "evidence": {
       "mcc": "주유소",
       "trip": "2025-03-18~2025-03-20",
@@ -4229,6 +4301,9 @@
      "rule_class": "참고",
      "severity": "advisory",
      "cluster": "fuel",
+     "fact": "주유가 당일 1회 · 14일 3회로 잦음",
+     "brief_value": "당일 1회 · 14일 3회",
+     "brief_verdict": "초과",
      "evidence": {
       "count_in_14d": 3,
       "per_day_limit": 2,
@@ -4268,6 +4343,9 @@
      "rule_class": "참고",
      "severity": "advisory",
      "cluster": "amount",
+     "fact": "동료 중앙값의 2배 금액",
+     "brief_value": "2배",
+     "brief_verdict": "동료 초과",
      "evidence": {
       "ratio": 2.0,
       "total": 100000.0,
@@ -4693,6 +4771,9 @@
      "rule_class": "참고",
      "severity": "advisory",
      "cluster": "trip",
+     "fact": "출장 중 식사(일반음식점)를 접대비 계정으로",
+     "brief_value": "접대비",
+     "brief_verdict": "출장비 아님",
      "evidence": {
       "mcc": "일반음식점",
       "trip": "2025-03-12~2025-03-14",
@@ -4714,6 +4795,9 @@
      "rule_class": "참고",
      "severity": "advisory",
      "cluster": "amount",
+     "fact": "동료 중앙값의 68.23배 금액",
+     "brief_value": "68.23배",
+     "brief_verdict": "동료 초과",
      "evidence": {
       "ratio": 68.23,
       "total": 5356000.0,
@@ -5240,6 +5324,9 @@
      "rule_class": "참고",
      "severity": "advisory",
      "cluster": "amount",
+     "fact": "동료 중앙값의 10.48배 금액",
+     "brief_value": "10.48배",
+     "brief_verdict": "동료 초과",
      "evidence": {
       "ratio": 10.48,
       "total": 480000.0,
@@ -5261,6 +5348,9 @@
      "rule_class": "참고",
      "severity": "advisory",
      "cluster": "kickback",
+     "fact": "참석 2명에 비해 큰 식사 금액",
+     "brief_value": "참석 2명",
+     "brief_verdict": "금액 초과",
      "evidence": {
       "mcc": "일반음식점",
       "memo": "동료 2명과 만찬",
@@ -8331,6 +8421,9 @@
      "rule_class": "위반 가능",
      "severity": "violation",
      "cluster": "time",
+     "fact": "휴일(03-09 일)에 사용",
+     "brief_value": "03-09 (일)",
+     "brief_verdict": "휴일",
      "evidence": {
       "mcc": "골프장",
       "date": "2025-03-09",
@@ -8352,6 +8445,9 @@
      "rule_class": "위반 가능",
      "severity": "violation",
      "cluster": "location",
+     "fact": "15분 안에 용인시와 동구 두 곳에서 결제",
+     "brief_value": "15분 안 2곳",
+     "brief_verdict": "동시",
      "evidence": {
       "kind": "same_person",
       "window_min": 15,
@@ -8382,6 +8478,9 @@
      "rule_class": "위반 가능",
      "severity": "violation",
      "cluster": "entertain",
+     "fact": "제한 업종 골프장 (계정 접대비)",
+     "brief_value": "골프장",
+     "brief_verdict": "금지 업종",
      "evidence": {
       "mcc": "골프장",
       "time": "13:00:14",
@@ -8947,6 +9046,9 @@
      "rule_class": "위반 가능",
      "severity": "violation",
      "cluster": "time",
+     "fact": "휴일(03-09 일)에 사용",
+     "brief_value": "03-09 (일)",
+     "brief_verdict": "휴일",
      "evidence": {
       "mcc": "컴퓨터",
       "date": "2025-03-09",
@@ -8968,6 +9070,9 @@
      "rule_class": "위반 가능",
      "severity": "violation",
      "cluster": "split_prepay",
+     "fact": "같은 가게에서 60분 안에 2건으로 나눠 결제",
+     "brief_value": "60분 안 2건",
+     "brief_verdict": "분할",
      "evidence": {
       "merchant": "GITHUB  INC.",
       "near_limit": 500000,
@@ -8999,6 +9104,9 @@
      "rule_class": "참고",
      "severity": "advisory",
      "cluster": "amount",
+     "fact": "동료 중앙값의 50.84배 금액",
+     "brief_value": "50.84배",
+     "brief_verdict": "동료 초과",
      "evidence": {
       "ratio": 50.84,
       "total": 1678244.0,

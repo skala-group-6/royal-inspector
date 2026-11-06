@@ -92,4 +92,4 @@ v2(위)는 "객체·속성·관계"로 사실은 잘 정리했지만, 속성 8�
 | 처음인가 반복인가 | 13주 주간 적중·위반 확정(시점 기준) | 누적 막대 | `charts/history-weeks.tsx` |
 규정·승인자·선례·모델은 글자·표(크기가 없는 사실). 모델 점수는 보조 신호라 작게.
 
-데이터 계약: `CaseBundle.profile`(`types.ts`), API `GET /tx/{id}/case`가 `service.get_case`로 채움(2026-11-06부터 화면은 mock이 아니라 API를 읽고, 판정은 `POST /tx/{id}/review`로 저장된다. /gallery만 mock 스냅샷). 목록은 큐 순서 500건까지 표시(전체 건수는 머리글에). 결론 문장은 당분간 클라이언트 템플릿(`lib/conclusion.ts`), 로드맵 6단계에서 서버로.
+데이터 계약: `CaseBundle.profile`(`types.ts`), API `GET /tx/{id}/case`가 `service.get_case`로 채움(2026-11-06부터 화면은 mock이 아니라 API를 읽고, 판정은 `POST /tx/{id}/review`로 저장된다. /gallery만 mock 스냅샷). 목록은 큐 순서 500건까지 표시(전체 건수는 머리글에). 규칙 줄의 문장(`fact`)과 `관측값 · 판단어`(`brief`)는 규칙 카탈로그에 선언하고 서버가 렌더한다(2026-11-06). 결론 한 줄(거래 + 가장 센 사실)만 아직 클라이언트(`web/src/pack/corp_card.ts`), 로드맵 6단계에서 서버로.

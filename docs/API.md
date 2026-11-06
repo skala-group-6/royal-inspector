@@ -26,7 +26,7 @@
 
 공통 객체
 - `FlagSummary`: tx_id, tx_ts, emp_id, emp_name(마스킹 가능), dept, account_policy, merchant, mcc_name, total, rules[{rule_id, severity}], review_status(unreviewed|violation|ok|hold)
-- `Evidence`: rule_id, rule_name, rule_class(①규정|②임계치|③가설), severity, evidence(JSON), evidence_text(사람 말), related_tx[FlagSummary], rule_version
+- `Evidence`: rule_id, rule_name, rule_class, severity, **cluster**, **fact**(카탈로그 템플릿을 서버가 렌더한 한 문장 — 어긋난 사실만), **brief_value · brief_verdict**(`관측값 · 판단어`), evidence(JSON), evidence_text(구 템플릿, Streamlit용), related_tx[FlagSummary], rule_version
 - `Review`: review_id, tx_id, rule_id|null, decision(violation|ok|hold), reason_code, memo, reviewer, created_at
 
 ## 1. 조회

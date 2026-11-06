@@ -14,6 +14,7 @@ export interface QueueRow {
 }
 export interface Evidence {
   rule_id: string; rule_name: string; rule_class: string; severity: "violation" | "advisory"; cluster: string
+  fact: string; brief_value: string; brief_verdict: string
   evidence: Record<string, unknown>; evidence_text: string; headline: string; detail: string; citation: string; explain: string
   related_tx: { tx_id: TxId; tx_ts: string; emp_name: string; account_policy: string; merchant: string; mcc_name: string; total: number }[]
   rule_version: number

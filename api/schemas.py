@@ -23,6 +23,7 @@ class RelatedTx(BaseModel):
 
 class Evidence(BaseModel):
     rule_id: str; rule_name: str; rule_class: str; severity: Literal["violation", "advisory"]; cluster: str
+    fact: str; brief_value: str; brief_verdict: str
     evidence: dict[str, Any]; evidence_text: str; headline: str; detail: str; citation: str; explain: str
     related_tx: list[RelatedTx]; rule_version: int
 
