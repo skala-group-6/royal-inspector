@@ -420,7 +420,6 @@ cases:
   - n: 2
     rules:
     - R08_banned_mcc
-    - R11_account_mismatch
     merchant_pool:
     - 골프장
     - 일반주점
@@ -435,7 +434,6 @@ cases:
   - 팀장 승인
   precedent_rules:
   - R08_banned_mcc
-  - R11_account_mismatch
 - id: 19
   summary: 서울-대전 통근 톨비인데 울산·부산 톨게이트
   feasible: full

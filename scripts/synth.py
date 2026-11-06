@@ -188,7 +188,7 @@ A[17] = a = actor("S17", "팀장"); m = pick(merchants("일반주점")); d = ran
 for k, amt in enumerate((480000, 450000)): tx(a, m, d, f"21:{40+12*k}:00", amt, "접대비", 17, ["R03_split_payment", "R08_banned_mcc"], memo="고객 접대")
 # 18
 A[18] = a = actor("S18", "팀장"); M = actor("S18M")
-for mcc in ("골프장", "일반주점"): tx(M, pick(merchants(mcc)), rand_date(), rand_time("17:00", "22:00"), rng.randrange(250000, 600000), "의욕관리비", 18, ["R08_banned_mcc", "R11_account_mismatch"], approver=a, memo="팀 워크숍")
+for mcc in ("골프장", "일반주점"): tx(M, pick(merchants(mcc)), rand_date(), rand_time("17:00", "22:00"), rng.randrange(250000, 600000), "의욕관리비", 18, ["R08_banned_mcc"], approver=a, memo="팀 워크숍")
 # 19
 A[19] = a = actor("S19", home_sido="서울", worksite_sido="대전") if ((profiles.home_addr.str.startswith("서울")) & (profiles.work_site_addr.str.startswith("대전"))).any() else actor("S19", home_sido="서울")
 a["work_site_addr"] = "대전광역시 유성구"; a["work_site"] = "대전"

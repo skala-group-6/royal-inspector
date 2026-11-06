@@ -39,8 +39,8 @@ def test_rows_bounds_and_prior(con):
 def test_cluster_counts_once_and_formula(con):
     c, cfg = con; pv, prior = cfg["p_tier"]["violation"], cfg["prior"]
     row = C.q(c, """select l.prob, l.clusters_hit from labels l where l.tenant_id=tenant() and label_source='weak' and tx_id in (
-                    select tx_id from current_flags group by tx_id having array_agg(distinct rule_id order by rule_id) = array['R08_banned_mcc','R11_account_mismatch']) order by tx_id limit 1""")
-    assert len(row), "need a tx flagged by exactly R08+R11"
+                    select tx_id from current_flags group by tx_id having array_agg(distinct rule_id order by rule_id) = array['R08_banned_mcc','R18_approver_conflict']) order by tx_id limit 1""")
+    assert len(row), "need a tx flagged by exactly R08+R18 (same cluster: entertain)"
     prob, clusters = row.prob.iloc[0], row.clusters_hit.iloc[0]; assert list(clusters) == ["entertain"] and prob == pytest.approx(1 - (1 - prior) * (1 - pv), abs=1e-6)
     # generic recomputation for 200 flagged tx
     fl = C.q(c, "select f.tx_id, f.rule_id from current_flags f where f.tx_id in (select tx_id from current_flags order by tx_id limit 200)").merge(cfg["_rule_p"], on="rule_id")

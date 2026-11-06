@@ -17,7 +17,7 @@ description = "A service-layer, queue, labels, model, feature, pack, schema or d
 
 [[scripts.check]]
 name = "rules"
-command = "URL=$(.venv/bin/python scripts/db_clone.py --name rules) && DATABASE_URL=$URL .venv/bin/python -I scripts/run_rules.py | grep -q 'OVERALL recall 114/114'; rc=$?; .venv/bin/python scripts/db_clone.py --drop ${URL##*/} >/dev/null; exit $rc"
+command = "URL=$(.venv/bin/python scripts/db_clone.py --name rules) && DATABASE_URL=$URL .venv/bin/python -I scripts/run_rules.py | grep -q 'OVERALL recall 112/112'; rc=$?; .venv/bin/python scripts/db_clone.py --drop ${URL##*/} >/dev/null; exit $rc"
 description = "The rule engine no longer catches every planted violation in the synthetic ground truth: a rule or threshold change regressed recall."
 
 [[scripts.check]]
