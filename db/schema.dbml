@@ -267,6 +267,23 @@ Table "flags" {
   Note: '[der] 규칙 적중. 실행(run_id)마다 쌓임. 읽기는 current_flags 뷰(최신 run).'
 }
 
+Table "entity_baselines" {
+  "tenant_id" int [not null]
+  "features_version" int [not null]
+  "entity" text [not null]
+  "window" text [not null]
+  "entity_key" text [not null]
+  "as_of_date" date [not null]
+  "stat" text [not null]
+  "value" doubleprecision
+  "n_obs" int
+
+  Indexes {
+    (tenant_id, features_version, entity, window, entity_key, as_of_date, stat) [pk]
+  }
+  Note: '[der] grain=day 피처의 기준선: 집단 × 기준일 × 통계 (features/executor.py가 재생성). 화면 동료 비교·선례가 같은 숫자를 읽는다.'
+}
+
 Table "labels" {
   "tenant_id" int [not null]
   "tx_id" bigint [not null]
@@ -473,6 +490,8 @@ Ref:"rule_runs".("tenant_id", "run_id") <? "flags".("tenant_id", "run_id")
 
 Ref:"transactions".("tenant_id", "tx_id") <? "flags".("tenant_id", "tx_id")
 
+Ref:"tenants"."tenant_id" <? "entity_baselines"."tenant_id"
+
 Ref:"tenants"."tenant_id" <? "labels"."tenant_id"
 
 Ref:"transactions".("tenant_id", "tx_id") <? "labels".("tenant_id", "tx_id")
@@ -545,6 +564,8 @@ TableGroup "파생 (der)" {
   rule_runs
 
   flags
+
+  entity_baselines
 
   labels
 

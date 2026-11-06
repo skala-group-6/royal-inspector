@@ -255,6 +255,20 @@ comment on table flags is '[der] 규칙 적중. 실행(run_id)마다 쌓임. 읽
 -- tx_features (wide, pack-defined columns) is created by features/executor.py: DROP IF EXISTS + CREATE TABLE AS,
 -- always with tenant_id, tx_id, features_version first. Not declared here on purpose.
 
+create table entity_baselines (
+  tenant_id         int   not null references tenants,
+  features_version  int   not null,
+  entity            text  not null,                    -- features.yaml entities (dept, rank, acct_mcc …)
+  "window"          text  not null,                    -- features.yaml windows (all, 30d …)
+  entity_key        text  not null,                    -- key columns joined with '|'
+  as_of_date        date  not null,                    -- baseline uses rows with tx_date < as_of_date (전날까지)
+  stat              text  not null,                    -- feature name, e.g. rank__all__amount_ratio_median's quantile
+  value             double precision,
+  n_obs             int,
+  primary key (tenant_id, features_version, entity, "window", entity_key, as_of_date, stat)
+);
+comment on table entity_baselines is '[der] grain=day 피처의 기준선: 집단 × 기준일 × 통계 (features/executor.py가 재생성). 화면 동료 비교·선례가 같은 숫자를 읽는다.';
+
 create table labels (
   tenant_id        int    not null references tenants,
   tx_id            bigint not null,

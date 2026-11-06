@@ -43,6 +43,7 @@
 | `rule_runs` | run_id | tenant_id, catalog_version, settings_version, ran_at, n_flags |
 | `flags` | (run_id, tx_id, rule_id) | tenant_id, severity, evidence jsonb, related_tx_ids bigint[], rule_version |
 | `tx_features` | (tenant_id, tx_id, features_version) | 피처 열(35개) 또는 jsonb |
+| `entity_baselines` | (tenant_id, features_version, entity, window, entity_key, as_of_date, stat) | value, n_obs — grain=day 피처의 집단 × 기준일 통계(전날까지). 화면·선례가 모델과 같은 숫자를 읽음 |
 | `labels` | (tenant_id, tx_id, label_source, source_version) | prob, created_at |
 | `model_versions` | model_version | tenant_id, model_id, plug, params jsonb, label_source, trained_at, metrics jsonb, artifact_path, artifact_hash |
 | `tx_scores` | (model_version, tx_id) | tenant_id, score, **rank_pct**, top_features jsonb |
@@ -63,6 +64,7 @@
 tenants ─┬─ reviewers, data_sources, rule_settings
          ├─ loads ─ transactions ─┬─ flags(run) ─ rule_runs
          │                        ├─ tx_features
+         │                        ├─ entity_baselines
          │                        ├─ labels
          │                        ├─ tx_scores ─ model_versions ─ model_bindings
          │                        ├─ queue_items ─ queues

@@ -28,8 +28,9 @@
 ## 저장
 | 테이블 | 행 | 생성 |
 |---|---|---|
-| entity_stats | 엔티티 × 기준일 × 통계 | 배치 |
-| tx_features | 거래 × 피처 | 거래 시각으로 entity_stats 조인 |
+| tx_features | 거래 × 피처(34열) + tenant_id, features_version | 실행기가 DROP + CREATE TABLE AS |
+| entity_baselines | 집단 × 기준일 × 통계 (grain=day 피처의 기준선, 전날까지) | 실행기가 (키, 날짜)마다 한 번 계산해 적재 |
+| entity_stats (뷰) | tx_features의 long 형태 (tx_id, entity, entity_key, as_of_ts, stat, value) | 화면·선례·모델이 같은 숫자를 읽는 입구 |
 
 ## 1차 피처 목록 (약 25개)
 | 묶음 | 피처 | 뒷받침 사례 |
@@ -65,8 +66,24 @@
 
 ## 구현 기록 (2026-11-01, catalog v1)
 - 파일: `packs/corp_card/features.yaml`(선언 35개 = agg 25 + column 9 + history 1), `features/executor.py`, `scripts/build_features.py`, `scripts/validate_features.py`, `tests/test_features.py`. 결과 `tx_features` 30,284행 × 34열(0.8초), `entity_stats` 뷰.
-- DuckDB 2.0 프로브: 윈도 `quantile_cont`, `count(distinct)`, `RANGE BETWEEN … AND INTERVAL 1 MICROSECOND PRECEDING`, 30d RANGE 하한 모두 지원. 윈도 vs 상관 서브쿼리 3만 행 불일치 0.
+- (DuckDB 시절) 윈도 `quantile_cont`로 3만 행 0.8초. PostgreSQL로 옮긴 뒤의 구조와 측정은 아래 '입도(grain)' 절.
 - 시점 기준 구현: 윈도 프레임 상한 `INTERVAL 1 MICROSECOND PRECEDING`(자신·동시각 제외). `since_last_min`은 두 전략 모두 상관 서브쿼리(동시각 제외 일관성). 상관 전략은 큰 파티션(직급)에서 O(n²)라 검증용 표본 500건에만 사용.
 - 설계 조정: 직급 백분위 → 중앙값 배수(비용). `lookahead: true` 명시(same_day 4개, until_next). 이력 그룹(`hist__`)은 기본 제외, `--with-history`에서만(약한 라벨 누설). 선례 유사도는 제외(자기 규칙 집합의 함수).
 - 검증 7종 전부 통과. 발견: `user__30d__n_tx`≈`user__all__n_tx`(r=0.997, 3개월 데이터) → known_redundant로 유지. `merchant__all__n_distinct_users`는 "적을수록 의심" 가정이 약한 신호와 반대(+0.36): 금지 업종 규칙이 걸리는 술집이 인기 가맹점이라서. 방향 기대 제거, 실제 판정 후 재검토.
 - #11012 시점 기준 값: 본인 중앙값 대비 14.53배(전 기간 18.15), 심야 비율 25%, 부서 18.09배, 의욕관리비×노래방 과거 1건(백분위 100), 이 가맹점 과거 사용자 0, 직전 간격 157분, 같은 날 지역 2. 화면 동료 비교가 이제 이 값을 읽는다(`service.peer_from_features`, `point_in_time=True`).
+
+## 입도(grain) — 2026-11-06, catalog v2
+PostgreSQL 17에는 "창 안 분위수" 윈도 함수가 없다. 거래마다 집단의 과거 전체를 다시 정렬하면 큰 집단에서 O(n²)이 된다(직급은 9개 집단 중 하나가 전체의 86%). 그래서 피처마다 **입도**를 선언한다. Chronon의 `accuracy = TEMPORAL | SNAPSHOT`, Tecton의 타일, Feast의 as-of 조인과 같은 구조.
+
+| grain | 뜻 | 대상 | 계산 |
+|---|---|---|---|
+| `tx` (기본) | 이 거래 직전까지, 동시각 제외 (`h.tx_ts < t.tx_ts`) | 사람, 사람×가맹점, 가맹점, 승인자, 같은 날, 직전·직후 간격 | 윈도 함수 또는 (엔티티, 창)별 LATERAL 1개 |
+| `day` | **전날까지** (`h.tx_date < t.tx_date`) | 부서, 직급, 계정×업종의 건수·분위수·백분위 8개 | 통계가 거래와 무관하면 `(키, 기준일)`마다 한 번 계산한 기준선 표(`bl_*` → `entity_baselines`)를 `tx_date`로 조인. 거래 값을 보는 백분위(`percentile_of_value`)는 행별 LATERAL이되 날짜 cutoff(정렬 없이 count만) |
+
+규칙: `n_obs` 카운트는 비율과 같은 grain(로더가 강제). same_day·since_last·until_next는 tx만. 첫날 거래는 기준선이 없어 count 0 / 분위수 NULL — 모델은 n_obs=0을 본다(콜드 스타트 원칙 그대로). 데이터가 하루치만 있는 회사는 day 피처가 전부 비어 있다.
+
+의미 변화: 부서·직급·계정×업종 비교가 "이 거래 직전까지"에서 "전날까지"로. 같은 날 앞선 동료 거래가 빠지지만 집단이 수천 건이라 중앙값에는 거의 영향이 없다. 사람·가맹점 피처는 그대로. 모델은 재학습(features_version 2).
+
+측정(3만 행, Docker Postgres 17): 전부 LATERAL 268초 → day 기준선 39초 → (키, tx_date) 인덱스 23초 → 가장 큰 LATERAL 엔티티 키로 base를 물리 정렬 **12초**. 기준선 3개 0.8초. 값은 정렬·인덱스와 무관(해시 동일).
+
+검증 8종(`scripts/validate_features.py`): 기존 7종 + **4b** "같은 날 뒤 거래를 바꿔도 day 피처는 변하지 않는다". 두 전략 비교(3)는 day 피처를 '기준선 조인 vs 행별 상관 서브쿼리(날짜 cutoff)'로 비교해 불일치 0.

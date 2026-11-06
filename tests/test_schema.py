@@ -24,7 +24,7 @@ def pg():
 def test_schema_applies(pg):
     r = pg(file="/db/schema.sql"); assert r.returncode == 0, r.stderr
     n = pg("select count(*) from information_schema.tables where table_schema='ri' and table_type='BASE TABLE'").stdout.strip()
-    assert int(n) == 24
+    assert int(n) == 25
 
 def test_guards_and_views(pg):
     seed = """set search_path to ri;
