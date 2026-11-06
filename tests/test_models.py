@@ -1,6 +1,6 @@
 import sys, pathlib, re, json, importlib.util; ROOT = pathlib.Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT))
-import numpy as np, pandas as pd, pytest, duckdb
-from app import service as s
+import numpy as np, pandas as pd, pytest
+from db import conn as C
 from features.executor import load_catalog
 from models.base import Scorer
 from models.baseline import RuleAmountBaseline
@@ -24,7 +24,7 @@ def test_socket_conformance(toy, cls):
     e = m.explain(X.iloc[:2], aux.iloc[:2], 3); assert len(e) == 2 and len(e[0]) == 3 and all(isinstance(n, str) and isinstance(c, float) for n, c in e[0])
 
 @pytest.fixture(scope="module")
-def con(): c = duckdb.connect(str(s.DB)); yield c; c.close()
+def con(pgdb): c = C.connect(); yield c; c.close()
 
 def test_feature_matrix_is_clean(con):
     X, y, aux, tr, te, meta = T.load_xy(con, "weak")
@@ -32,20 +32,23 @@ def test_feature_matrix_is_clean(con):
     assert not [c for c in X.columns if bad.search(c)] and not any(cat["features"][c].get("lookahead") for c in X.columns)
     assert "n_rules" not in X.columns and "total" not in X.columns and set(aux.columns) == {"n_rules", "n_violation_rules", "total"}
     assert not (tr & te).any() and (tr | te).all()
-    d = pd.to_datetime(con.execute("select tx_date from tx_active where tx_id in (select tx_id from labels where label_source='weak')").df().tx_date)
     assert meta["train"]["to"] < meta["test"]["from"]
 
-def test_train_manifest_and_determinism(con, tmp_path):
+def test_train_manifest_determinism_and_registry(con, tmp_path):
     m1 = T.train(con, "weak", out=tmp_path / "a", quiet=True); m2 = T.train(con, "weak", out=tmp_path / "b", quiet=True)
     assert "baseline" in m1["candidates"] and m1["chosen"] in m1["candidates"] and m1["best_learned"] in m1["candidates"] and m1["best_learned"] != "baseline"
     assert m1["candidates"] == m2["candidates"], "same input must give same metrics"
-    assert (tmp_path / "a" / m1["version"] / "model_learned.pkl").exists() and m1["disclaimer"]
+    assert (tmp_path / "a" / m1["version"] / f"{m1['best_learned']}.pkl").exists() and m1["disclaimer"]
+    rows = C.q(con, "select model_version, model_id, plug, metrics from model_versions where tenant_id=tenant() and model_version = any(%s)", [list(m1["model_versions"].values())])
+    assert len(rows) == len(m1["candidates"]) and set(rows.model_id) == set(m1["candidates"]) and all(p.startswith("models.") for p in rows.plug)
 
-def test_score_tx_rows(con, tmp_path):
-    T.train(con, "weak", out=tmp_path, quiet=True); n = S.score(con, models_dir=str(tmp_path), quiet=True)
-    assert n == con.execute("select count(*) from tx_features").fetchall()[0][0]
-    r = con.execute("select top_features, top_features_learned from tx_score limit 1").fetchall()[0]
-    assert len(json.loads(r[0])) == 3 and len(json.loads(r[1])) == 3
-    any_tx = con.execute("select tx_id from tx_score limit 1").fetchall()[0][0]
-    assert len(s.top_unflagged_by_score(5)) == 5 and s.get_score(any_tx)["disclaimer"]
-    assert "score_learned" in s.list_flags(sort="learned", page_size=5).columns
+def test_score_tx_rows_and_bindings(con, tmp_path):
+    m = T.train(con, "weak", out=tmp_path, quiet=True); n = S.score(con, models_dir=str(tmp_path), quiet=True)
+    n_tx = C.one(con, "select count(*) from tx_features where tenant_id=tenant()"); versions = {m["model_versions"][m[k]] for k in ("chosen", "best_learned")}
+    assert n == n_tx * len(versions)
+    for mv in versions:
+        assert C.one(con, "select count(*) from tx_scores where tenant_id=tenant() and model_version=%s", [mv]) == n_tx
+        lo, hi, tf = C.one(con, "select min(rank_pct), max(rank_pct), min(jsonb_array_length(top_features)) from tx_scores where tenant_id=tenant() and model_version=%s", [mv])
+        assert 0 < lo <= hi <= 100 and tf == 3
+    b = C.q(con, "select role, model_version from current_bindings where tenant_id=tenant()").set_index("role").model_version
+    assert b["rank"] == m["model_versions"][m["chosen"]] and b["discover"] == m["model_versions"][m["best_learned"]]

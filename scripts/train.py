@@ -1,12 +1,14 @@
 """Step 3.8: train candidate scorers on the same time-split exam and keep the winner only if it beats the baseline.
   train.py --label-source {weak|reviews|import} [--reviewers A,B] [--split-date 2025-03-01] [--k 100,500] [--out models]
-Writes models/<version>/{model.pkl,manifest.json} and models/LATEST. Honors ROYAL_DB. Synthetic rows are never used."""
+Writes models/<version>/{<candidate>.pkl, manifest.json}, models/LATEST, and one model_versions row per candidate (model_version = <version>__<candidate>).
+Uses DATABASE_URL (current tenant). Synthetic rows are never used."""
 from __future__ import annotations
-import os, sys, re, json, argparse, datetime as dt
+import os, sys, re, json, argparse, hashlib, datetime as dt
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT))
 import paths
-import numpy as np, pandas as pd, duckdb, yaml
+import numpy as np, pandas as pd, yaml
+from db import conn as C
 from sklearn.metrics import average_precision_score
 from features.executor import load_catalog, KEY_COLS
 from models.base import DEMO_DISCLAIMER, save_model
@@ -25,13 +27,13 @@ def feature_columns(cat) -> tuple[list[str], list[str]]:
 def load_xy(con, label_source, reviewers=None, split_date="2025-03-01"):
     cat = load_catalog(); use, look = feature_columns(cat); bad = re.compile(cat["forbidden_name"])
     assert not [c for c in use if bad.search(c)], "rule-derived column in features"
-    where = "l.label_source = ?"; params = [label_source]
-    df = con.execute(f"""
+    df = C.q(con, """
       select f.*, l.prob, l.source_version, t.total, t.tx_date as d, t.is_synthetic as syn,
              coalesce(a.n_rules, 0) n_rules, coalesce(a.n_violation_rules, 0) n_violation_rules
-      from tx_features f join labels l using(tx_id) join tx_active t using(tx_id)
-      left join (select tx_id, count(distinct rule_id) n_rules, count(distinct case when severity='violation' then rule_id end) n_violation_rules from flags group by 1) a using(tx_id)
-      where {where} order by f.tx_id""", params).df()
+      from tx_features f join tx_active t on t.tx_id = f.tx_id
+      join labels l on l.tenant_id = f.tenant_id and l.tx_id = f.tx_id and l.label_source = %s
+      left join (select tx_id, count(distinct rule_id) n_rules, count(distinct case when severity='violation' then rule_id end) n_violation_rules from current_flags group by 1) a on a.tx_id = f.tx_id
+      where f.tenant_id = tenant() order by f.tx_id""", [label_source])
     df = df[~df.syn.astype(bool)].reset_index(drop=True)
     X = df[use].astype(float); y = (df.prob >= 0.5).astype(int); aux = df[["n_rules", "n_violation_rules", "total"]].astype(float)
     split = pd.Timestamp(split_date).date(); d = pd.to_datetime(df.d).dt.date
@@ -57,8 +59,18 @@ def evaluate(name, s, y, ids, base_s, aux, ks):
     return out
 
 def snapshot(con):
-    h = lambda t, cols: con.execute(f"select md5(string_agg(md5(({cols})::varchar), '' order by tx_id)) from {t}").fetchall()[0][0]
+    h = lambda t, cols: C.one(con, f"select md5(string_agg(md5(({cols})::text), '' order by tx_id)) from {t} where tenant_id = tenant()")
     return dict(tx_features_hash=h("tx_features", "tx_id, user__all__n_tx, user__all__amount_ratio_median, acct_mcc__all__amount_pctile"), labels_hash=h("labels", "tx_id, prob, label_source"))
+
+def register_versions(con, manifest: dict, d: Path):
+    """One model_versions row per candidate (idempotent on re-run of the same version). The exam result is the row's metrics."""
+    for name, mv in manifest["model_versions"].items():
+        art = d / f"{name}.pkl"
+        C.execute(con, """insert into model_versions(tenant_id, model_version, model_id, plug, params, label_source, label_version, split_date, metrics, status, artifact_path, artifact_hash)
+                          values (tenant(), %s, %s, %s, %s::jsonb, %s, %s, %s, %s::jsonb, 'ok', %s, %s)
+                          on conflict (tenant_id, model_version) do update set metrics = excluded.metrics, artifact_path = excluded.artifact_path, artifact_hash = excluded.artifact_hash""",
+                  [mv, name, manifest["plugs"][name], json.dumps(dict(random_state=manifest["random_state"], version=manifest["version"])), manifest["label_source"], manifest["label_version"],
+                   manifest["split"]["split_date"], json.dumps(manifest["candidates"][name]), str(art), hashlib.sha1(art.read_bytes()).hexdigest()])
 
 def train(con, label_source, reviewers=None, split_date="2025-03-01", ks=(100, 500), out="models", quiet=False) -> dict:
     X, y, aux, tr, te, meta = load_xy(con, label_source, reviewers, split_date)
@@ -81,8 +93,11 @@ def train(con, label_source, reviewers=None, split_date="2025-03-01", ks=(100, 5
                     random_state=RANDOM_STATE, disclaimer=DEMO_DISCLAIMER)
     manifest["best_learned"] = best  # kept even when it does not beat the baseline: it is the only "other eye" on unflagged tx
     d = Path(out) / version; d.mkdir(parents=True, exist_ok=True)
-    save_model(fitted[chosen], d / "model.pkl"); save_model(fitted[best], d / "model_learned.pkl")
+    manifest["model_versions"] = {name: f"{version}__{name}" for name in fitted}
+    manifest["plugs"] = {name: type(m).__module__ for name, m in fitted.items()}
+    for name, m in fitted.items(): save_model(m, d / f"{name}.pkl")
     (d / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2)); (Path(out) / "LATEST").write_text(version)
+    register_versions(con, manifest, d)
     if not quiet:
         cols = ["p_at_100", "p_at_500", "pr_auc", "p_at_100_flagged", "overlap_at_100", "learned_nothing"]
         print(f"label_source={label_source} · train {meta['train']['n']:,} (pos {meta['train']['n_pos']:,}) {meta['train']['from']}~{meta['train']['to']} · test {meta['test']['n']:,} (pos {meta['test']['n_pos']:,}) {meta['test']['from']}~{meta['test']['to']}")
@@ -96,6 +111,6 @@ if __name__ == "__main__":
     ap.add_argument("--split-date", default="2025-03-01"); ap.add_argument("--k", default="100,500"); ap.add_argument("--out", default="models"); ap.add_argument("--quiet", action="store_true")
     a = ap.parse_args()
     if a.label_source == "reviews" and not a.reviewers: ap.error("--reviewers is required with --label-source reviews")
-    con = duckdb.connect(str(paths.DB))
+    con = C.connect()
     train(con, a.label_source, [r.strip() for r in a.reviewers.split(",")] if a.reviewers else None, a.split_date, tuple(int(k) for k in a.k.split(",")), a.out, a.quiet)
     con.close()
