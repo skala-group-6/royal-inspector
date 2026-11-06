@@ -81,12 +81,6 @@ export function humanLine(c: CaseBundle, source?: QueueSource): { head: string; 
   return { head, tail }
 }
 
-/** The rule the screen leads with: policy-backed first, then the pack's order of strength. */
-export function strongestRule(c: CaseBundle): Evidence | undefined {
-  if (!c.evidences.length) return undefined
-  const vio = c.evidences.filter((e) => e.severity === "violation"); const pool = vio.length ? vio : c.evidences
-  return [...pool].sort((a, b) => ORDER.indexOf(a.rule_id.slice(0, 3)) - ORDER.indexOf(b.rule_id.slice(0, 3)))[0]
-}
 
 /** Policy-backed situations = findings with a violation-tier lead (server-grouped). The "위반 n" badge. */
 export const violationFindings = (c: CaseBundle) => (c.findings ?? []).filter((f) => f.severity === "violation").length
