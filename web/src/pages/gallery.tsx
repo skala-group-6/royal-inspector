@@ -8,6 +8,7 @@ import { mock } from "@/mock"
 import { mmdd, hhmm } from "@/lib/format"
 import { CasePanel } from "@/components/case/case-panel"
 import { CasePanelV3 } from "@/components/case/case-v3"
+import { LayoutExplorer } from "@/components/case/layout-explorer"
 import type { CaseBundle } from "@/types"
 
 /**
@@ -161,6 +162,7 @@ function CaseSection() {
 export function GalleryPage() {
   return (
     <div className="p-6">
+      <LayoutExplorer rows={mock.queue} cases={mock.cases as Record<string, CaseBundle>} />
       <V3Section />
       <CaseSection />
       <h2 className="text-base font-semibold">면의 층 비교 — 선 없이 구분 · 채택: 제안 라이트 + 다크 A (2026-11-04, index.css surface-*)</h2>
