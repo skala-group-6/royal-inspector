@@ -22,7 +22,7 @@ sel_rules = st.sidebar.multiselect("규칙", rules.rule_id.tolist(), format_func
 status = st.sidebar.selectbox("검토 상태", ["unreviewed", None, "reviewed", "violation"], format_func=lambda v: {None: "전체", "unreviewed": "미검토", "reviewed": "검토됨", "violation": "위반 확정"}[v])
 min_total = st.sidebar.number_input("금액 이상", min_value=0, value=0, step=10000)
 SORTS = ({"source": "큐 순서(규칙→모델→무작위)"} if queue_mode else {}) | {"rules": "걸린 규칙 수", "total": "금액", "date": "날짜"}
-if s._has_table("tx_score"): SORTS.update({"score": "기준선 점수(규칙 수×금액)", "learned": "학습 모델 점수 (시연용)"})
+if s.has_score(): SORTS.update({"score": "기준선 점수(규칙 수×금액)", "learned": "학습 모델 점수 (시연용)"})
 sort = st.sidebar.selectbox("정렬", list(SORTS), format_func=lambda v: SORTS[v])
 syn = st.sidebar.selectbox("데이터", [None, False, True], format_func=lambda v: {None: "전체", False: "실데이터만", True: "합성(테스트)만"}[v])
 page = st.sidebar.number_input("페이지 (100건씩)", min_value=1, value=1)

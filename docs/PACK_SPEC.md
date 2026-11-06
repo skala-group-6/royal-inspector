@@ -48,7 +48,7 @@ packs/<name>/
 `flags(rule_id, tx_id, evidence JSON, related_tx_ids BIGINT[], severity, rule_version)`. 규칙 SQL은 `tx_id, evidence, related`를 내고 실행기가 나머지를 채운다. 화면·모델·선례는 이 테이블만 본다.
 
 ## 5. 엔진이 만드는 테이블 (팩 무관)
-DuckDB: `flags, tx_features, labels, tx_score, precedents`. Postgres(계획 3): `reviews, queue, ui_events`. 상세 docs/STORAGE_ARCHITECTURE.md.
+PostgreSQL 한 곳(`db/schema.sql`). 파생: `rule_runs`·`flags`(현재 실행은 `current_flags` 뷰), `tx_features`(실행기가 생성)·`entity_baselines`, `labels`, `model_versions`·`tx_scores`·`model_bindings`, `precedents`(사례 라이브러리는 tenant 공용). 기록: `queues`·`queue_items`, `reviews`, `audit_events`. 설명 docs/ERD.md.
 
 ## 6. 두 번째 팩을 만드는 절차
 1. `packs/<name>/` 복사 → pack.yaml의 name·raw_glob 수정.

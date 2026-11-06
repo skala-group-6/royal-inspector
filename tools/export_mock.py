@@ -1,5 +1,5 @@
-"""Export the React mock (web/src/mock/data.json) from a built warehouse through the same service functions the API will expose.
-Usage: ROYAL_DB=/tmp/royal_mock.duckdb python -I tools/export_mock.py [--period 2025-03-01 2025-03-31] [--out web/src/mock/data.json]
+"""Export the React mock (web/src/mock/data.json) from a built database through the same service functions the API will expose.
+Usage: DATABASE_URL=$(.venv/bin/python scripts/db_clone.py --name mock) python -I tools/export_mock.py [--period 2025-03-01 2025-03-31] [--out web/src/mock/data.json]
 
 Selection is deliberately mixed so the review screen is exercised at its extremes: multi-violation rows, advisory-only rows,
 model-recommended and random-sample rows (no rules → no evidence), and already-reviewed rows. PII that the screen never shows
@@ -8,10 +8,10 @@ import sys, json, argparse, datetime as dt, math
 from pathlib import Path
 import numpy as np, pandas as pd
 ROOT = Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT))
-import paths  # noqa: F401  (resolves pack + DB)
+import paths  # noqa: F401  (resolves the pack)
 from app import service as s
 
-DROP_TX_FIELDS = {"home_addr", "approver_addr", "work_site_addr", "reviewer"}
+DROP_TX_FIELDS = {"home_addr", "approver_addr", "work_site_addr", "reviewer", "tenant_id", "load_id"}  # PII the screen never shows + storage-only keys
 MASK_TX_FIELDS = {"approver"}  # names are masked like emp_name; ids are not PII
 
 ID_KEYS = {"tx_id", "cancel_of_tx_id"}

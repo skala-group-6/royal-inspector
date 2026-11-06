@@ -3,8 +3,10 @@
 ## 실행
 ```bash
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
-# data/raw/ 에 원본 엑셀 2개를 넣은 뒤
-.venv/bin/python -I scripts/load.py        # 1단계: DuckDB 적재
+docker compose up -d --wait db             # PostgreSQL 17 (localhost:5433, DB `ri`). 접속: DATABASE_URL (기본 postgresql://postgres:x@localhost:5433/ri)
+# data/raw/ 에 원본 엑셀 2개를 넣은 뒤 — 전부 한 번에: .venv/bin/python scripts/bootstrap_db.py (스키마 → 아래 10단계, 2~5분; 학습이 대부분)
+.venv/bin/python scripts/bootstrap_db.py --schema-only   # 0단계: db/schema.sql + 팩 SQL 함수 + tenant 1
+.venv/bin/python -I scripts/load.py        # 1단계: 엑셀 → transactions 등 (COPY)
 .venv/bin/python -I scripts/synth.py       # 2단계: 합성 정답셋 주입
 .venv/bin/python -I scripts/run_rules.py   # 3단계: 규칙 실행 + 채점
 .venv/bin/python -I scripts/load_precedents.py  # 4.5단계: 징계사례 선례 적재
@@ -12,12 +14,14 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python -I scripts/validate_features.py # 3.6단계: 피처 검증 7종 (누수·중복·단조·재실행)
 .venv/bin/python -I scripts/labels.py --label-source weak  # 3.7단계: 임시 정답 labels (규칙 투표 noisy-OR, packs/corp_card/weak_labels.yaml)
 .venv/bin/python -I scripts/train.py --label-source weak   # 3.8단계: 기준선·로지스틱·XGBoost 같은 시험 → models/<v>/manifest.json
-.venv/bin/python -I scripts/score_tx.py                    # 3.9단계: tx_score (기준선 점수 + 학습 모델 점수·이유)
+.venv/bin/python -I scripts/score_tx.py                    # 3.9단계: tx_scores (모델마다 1행, rank_pct) + serving 바인딩(rank/discover)
 .venv/bin/python -I scripts/build_queue.py --from 2025-03-01 --to 2025-03-31  # 3.95단계: 검토 큐 (규칙 + 모델 상위 M + 무작위 p%)
 pnpm --dir web install && pnpm --dir web dev  # 검토 화면(React). Octave Run 버튼도 이것을 띄움
 .venv/bin/streamlit run app/Home.py        # (동결) 시연용 Streamlit 화면
-.venv/bin/python -m pytest -q tests
+.venv/bin/python -m pytest -q tests        # 테스트는 `ri`를 템플릿 복제한 임시 DB에서 돈다 (tests/conftest.py)
 ```
+
+테스트·체크용 복제: `DATABASE_URL=$(.venv/bin/python scripts/db_clone.py --name x)` (1초, 끝나면 `--drop`). 1시간 넘은 복제는 자동 정리.
 
 macOS arm64에서 xgboost import가 libomp 오류를 내면 `brew install libomp` (실패 시 자동으로 sklearn HistGradientBoosting 폴백).
 
@@ -36,7 +40,7 @@ macOS arm64에서 xgboost import가 libomp 오류를 내면 `brew install libomp
 ## 스택 (2026-11-03 확정)
 | 층 | 선택 |
 |---|---|
-| 저장소 | **Postgres 단독**(회사별 설치, 2026-11-05). 스키마 `docs/ERD.md`. DuckDB는 개발자 로컬 탐색 도구 |
+| 저장소 | **PostgreSQL 17 단독**(회사별 설치, 2026-11-05 결정 · 2026-11-06 전 엔진 이전 완료). 스키마 `db/schema.sql`, 설명 `docs/ERD.md`, 접속층 `db/conn.py` |
 | 규칙·피처·라벨 정의 | YAML + SQL (git) |
 | 배치 | Python 스크립트 (CLI) |
 | 모델 | 소켓(fit/predict/explain) + 플러그(기준선·로지스틱·XGBoost·DNN 자리) |

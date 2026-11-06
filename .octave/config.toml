@@ -1,29 +1,31 @@
 [scripts]
-# data/ is gitignored: raw Excel inputs and the DuckDB warehouse built from them (load.py → synth.py → run_rules.py).
-copy = ["data/raw", "data/warehouse.duckdb"]
-setup = "python3 -m venv .venv && .venv/bin/pip install -r requirements.txt && pnpm --dir web install --frozen-lockfile"
+# data/ is gitignored: raw Excel inputs (data/raw). The database is PostgreSQL in Docker (docker-compose.yml, host port 5433),
+# rebuilt from data/raw by scripts/bootstrap_db.py (load → synth → rules → precedents → features → validate → labels → train → score → queue).
+copy = ["data/raw"]
+setup = "python3 -m venv .venv && .venv/bin/pip install -r requirements.txt && pnpm --dir web install --frozen-lockfile && docker compose up -d --wait db && .venv/bin/python scripts/bootstrap_db.py"
 
 # Run = the React review app (web/, Vite dev server). The Streamlit screens are frozen for demo use:
 #   .venv/bin/streamlit run app/Home.py
 [scripts.run.app]
 command = "pnpm --dir web exec vite --host 127.0.0.1 --port $OCTAVE_PORT --strictPort"
 
+# Checks run against a throwaway clone of the `ri` database (scripts/db_clone.py, ≈1 s) so they never touch the database the app serves from.
 [[scripts.check]]
 name = "unit"
-command = "cp data/warehouse.duckdb /tmp/royal_test.duckdb && ROYAL_DB=/tmp/royal_test.duckdb .venv/bin/python -m pytest -q tests"
-description = "A service-layer or precedents test fails: list/evidence/context/review/precedent functions no longer behave as pinned down (needs data/warehouse.duckdb with flags and precedents)."
+command = "URL=$(.venv/bin/python scripts/db_clone.py --name unit) && DATABASE_URL=$URL RI_TEST_DB_READY=1 .venv/bin/python -m pytest -q tests; rc=$?; .venv/bin/python scripts/db_clone.py --drop ${URL##*/} >/dev/null; exit $rc"
+description = "A service-layer, queue, labels, model, feature, pack, schema or design-rule test fails: a function no longer behaves as pinned down (needs the `ri` database built by scripts/bootstrap_db.py)."
 
 [[scripts.check]]
 name = "rules"
-command = "cp data/warehouse.duckdb /tmp/royal_rules.duckdb && ROYAL_DB=/tmp/royal_rules.duckdb .venv/bin/python -I scripts/run_rules.py | grep -q 'OVERALL recall 114/114'"
+command = "URL=$(.venv/bin/python scripts/db_clone.py --name rules) && DATABASE_URL=$URL .venv/bin/python -I scripts/run_rules.py | grep -q 'OVERALL recall 114/114'; rc=$?; .venv/bin/python scripts/db_clone.py --drop ${URL##*/} >/dev/null; exit $rc"
 description = "The rule engine no longer catches every planted violation in the synthetic ground truth: a rule or threshold change regressed recall."
 
 [[scripts.check]]
 name = "features"
-command = "cp data/warehouse.duckdb /tmp/royal_feat.duckdb && ROYAL_DB=/tmp/royal_feat.duckdb .venv/bin/python -I scripts/build_features.py --quiet && ROYAL_DB=/tmp/royal_feat.duckdb .venv/bin/python -I scripts/validate_features.py"
-description = "The feature table failed a validation check: schema/catalog mismatch, a rule-derived column, point-in-time leakage (static, dual-strategy, or perturbation), undeclared redundancy, a direction expectation contradicted by the weak signal, or a non-reproducible rebuild."
+command = "URL=$(.venv/bin/python scripts/db_clone.py --name feat) && DATABASE_URL=$URL .venv/bin/python -I scripts/build_features.py --quiet && DATABASE_URL=$URL .venv/bin/python -I scripts/validate_features.py; rc=$?; .venv/bin/python scripts/db_clone.py --drop ${URL##*/} >/dev/null; exit $rc"
+description = "The feature table failed a validation check: schema/catalog mismatch, a rule-derived column, point-in-time leakage (static, dual-strategy, perturbation, same-day for day-grain), undeclared redundancy, a direction expectation contradicted by the weak signal, or a non-reproducible rebuild."
 
 [[scripts.check]]
 name = "model"
-command = "cp data/warehouse.duckdb /tmp/royal_model.duckdb && ROYAL_DB=/tmp/royal_model.duckdb .venv/bin/python -I scripts/train.py --label-source weak --out /tmp/royal_models | grep -qE 'chosen: (baseline|logistic|xgb|hgb)'"
+command = "URL=$(.venv/bin/python scripts/db_clone.py --name model) && DATABASE_URL=$URL .venv/bin/python -I scripts/train.py --label-source weak --out /tmp/royal_models | grep -qE 'chosen: (baseline|logistic|xgb|hgb)'; rc=$?; .venv/bin/python scripts/db_clone.py --drop ${URL##*/} >/dev/null; exit $rc"
 description = "Model training failed or produced no chosen model: the feature matrix, weak labels, time split, or one of the candidate scorers broke."
