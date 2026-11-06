@@ -32,7 +32,7 @@ def test_manifest_paths_exist_and_default_pack_is_corp_card():
     assert P.PACK_NAME == "corp_card" and P.PACK_DIR == (ROOT / "packs" / "corp_card").resolve()
     for p in (P.RULES_CATALOG, P.RULES_SQL_DIR, P.FEATURES_CATALOG, P.WEAK_LABELS, P.CASES):
         assert p is not None and p.exists(), p
-    assert P.MACROS is None or P.MACROS.exists()
+    assert P.FUNCTIONS is None or P.FUNCTIONS.exists()
     import yaml
     stems = {f.stem for f in P.RULES_SQL_DIR.glob("R*.sql")}; cat = set(yaml.safe_load(open(P.RULES_CATALOG))["rules"])
     assert stems and stems <= cat, stems - cat   # every rule SQL is declared in the catalog

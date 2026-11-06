@@ -3,7 +3,7 @@ name: corp_card
 version: 1
 rules_catalog: rules/catalog.yaml
 rules_sql_dir: rules/sql
-macros: rules/macros.sql              # null이면 피처·규칙 실행기가 매크로 로드를 건너뜀
+functions: rules/functions.sql        # PostgreSQL SQL 함수(sido_of 등). bootstrap_db.py가 schema 다음에 적용
 features_catalog: features.yaml
 weak_labels: weak_labels.yaml
 cases: cases.yaml

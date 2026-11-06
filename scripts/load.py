@@ -1,13 +1,15 @@
-"""Step 1: load raw Excel into data/warehouse.duckdb as standard tables.
-Re-runnable: drops and recreates everything. Original files are never modified."""
-import re, json, sys, os
+"""Step 1: load raw Excel into PostgreSQL (schema ri) as standard tables for the current tenant (TENANT_ID, default 1).
+Re-runnable: replaces the tenant's source and derived rows. Refuses when human reviews exist (they reference transactions).
+Original files are never modified."""
+import re, json, sys, os, hashlib
 from pathlib import Path
-import pandas as pd, numpy as np, duckdb
+import pandas as pd, numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parent)); from keys import det_ids
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT)); import paths
-RAW = paths.RAW_DIR; DB = paths.DB; OUT = ROOT / "data/inventory"
+from db import conn as C
+RAW = paths.RAW_DIR; OUT = ROOT / "data/inventory"
 F1 = next(RAW.glob(paths.RAW_GLOB[0])); F2 = next(RAW.glob(paths.RAW_GLOB[1]))
 report = {}
 
@@ -137,29 +139,42 @@ acc["direction"] = np.select([acc.event.str.contains("입", na=False), acc.event
 
 # ---------- 7. addresses to geocode (placeholder table) ----------
 addrs = pd.concat([tx.merchant_addr, tx.home_addr, tx.work_site_addr, tx.approver_addr]).dropna().astype(str).str.strip()
-geo = pd.DataFrame({"addr": sorted(addrs.unique())}); geo["lat"] = np.nan; geo["lon"] = np.nan; geo["geocoded_at"] = pd.NaT
+geo = pd.DataFrame({"addr": sorted(a for a in addrs.unique() if a)}); geo["lat"] = np.nan; geo["lon"] = np.nan; geo["geocoded_at"] = pd.NaT
 
 # ---------- write ----------
-if DB.exists(): DB.unlink()
-con = duckdb.connect(str(DB))
-for name, df in [("transactions", tx), ("employees", emp), ("access_logs", acc), ("policy_accounts", pol), ("account_map", amap), ("geocode", geo)]:
-    con.register("df", df); con.execute(f"CREATE TABLE {name} AS SELECT * FROM df"); con.unregister("df")
-con.execute("CREATE VIEW tx_active AS SELECT * FROM transactions WHERE exclude_reason IS NULL")
+# Tables that reference transactions, deleted children-first. Reviews are people's records: never deleted silently.
+DERIVED = ["queue_items", "tx_scores", "labels", "flags", "ground_truth"]
+tx["tx_ts"] = tx["tx_ts"].dt.tz_localize("Asia/Seoul"); acc["access_ts"] = acc["access_ts"].dt.tz_localize("Asia/Seoul")
+con = C.connect(autocommit=False)
+with con.transaction():
+    if C.one(con, "select count(*) from reviews where tenant_id=tenant()"):
+        raise SystemExit("reviews exist for this tenant; a reload would orphan them. Use a fresh database (scripts/bootstrap_db.py).")
+    for t in DERIVED + ["queues", "rule_runs", "transactions", "employees", "access_logs", "policy_accounts", "account_map", "geocode", "loads", "data_sources"]:
+        C.execute(con, f"delete from {t} where tenant_id=tenant()")
+    def source(kind, f):
+        sid = C.one(con, "insert into data_sources(tenant_id,kind,name,raw_glob) values (tenant(),%s,%s,%s) returning source_id", [kind, f.name, paths.RAW_GLOB[0 if kind == "card_tx" else 1]])
+        return C.one(con, "insert into loads(tenant_id,source_id,file_name,file_hash,n_rows) values (tenant(),%s,%s,%s,%s) returning load_id",
+                     [sid, f.name, hashlib.sha1(f.read_bytes()).hexdigest(), None])
+    tx.insert(1, "load_id", source("card_tx", F1)); acc_load = source("access", F2)
+    for name, df in [("transactions", tx), ("employees", emp), ("access_logs", acc), ("policy_accounts", pol), ("account_map", amap), ("geocode", geo)]:
+        C.write_df(con, name, df)
+    C.execute(con, "update loads set n_rows=(select count(*) from transactions where tenant_id=tenant() and load_id=loads.load_id) where tenant_id=tenant() and load_id=%s", [int(tx.load_id.iloc[0])])
+    C.execute(con, "update loads set n_rows=%s where tenant_id=tenant() and load_id=%s", [len(acc), acc_load])
 
 # ---------- quality report ----------
-q = lambda s: con.execute(s).fetchone()[0]
-report["rows"] = dict(transactions=q("select count(*) from transactions"), active=q("select count(*) from tx_active"),
-                      employees=q("select count(*) from employees"), access_logs=q("select count(*) from access_logs"), addresses=q("select count(*) from geocode"))
-report["active_fill_pct"] = {c: round(q(f"select 100.0*count({c})/count(*) from tx_active"), 1) for c in
+q = lambda s: C.one(con, s)
+report["rows"] = dict(transactions=q("select count(*) from transactions where tenant_id=tenant()"), active=q("select count(*) from tx_active"),
+                      employees=q("select count(*) from employees where tenant_id=tenant()"), access_logs=q("select count(*) from access_logs where tenant_id=tenant()"), addresses=q("select count(*) from geocode where tenant_id=tenant()"))
+report["active_fill_pct"] = {c: round(float(q(f"select 100.0*count({c})/count(*) from tx_active")), 1) for c in
                              ["merchant_addr", "home_addr", "work_site_addr", "mcc_code", "approval_no", "tx_time", "trip_start", "approver_id"]}
 report["active_flags"] = dict(holiday=q("select count(*) from tx_active where is_holiday"), leave=q("select count(*) from tx_active where is_leave"),
                               trip=q("select count(*) from tx_active where trip_type is not null"), attachment=q("select count(*) from tx_active where has_attachment"),
                               dummy_time=q("select count(*) from tx_active where time_is_dummy"), no_policy_account=q("select count(*) from tx_active where account_policy is null"))
-report["access_link"] = dict(emp_with_access_pct=round(q("select 100.0*count(*)/(select count(*) from employees) from employees where emp_id in (select distinct emp_id from access_logs)"), 1),
-                             tx_with_same_day_access_pct=round(q("""select 100.0*count(distinct t.tx_id)/(select count(*) from tx_active) from tx_active t
-                                join access_logs a on a.emp_id=t.emp_id and cast(a.access_ts as date)=t.tx_date"""), 1))
+report["access_link"] = dict(emp_with_access_pct=round(float(q("select 100.0*count(*)/(select count(*) from employees where tenant_id=tenant()) from employees where tenant_id=tenant() and emp_id in (select distinct emp_id from access_logs where tenant_id=tenant())")), 1),
+                             tx_with_same_day_access_pct=round(float(q("""select 100.0*count(distinct t.tx_id)/(select count(*) from tx_active) from tx_active t
+                                join access_logs a on a.tenant_id=tenant() and a.emp_id=t.emp_id and cast(a.access_ts as date)=t.tx_date""")), 1))
 report["employee_consistency"] = dict(multi_home=int((emp.n_home_variants > 1).sum()), multi_site=int((emp.n_site_variants > 1).sum()))
 report["unmapped_accounts"] = amap[amap.method != "auto"].to_dict("records")
-con.close()
+con.commit(); con.close()
 (OUT / "load_report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2, default=str))
 print(json.dumps(report, ensure_ascii=False, indent=2, default=str))

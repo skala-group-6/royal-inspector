@@ -29,8 +29,7 @@ def recreate(dbname: str):
 def schema(dbname: str, tenant_name: str = "default"):
     with psycopg.connect(C.with_dbname(C.url(), dbname), autocommit=True) as con:
         C.exec_script(con, ROOT / "db" / "schema.sql")
-        fn = paths.PACK_DIR / "rules" / "functions.sql"
-        if fn.exists(): con.execute("set search_path to ri, public"); C.exec_script(con, fn)
+        if paths.FUNCTIONS and paths.FUNCTIONS.exists(): con.execute("set search_path to ri, public"); C.exec_script(con, paths.FUNCTIONS)
         con.execute("set search_path to ri, public")
         con.execute("insert into tenants(name) values (%s) on conflict (name) do nothing", [tenant_name])
         tid = con.execute("select tenant_id from tenants where name=%s", [tenant_name]).fetchone()[0]

@@ -1,7 +1,7 @@
 # 규칙 엔진 (3단계) — 2026-10-31
 
 실행: `scripts/run_rules.py` → `flags(rule_id, tx_id, evidence JSON, related_tx_ids, severity, rule_version)` → `scripts/score.py`
-규칙 SQL: `packs/corp_card/rules/sql/R*.sql`, 임계치: `packs/corp_card/rules/catalog.yaml` params + `run_rules.py` DEFAULTS, 주소 파서: `packs/corp_card/rules/macros.sql`(sido_of, sigungu_of)
+규칙 SQL: `packs/corp_card/rules/sql/R*.sql`, 임계치: `packs/corp_card/rules/catalog.yaml` params + `run_rules.py` DEFAULTS, 주소 파서: `packs/corp_card/rules/functions.sql`(PostgreSQL 함수 sido_of, sigungu_of)
 민감도: `tools/sweep.py` (부분 실행은 `flags_subset`에 기록, 전체 `flags`는 보존)
 
 ## 시나리오 12 → 규칙 21 → 사례 22 대응 (2026-10-31 확인)

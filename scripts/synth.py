@@ -1,33 +1,27 @@
-"""Step 2: inject 22 disciplinary cases as synthetic users/transactions into data/warehouse.duckdb.
+"""Step 2: inject 22 disciplinary cases as synthetic users/transactions into PostgreSQL (current tenant).
 Idempotent: removes previous synthetic rows first. Seeded. Real rows are never modified."""
 import random, datetime as dt, re, os, sys
 from pathlib import Path
-import pandas as pd, numpy as np, duckdb
+import pandas as pd, numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parent)); sys.path.insert(0, str(Path(__file__).resolve().parents[1])); from keys import det_id; import paths
+from db import conn as pg
 
-DB = str(paths.DB); SEED = 20251031
+SEED = 20251031
 rng = random.Random(SEED)
-con = duckdb.connect(DB)
+con = pg.connect(autocommit=False)
 D0, D1 = dt.date(2025, 2, 3), dt.date(2025, 3, 27)
 HOLIDAYS = {dt.date(2025, 3, 1), dt.date(2025, 3, 3)}
 WD = ["월", "화", "수", "목", "금", "토", "일"]
 
-# ---------- schema prep ----------
-for t, cols in {"transactions": ["is_synthetic BOOLEAN DEFAULT FALSE", "case_id INTEGER"],
-                "employees": ["is_synthetic BOOLEAN DEFAULT FALSE"], "access_logs": ["is_synthetic BOOLEAN DEFAULT FALSE"]}.items():
-    existing = {r[0] for r in con.execute(f"describe {t}").fetchall()}
-    for c in cols:
-        if c.split()[0] not in existing: con.execute(f"ALTER TABLE {t} ADD COLUMN {c}").fetchall()
-con.execute("UPDATE transactions SET is_synthetic=FALSE WHERE is_synthetic IS NULL").fetchall()
-con.execute("UPDATE employees SET is_synthetic=FALSE WHERE is_synthetic IS NULL").fetchall()
-con.execute("UPDATE access_logs SET is_synthetic=FALSE WHERE is_synthetic IS NULL").fetchall()
-for t in ("transactions", "employees", "access_logs"): con.execute(f"DELETE FROM {t} WHERE is_synthetic").fetchall()
-con.execute("DROP TABLE IF EXISTS ground_truth").fetchall()
-con.execute("CREATE OR REPLACE VIEW tx_active AS SELECT * FROM transactions WHERE exclude_reason IS NULL").fetchall()
+# ---------- remove previous synthetic rows (children first; tx_id is deterministic so reruns reproduce the same ids) ----------
+SYN_TX = "select tx_id from transactions where tenant_id=tenant() and is_synthetic"
+for t in ("queue_items", "tx_scores", "labels", "flags"): con.execute(f"delete from {t} where tenant_id=tenant() and tx_id in ({SYN_TX})")
+con.execute("delete from ground_truth where tenant_id=tenant()")
+for t in ("transactions", "employees", "access_logs"): con.execute(f"delete from {t} where tenant_id=tenant() and is_synthetic")
 
 # ---------- materials from real data ----------
-real = con.execute("select * from transactions where not is_synthetic and exclude_reason is null order by tx_id").df()
-TX_COLS = [r[0] for r in con.execute("describe transactions").fetchall()]
+real = pg.q(con, "select * from tx_active where not is_synthetic order by tx_id")
+TX_COLS = [c for c in pg.columns(con, "transactions") if c not in ("tenant_id", "load_id")]
 pool = real.dropna(subset=["merchant", "merchant_addr", "mcc_name"])[["merchant", "merchant_addr", "mcc_code", "mcc_name"]].drop_duplicates()
 def merchants(mcc_names, pred=None):
     m = pool[pool.mcc_name.isin([mcc_names] if isinstance(mcc_names, str) else mcc_names)]
@@ -39,7 +33,7 @@ profiles = real.dropna(subset=["home_addr", "work_site_addr", "main_dept"]).grou
 profiles = profiles[profiles.home_addr.str.contains(r"\s[가-힣]+?(?:시|군|구)", regex=True) & profiles.work_site_addr.str.contains(r"[가-힣]+(?:시|군|구)", regex=True)]
 templates = {r: real[real["rank"] == r] for r in ["팀원", "팀장"]}
 median_rail_home = real[(real.account_policy == "자택방문교통비") & (real.mcc_name == "철도")].total.median()
-used_ids = set(con.execute("select emp_id from employees").df().emp_id.dropna().astype(int))
+used_ids = set(pg.q(con, "select emp_id from employees where tenant_id=tenant()").emp_id.dropna().astype(int))
 next_id = 880001
 def new_id():
     global next_id
@@ -222,9 +216,9 @@ assert txdf.tx_id.is_unique
 gt = pd.DataFrame(gt_rows); gt["tx_id"] = gt.row_idx.map(lambda i: int(txdf.tx_id.iloc[i])); gt = gt.drop(columns="row_idx")
 empdf = pd.DataFrame(emps).drop(columns=["code", "dept", "approver_id", "trips"], errors="ignore"); empdf["n_tx"] = empdf.emp_id.map(txdf.emp_id.value_counts())
 accdf = pd.DataFrame(acc_rows)
-for name, df in (("transactions", txdf), ("employees", empdf), ("access_logs", accdf)):
-    con.register("df", df); con.execute(f"INSERT INTO {name} BY NAME SELECT * FROM df").fetchall(); con.unregister("df")
-con.register("gt", gt); con.execute("CREATE TABLE ground_truth AS SELECT tx_id, case_id, rule_id, emp_id FROM gt").fetchall(); con.unregister("gt")
+for name, df in (("transactions", txdf), ("employees", empdf), ("access_logs", accdf), ("ground_truth", gt[["tx_id", "case_id", "rule_id", "emp_id"]])):
+    pg.write_df(con, name, df)
+con.commit()
 print(f"synthetic users {len(empdf)} | tx {len(txdf)} (violations {gt.tx_id.nunique()}, normal {len(txdf)-gt.tx_id.nunique()}) | access {len(accdf)} | ground_truth rows {len(gt)}")
-print(con.execute("select case_id, count(distinct tx_id) tx, string_agg(distinct rule_id, ',') rules from ground_truth group by 1 order by 1").df().to_string(index=False))
+print(pg.q(con, "select case_id, count(distinct tx_id) tx, string_agg(distinct rule_id, ',') rules from ground_truth where tenant_id=tenant() group by 1 order by 1").to_string(index=False))
 con.close()

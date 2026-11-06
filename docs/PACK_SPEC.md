@@ -8,7 +8,7 @@ packs/<name>/
   pack.yaml            매니페스트 (아래 2)
   rules/catalog.yaml   규칙 카탈로그 v2: id, name, tier(violation|advisory), params, explain, policy_ref
   rules/sql/R*.sql     규칙 1개 = SQL 1장. 출력 계약 고정 (아래 4)
-  rules/macros.sql     (선택) SQL 매크로. 규칙·피처가 공유. 없으면 null
+  rules/functions.sql  (선택) PostgreSQL SQL 함수(sido_of 등). 규칙·피처가 공유. bootstrap_db.py가 schema 다음에 적용
   features.yaml        피처 선언: {entity}__{window}__{what}, 시점 기준(point-in-time) 집계. docs/FEATURES.md
   weak_labels.yaml     약한 라벨: 규칙 클러스터·p_tier·prior (noisy-OR). docs/MODEL.md
   cases.yaml           선례·합성 사례 명세(징계사례 등). docs/PRECEDENTS.md
@@ -20,7 +20,7 @@ packs/<name>/
 |---|---|---|
 | name, version | 팩 이름·버전 | 예 |
 | rules_catalog, rules_sql_dir | 규칙 카탈로그·SQL 폴더 (pack.yaml 기준 상대경로) | 예 |
-| macros | 매크로 SQL. null 허용 | 아니오 |
+| functions | 팩 SQL 함수 파일. null 허용 | 아니오 |
 | features_catalog | 피처 선언 | 예 |
 | weak_labels | 약한 라벨 설정 | 예 (라벨 없을 때 학습 시작점) |
 | cases | 선례·합성 사례 | 아니오 |

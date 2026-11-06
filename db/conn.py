@@ -33,9 +33,10 @@ def q(con, sql: str, params=None) -> pd.DataFrame:
         if cur.description is None: return pd.DataFrame()
         cols = [d.name for d in cur.description]; rows = cur.fetchall()
     df = pd.DataFrame(rows, columns=cols)
-    for c in df.columns:
-        if df[c].dtype == object and len(df) and any(isinstance(v, Decimal) for v in df[c].head(50)):
-            df[c] = pd.to_numeric(df[c], errors="coerce").astype(float)
+    for i in range(df.shape[1]):   # by position: result sets may repeat a column name
+        col = df.iloc[:, i]
+        if col.dtype == object and len(df) and any(isinstance(v, Decimal) for v in col.head(50)):
+            df.isetitem(i, pd.to_numeric(col, errors="coerce").astype(float))
     return df
 
 def one(con, sql: str, params=None):
@@ -63,10 +64,12 @@ def pg_array(v) -> str | None:
 
 def _cell(v):
     if v is None or v is pd.NA or v is pd.NaT: return None
-    if isinstance(v, float) and np.isnan(v): return None
     if isinstance(v, (np.bool_, bool)): return "t" if v else "f"
     if isinstance(v, (np.integer,)): return str(int(v))
-    if isinstance(v, (np.floating,)): return None if np.isnan(v) else repr(float(v))
+    if isinstance(v, (float, np.floating)):   # pandas turns int columns with NULLs into floats: 8001.0 must land in an int column
+        f = float(v)
+        if np.isnan(f): return None
+        return str(int(f)) if f.is_integer() and abs(f) < 2**53 else repr(f)
     if isinstance(v, (list, tuple, np.ndarray)): return pg_array(v)
     if isinstance(v, dict): return json.dumps(v, ensure_ascii=False)
     if isinstance(v, (pd.Timestamp, dt.datetime, dt.date, dt.time)): return v.isoformat()
@@ -79,7 +82,7 @@ def write_df(con, table: str, df: pd.DataFrame, cols: list[str] | None = None, t
     cols = cols or list(df.columns)
     buf = io.StringIO(); w = csv.writer(buf, lineterminator="\n")
     for row in df[cols].itertuples(index=False, name=None):
-        w.writerow([_cell(v) if _cell(v) is not None else "" for v in row])
+        w.writerow(["" if (c := _cell(v)) is None else c for v in row])
     buf.seek(0)
     with con.cursor() as cur, cur.copy(f"COPY {table} ({', '.join(cols)}) FROM STDIN WITH (FORMAT csv, NULL '')") as cp:
         cp.write(buf.read())
