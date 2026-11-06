@@ -557,6 +557,141 @@
      "explain": "같은 계정·업종 조합에서 다른 사람들의 중앙값보다 2배 이상 큰 금액. 통계적 이상치이며 정당한 사유가 흔하므로 참고용."
     }
    ],
+   "findings": [
+    {
+     "cluster": "location",
+     "severity": "violation",
+     "fact": "집과 같은 동네(용인시 수지구)에서 사용",
+     "brief_value": "용인시 수지구",
+     "brief_verdict": "집과 같음",
+     "lead_rule_id": "R05_near_home",
+     "chips": [],
+     "evidences": [
+      {
+       "rule_id": "R05_near_home",
+       "rule_name": "거주지 인근 사용",
+       "rule_class": "위반 가능",
+       "severity": "violation",
+       "cluster": "location",
+       "fact": "집과 같은 동네(용인시 수지구)에서 사용",
+       "brief_value": "용인시 수지구",
+       "brief_verdict": "집과 같음",
+       "evidence": {
+        "mcc": "일반주점",
+        "time": "22:56:18",
+        "total": 323657.0,
+        "home_sigungu": "용인시 수지구",
+        "work_sigungu": "성남시 분당구",
+        "merchant_sigungu": "용인시 수지구"
+       },
+       "evidence_text": "가맹점 지역(용인시 수지구)이 주거지(용인시 수지구)와 같고 근무지(성남시 분당구)와 다름. 22:56:18 일반주점 323,657.0원",
+       "related_tx": [],
+       "rule_version": 3,
+       "headline": "집 근처(용인시 수지구)에서 사용",
+       "detail": "근무지 성남시 분당구 · 22:56 · 일반주점",
+       "citation": "사적사용 시나리오 '거주지 인근 사용' / 징계사례 1·5",
+       "explain": "가맹점이 사용자 주거지와 같은 시·군·구에 있고 근무지와는 다른 곳. 지오코딩 전까지는 주소 문자열의 시·군·구 일치로 판정."
+      }
+     ]
+    },
+    {
+     "cluster": "entertain",
+     "severity": "violation",
+     "fact": "제한 업종 일반주점 (계정 의욕관리비)",
+     "brief_value": "일반주점",
+     "brief_verdict": "금지 업종",
+     "lead_rule_id": "R08_banned_mcc",
+     "chips": [
+      "승인자 이해충돌"
+     ],
+     "evidences": [
+      {
+       "rule_id": "R08_banned_mcc",
+       "rule_name": "금지 업종",
+       "rule_class": "위반 가능",
+       "severity": "violation",
+       "cluster": "entertain",
+       "fact": "제한 업종 일반주점 (계정 의욕관리비)",
+       "brief_value": "일반주점",
+       "brief_verdict": "금지 업종",
+       "evidence": {
+        "mcc": "일반주점",
+        "time": "22:56:18",
+        "total": 323657.0,
+        "account": "의욕관리비",
+        "weekday": "월"
+       },
+       "evidence_text": "금지 업종 일반주점, 계정 의욕관리비, 월요일 22:56:18, 323,657.0원",
+       "related_tx": [],
+       "rule_version": 3,
+       "headline": "금지 업종 일반주점",
+       "detail": "계정 의욕관리비 · 월 22:56 · 323,657원",
+       "citation": "계정별 비용정산지침 Don'ts(유흥주점, 골프 등) / 클린카드 제한 업종",
+       "explain": "유흥주점·골프장 등 사용이 제한된 업종. 계정별 규정의 Don'ts에 명시되어 있고, 접대비라도 사전 품의와 상대방 정보가 필요."
+      },
+      {
+       "rule_id": "R18_approver_conflict",
+       "rule_name": "승인자 이해충돌",
+       "rule_class": "위반 가능",
+       "severity": "violation",
+       "cluster": "entertain",
+       "fact": "승인자 집과 같은 동네(용인시 수지구) 가맹점",
+       "brief_value": "용인시 수지구",
+       "brief_verdict": "승인자 집과 같음",
+       "evidence": {
+        "mcc": "일반주점",
+        "time": "22:56:18",
+        "total": 323657.0,
+        "work_sigungu": "성남시 분당구",
+        "approver_sigungu": "용인시 수지구",
+        "merchant_sigungu": "용인시 수지구"
+       },
+       "evidence_text": "승인자 주거지(용인시 수지구)와 가맹점 지역이 같음. 22:56:18 일반주점 323,657.0원",
+       "related_tx": [],
+       "rule_version": 3,
+       "headline": "승인자 집 근처(용인시 수지구) 가맹점",
+       "detail": "22:56 · 일반주점 · 323,657원",
+       "citation": "징계사례 5(팀장이 부하 결제를 승인)",
+       "explain": "저녁·휴일의 식당·주점 결제인데 가맹점이 승인자 주거지와 같은 시·군·구. 승인자가 동석했을 가능성이 있어 승인의 독립성이 의심됨."
+      }
+     ]
+    },
+    {
+     "cluster": "amount",
+     "severity": "advisory",
+     "fact": "동료 중앙값의 5.1배 금액",
+     "brief_value": "5.1배",
+     "brief_verdict": "동료 초과",
+     "lead_rule_id": "R16_amount_outlier",
+     "chips": [],
+     "evidences": [
+      {
+       "rule_id": "R16_amount_outlier",
+       "rule_name": "동료 대비 금액 과다",
+       "rule_class": "참고",
+       "severity": "advisory",
+       "cluster": "amount",
+       "fact": "동료 중앙값의 5.1배 금액",
+       "brief_value": "5.1배",
+       "brief_verdict": "동료 초과",
+       "evidence": {
+        "ratio": 5.1,
+        "total": 323657.0,
+        "peer_n": 113,
+        "peer_group": "의욕관리비 × 일반주점",
+        "peer_median": 63500
+       },
+       "evidence_text": "의욕관리비 × 일반주점 동료 중앙값 63,500원의 5.1배인 323,657.0원 (비교 113건)",
+       "related_tx": [],
+       "rule_version": 3,
+       "headline": "동료 중앙값의 5.1배 금액",
+       "detail": "의욕관리비 × 일반주점 중앙값 63,500원 vs 323,657원",
+       "citation": "징계사례 20(KTX 2배 청구)·22(일당 초과)",
+       "explain": "같은 계정·업종 조합에서 다른 사람들의 중앙값보다 2배 이상 큰 금액. 통계적 이상치이며 정당한 사유가 흔하므로 참고용."
+      }
+     ]
+    }
+   ],
    "context": {
     "recent_tx": [
      {
@@ -1118,6 +1253,167 @@
      "explain": "같은 계정·업종 조합에서 다른 사람들의 중앙값보다 2배 이상 큰 금액. 통계적 이상치이며 정당한 사유가 흔하므로 참고용."
     }
    ],
+   "findings": [
+    {
+     "cluster": "split_prepay",
+     "severity": "violation",
+     "fact": "같은 가게에서 60분 안에 2건으로 나눠 결제",
+     "brief_value": "60분 안 2건",
+     "brief_verdict": "분할",
+     "lead_rule_id": "R03_split_payment",
+     "chips": [],
+     "evidences": [
+      {
+       "rule_id": "R03_split_payment",
+       "rule_name": "분할결제",
+       "rule_class": "위반 가능",
+       "severity": "violation",
+       "cluster": "split_prepay",
+       "fact": "같은 가게에서 60분 안에 2건으로 나눠 결제",
+       "brief_value": "60분 안 2건",
+       "brief_verdict": "분할",
+       "evidence": {
+        "merchant": "굽돌집 서울시청 본점",
+        "near_limit": 500000,
+        "window_min": 60,
+        "group_total": 277000.0,
+        "count_in_window": 2
+       },
+       "evidence_text": "같은 가맹점(굽돌집 서울시청 본점)에서 60분 안에 2건, 합계 277,000.0원 (기준 500,000원)",
+       "related_tx": [
+        {
+         "tx_id": "-8180944960896160674",
+         "tx_ts": "2025-03-05T19:38:53+09:00",
+         "emp_name": "서*교",
+         "account_policy": "PJT운영비",
+         "merchant": "굽돌집 서울시청 본점",
+         "mcc_name": "일반음식점",
+         "total": 100000.0
+        }
+       ],
+       "rule_version": 3,
+       "headline": "같은 가게에서 60분 안에 2건 결제",
+       "detail": "합계 277,000원 · 굽돌집 서울시청 본점",
+       "citation": "사적사용 시나리오 '선결제와 분할결제' / 징계사례 17(승인권자 회피 목적 2회 결제)",
+       "explain": "같은 사람이 같은 가맹점에서 짧은 시간 안에 여러 번 결제. 승인 한도(건당 50만원 등)를 피하려고 나눠 긁는 패턴. 합계가 기준에 가까울수록 의심."
+      }
+     ]
+    },
+    {
+     "cluster": "location",
+     "severity": "violation",
+     "fact": "15분 안에 중구와 동구 두 곳에서 결제",
+     "brief_value": "15분 안 2곳",
+     "brief_verdict": "동시",
+     "lead_rule_id": "R06_same_time_diff_place",
+     "chips": [],
+     "evidences": [
+      {
+       "rule_id": "R06_same_time_diff_place",
+       "rule_name": "동일인 동시간 다른 장소",
+       "rule_class": "위반 가능",
+       "severity": "violation",
+       "cluster": "location",
+       "fact": "15분 안에 중구와 동구 두 곳에서 결제",
+       "brief_value": "15분 안 2곳",
+       "brief_verdict": "동시",
+       "evidence": {
+        "kind": "named_attendee_elsewhere",
+        "window_min": 15,
+        "this_sigungu": "중구",
+        "other_sigungu": "동구"
+       },
+       "evidence_text": "적요에 적힌 동석자가 같은 시각 동구에서 결제",
+       "related_tx": [
+        {
+         "tx_id": "-3913411881958831830",
+         "tx_ts": "2025-03-05T19:51:52+09:00",
+         "emp_name": "묘*캬",
+         "account_policy": "국내출장비",
+         "merchant": "철도승차권  발매",
+         "mcc_name": "철도",
+         "total": 23700.0
+        }
+       ],
+       "rule_version": 3,
+       "headline": "적요의 동석자가 같은 시각 다른 지역에서 결제",
+       "detail": "중구 ↔ 동구",
+       "citation": "사적사용 시나리오 '동일인이 같은 시간 다른 장소에서 사용' / 징계사례 8",
+       "explain": "같은 카드가 15분 안에 서로 다른 시·군·구에서 결제되거나, 적요에 적힌 동석자가 같은 시각 다른 지역에서 결제. 물리적으로 한 사람이 있을 수 없는 조합."
+      }
+     ]
+    },
+    {
+     "cluster": "trip",
+     "severity": "advisory",
+     "fact": "출장 중 식사(일반음식점)를 의욕관리비 계정으로",
+     "brief_value": "의욕관리비",
+     "brief_verdict": "출장비 아님",
+     "lead_rule_id": "R14_trip_meal_double",
+     "chips": [],
+     "evidences": [
+      {
+       "rule_id": "R14_trip_meal_double",
+       "rule_name": "출장 중 식사 카드 결제",
+       "rule_class": "참고",
+       "severity": "advisory",
+       "cluster": "trip",
+       "fact": "출장 중 식사(일반음식점)를 의욕관리비 계정으로",
+       "brief_value": "의욕관리비",
+       "brief_verdict": "출장비 아님",
+       "evidence": {
+        "mcc": "일반음식점",
+        "trip": "2025-03-04~2025-03-06",
+        "total": 177000.0,
+        "account": "의욕관리비",
+        "trip_type": "국내출장"
+       },
+       "evidence_text": "국내출장(2025-03-04~2025-03-06) 중 일반음식점 177,000.0원을 의욕관리비로 결제",
+       "related_tx": [],
+       "rule_version": 3,
+       "headline": "국내출장 중 식사를 카드로 결제",
+       "detail": "출장 2025-03-04~2025-03-06 · 계정 의욕관리비 · 177,000원",
+       "citation": "리더 점검 시나리오 / 징계사례 15·22",
+       "explain": "출장 기간 중 식당·카페 결제. 일당(식비 포함)을 받으면서 식사를 카드로도 결제하면 이중 지급. 일당 지급 방식에 따라 정상일 수 있어 참고용."
+      }
+     ]
+    },
+    {
+     "cluster": "amount",
+     "severity": "advisory",
+     "fact": "동료 중앙값의 3.86배 금액",
+     "brief_value": "3.86배",
+     "brief_verdict": "동료 초과",
+     "lead_rule_id": "R16_amount_outlier",
+     "chips": [],
+     "evidences": [
+      {
+       "rule_id": "R16_amount_outlier",
+       "rule_name": "동료 대비 금액 과다",
+       "rule_class": "참고",
+       "severity": "advisory",
+       "cluster": "amount",
+       "fact": "동료 중앙값의 3.86배 금액",
+       "brief_value": "3.86배",
+       "brief_verdict": "동료 초과",
+       "evidence": {
+        "ratio": 3.86,
+        "total": 177000.0,
+        "peer_n": 3694,
+        "peer_group": "의욕관리비 × 일반음식점",
+        "peer_median": 45800
+       },
+       "evidence_text": "의욕관리비 × 일반음식점 동료 중앙값 45,800원의 3.86배인 177,000.0원 (비교 3694건)",
+       "related_tx": [],
+       "rule_version": 3,
+       "headline": "동료 중앙값의 3.86배 금액",
+       "detail": "의욕관리비 × 일반음식점 중앙값 45,800원 vs 177,000원",
+       "citation": "징계사례 20(KTX 2배 청구)·22(일당 초과)",
+       "explain": "같은 계정·업종 조합에서 다른 사람들의 중앙값보다 2배 이상 큰 금액. 통계적 이상치이며 정당한 사유가 흔하므로 참고용."
+      }
+     ]
+    }
+   ],
    "context": {
     "recent_tx": [
      {
@@ -1633,6 +1929,131 @@
      "detail": "의욕관리비 × 일반음식점 중앙값 45,800원 vs 155,000원",
      "citation": "징계사례 20(KTX 2배 청구)·22(일당 초과)",
      "explain": "같은 계정·업종 조합에서 다른 사람들의 중앙값보다 2배 이상 큰 금액. 통계적 이상치이며 정당한 사유가 흔하므로 참고용."
+    }
+   ],
+   "findings": [
+    {
+     "cluster": "trip",
+     "severity": "violation",
+     "fact": "해외출장 중 식사(일반음식점)를 의욕관리비 계정으로 처리",
+     "brief_value": "의욕관리비",
+     "brief_verdict": "출장비 아님",
+     "lead_rule_id": "R11_account_mismatch",
+     "chips": [
+      "출장 중 출장지 밖 사용",
+      "출장 중 식사 카드 결제"
+     ],
+     "evidences": [
+      {
+       "rule_id": "R11_account_mismatch",
+       "rule_name": "출장 중 계정 불일치",
+       "rule_class": "위반 가능",
+       "severity": "violation",
+       "cluster": "trip",
+       "fact": "해외출장 중 식사(일반음식점)를 의욕관리비 계정으로 처리",
+       "brief_value": "의욕관리비",
+       "brief_verdict": "출장비 아님",
+       "evidence": {
+        "mcc": "일반음식점",
+        "total": 155000.0,
+        "reason": "overseas_trip_meal_not_trip_account",
+        "account": "의욕관리비",
+        "trip_type": "해외출장"
+       },
+       "evidence_text": "업종 일반음식점와 계정 의욕관리비 불일치 — 해외출장 중 식사를 출장비 외 계정으로",
+       "related_tx": [],
+       "rule_version": 3,
+       "headline": "해외출장 중 식사를 출장비 외 계정으로",
+       "detail": "계정 의욕관리비",
+       "citation": "계정별 비용정산지침 해외출장비 / 징계사례 15",
+       "explain": "해외출장 기간의 식사를 해외출장비가 아닌 계정으로 처리. (금지 업종을 접대비 외 계정으로 쓴 경우는 R08 금지 업종이 계정까지 함께 보여준다.)"
+      },
+      {
+       "rule_id": "R07_outside_trip_area",
+       "rule_name": "출장 중 출장지 밖 사용",
+       "rule_class": "참고",
+       "severity": "advisory",
+       "cluster": "trip",
+       "fact": "해외출장 중인데 출장지 밖(서울)에서 사용",
+       "brief_value": "서울",
+       "brief_verdict": "출장지 밖",
+       "evidence": {
+        "mcc": "일반음식점",
+        "trip": "2025-03-21~2025-03-30",
+        "total": 155000.0,
+        "home_sido": "서울",
+        "trip_type": "해외출장",
+        "work_sido": "경기",
+        "merchant_sido": "서울"
+       },
+       "evidence_text": "해외출장(2025-03-21~2025-03-30) 중 서울 지역에서 일반음식점 155,000.0원 (주거지 서울, 근무지 경기)",
+       "related_tx": [],
+       "rule_version": 3,
+       "headline": "해외출장 중 출장지 밖(서울)에서 사용",
+       "detail": "출장 2025-03-21~2025-03-30 · 일반음식점 · 155,000원",
+       "citation": "리더 점검 시나리오 '출장 기간 중 출장지 밖 사용' / 징계사례 1·9",
+       "explain": "출장 기간 중 거래인데 가맹점이 출장지가 아닌 곳(해외출장 중 국내, 국내출장 중 자택 인근). 출장이 실제로 이루어졌는지, 카드를 다른 사람이 썼는지 확인 대상."
+      },
+      {
+       "rule_id": "R14_trip_meal_double",
+       "rule_name": "출장 중 식사 카드 결제",
+       "rule_class": "참고",
+       "severity": "advisory",
+       "cluster": "trip",
+       "fact": "출장 중 식사(일반음식점)를 의욕관리비 계정으로",
+       "brief_value": "의욕관리비",
+       "brief_verdict": "출장비 아님",
+       "evidence": {
+        "mcc": "일반음식점",
+        "trip": "2025-03-21~2025-03-30",
+        "total": 155000.0,
+        "account": "의욕관리비",
+        "trip_type": "해외출장"
+       },
+       "evidence_text": "해외출장(2025-03-21~2025-03-30) 중 일반음식점 155,000.0원을 의욕관리비로 결제",
+       "related_tx": [],
+       "rule_version": 3,
+       "headline": "해외출장 중 식사를 카드로 결제",
+       "detail": "출장 2025-03-21~2025-03-30 · 계정 의욕관리비 · 155,000원",
+       "citation": "리더 점검 시나리오 / 징계사례 15·22",
+       "explain": "출장 기간 중 식당·카페 결제. 일당(식비 포함)을 받으면서 식사를 카드로도 결제하면 이중 지급. 일당 지급 방식에 따라 정상일 수 있어 참고용."
+      }
+     ]
+    },
+    {
+     "cluster": "amount",
+     "severity": "advisory",
+     "fact": "동료 중앙값의 3.38배 금액",
+     "brief_value": "3.38배",
+     "brief_verdict": "동료 초과",
+     "lead_rule_id": "R16_amount_outlier",
+     "chips": [],
+     "evidences": [
+      {
+       "rule_id": "R16_amount_outlier",
+       "rule_name": "동료 대비 금액 과다",
+       "rule_class": "참고",
+       "severity": "advisory",
+       "cluster": "amount",
+       "fact": "동료 중앙값의 3.38배 금액",
+       "brief_value": "3.38배",
+       "brief_verdict": "동료 초과",
+       "evidence": {
+        "ratio": 3.38,
+        "total": 155000.0,
+        "peer_n": 3694,
+        "peer_group": "의욕관리비 × 일반음식점",
+        "peer_median": 45800
+       },
+       "evidence_text": "의욕관리비 × 일반음식점 동료 중앙값 45,800원의 3.38배인 155,000.0원 (비교 3694건)",
+       "related_tx": [],
+       "rule_version": 3,
+       "headline": "동료 중앙값의 3.38배 금액",
+       "detail": "의욕관리비 × 일반음식점 중앙값 45,800원 vs 155,000원",
+       "citation": "징계사례 20(KTX 2배 청구)·22(일당 초과)",
+       "explain": "같은 계정·업종 조합에서 다른 사람들의 중앙값보다 2배 이상 큰 금액. 통계적 이상치이며 정당한 사유가 흔하므로 참고용."
+      }
+     ]
     }
    ],
    "context": {
@@ -2286,6 +2707,123 @@
      "explain": "같은 계정·업종 조합에서 다른 사람들의 중앙값보다 2배 이상 큰 금액. 통계적 이상치이며 정당한 사유가 흔하므로 참고용."
     }
    ],
+   "findings": [
+    {
+     "cluster": "time",
+     "severity": "violation",
+     "fact": "휴일(03-09 일)에 사용",
+     "brief_value": "03-09 (일)",
+     "brief_verdict": "휴일",
+     "lead_rule_id": "R01_holiday_use",
+     "chips": [],
+     "evidences": [
+      {
+       "rule_id": "R01_holiday_use",
+       "rule_name": "휴일 사용",
+       "rule_class": "위반 가능",
+       "severity": "violation",
+       "cluster": "time",
+       "fact": "휴일(03-09 일)에 사용",
+       "brief_value": "03-09 (일)",
+       "brief_verdict": "휴일",
+       "evidence": {
+        "mcc": "컴퓨터",
+        "date": "2025-03-09",
+        "total": 1678244.0,
+        "account": "지급수수료",
+        "weekday": "일"
+       },
+       "evidence_text": "2025-03-09(일) 휴일에 컴퓨터에서 1,678,244.0원 (지급수수료)",
+       "related_tx": [],
+       "rule_version": 3,
+       "headline": "휴일(일) 사용",
+       "detail": "2025-03-09 · 컴퓨터 · 1,678,244원",
+       "citation": "사적사용 시나리오 '휴가·휴일 사용' / 공공기관 업무추진비 지침의 공휴일 사용 소명 의무",
+       "explain": "거래일이 토·일·공휴일이고 출장 기록이 없는 거래. 휴일 사용은 사전 승인 또는 소명이 필요한 사적 사용 의심 시나리오."
+      }
+     ]
+    },
+    {
+     "cluster": "split_prepay",
+     "severity": "violation",
+     "fact": "같은 가게에서 60분 안에 2건으로 나눠 결제",
+     "brief_value": "60분 안 2건",
+     "brief_verdict": "분할",
+     "lead_rule_id": "R03_split_payment",
+     "chips": [],
+     "evidences": [
+      {
+       "rule_id": "R03_split_payment",
+       "rule_name": "분할결제",
+       "rule_class": "위반 가능",
+       "severity": "violation",
+       "cluster": "split_prepay",
+       "fact": "같은 가게에서 60분 안에 2건으로 나눠 결제",
+       "brief_value": "60분 안 2건",
+       "brief_verdict": "분할",
+       "evidence": {
+        "merchant": "GITHUB  INC.",
+        "near_limit": 500000,
+        "window_min": 60,
+        "group_total": 1693076.0,
+        "count_in_window": 2
+       },
+       "evidence_text": "같은 가맹점(GITHUB  INC.)에서 60분 안에 2건, 합계 1,693,076.0원 (기준 500,000원)",
+       "related_tx": [
+        {
+         "tx_id": "3565948045801248374",
+         "tx_ts": "2025-03-09T17:04:35+09:00",
+         "emp_name": "일*항",
+         "account_policy": "지급수수료",
+         "merchant": "GITHUB  INC.",
+         "mcc_name": "컴퓨터",
+         "total": 14832.0
+        }
+       ],
+       "rule_version": 3,
+       "headline": "같은 가게에서 60분 안에 2건 결제",
+       "detail": "합계 1,693,076원 · GITHUB  INC.",
+       "citation": "사적사용 시나리오 '선결제와 분할결제' / 징계사례 17(승인권자 회피 목적 2회 결제)",
+       "explain": "같은 사람이 같은 가맹점에서 짧은 시간 안에 여러 번 결제. 승인 한도(건당 50만원 등)를 피하려고 나눠 긁는 패턴. 합계가 기준에 가까울수록 의심."
+      }
+     ]
+    },
+    {
+     "cluster": "amount",
+     "severity": "advisory",
+     "fact": "동료 중앙값의 50.84배 금액",
+     "brief_value": "50.84배",
+     "brief_verdict": "동료 초과",
+     "lead_rule_id": "R16_amount_outlier",
+     "chips": [],
+     "evidences": [
+      {
+       "rule_id": "R16_amount_outlier",
+       "rule_name": "동료 대비 금액 과다",
+       "rule_class": "참고",
+       "severity": "advisory",
+       "cluster": "amount",
+       "fact": "동료 중앙값의 50.84배 금액",
+       "brief_value": "50.84배",
+       "brief_verdict": "동료 초과",
+       "evidence": {
+        "ratio": 50.84,
+        "total": 1678244.0,
+        "peer_n": 136,
+        "peer_group": "지급수수료 × 컴퓨터",
+        "peer_median": 33008
+       },
+       "evidence_text": "지급수수료 × 컴퓨터 동료 중앙값 33,008원의 50.84배인 1,678,244.0원 (비교 136건)",
+       "related_tx": [],
+       "rule_version": 3,
+       "headline": "동료 중앙값의 50.84배 금액",
+       "detail": "지급수수료 × 컴퓨터 중앙값 33,008원 vs 1,678,244원",
+       "citation": "징계사례 20(KTX 2배 청구)·22(일당 초과)",
+       "explain": "같은 계정·업종 조합에서 다른 사람들의 중앙값보다 2배 이상 큰 금액. 통계적 이상치이며 정당한 사유가 흔하므로 참고용."
+      }
+     ]
+    }
+   ],
    "context": {
     "recent_tx": [
      {
@@ -2757,6 +3295,113 @@
      "detail": "접대비 × 골프장 중앙값 445,120원 vs 1,402,920원",
      "citation": "징계사례 20(KTX 2배 청구)·22(일당 초과)",
      "explain": "같은 계정·업종 조합에서 다른 사람들의 중앙값보다 2배 이상 큰 금액. 통계적 이상치이며 정당한 사유가 흔하므로 참고용."
+    }
+   ],
+   "findings": [
+    {
+     "cluster": "time",
+     "severity": "violation",
+     "fact": "휴일(03-16 일)에 사용",
+     "brief_value": "03-16 (일)",
+     "brief_verdict": "휴일",
+     "lead_rule_id": "R01_holiday_use",
+     "chips": [],
+     "evidences": [
+      {
+       "rule_id": "R01_holiday_use",
+       "rule_name": "휴일 사용",
+       "rule_class": "위반 가능",
+       "severity": "violation",
+       "cluster": "time",
+       "fact": "휴일(03-16 일)에 사용",
+       "brief_value": "03-16 (일)",
+       "brief_verdict": "휴일",
+       "evidence": {
+        "mcc": "골프장",
+        "date": "2025-03-16",
+        "total": 1402920.0,
+        "account": "접대비",
+        "weekday": "일"
+       },
+       "evidence_text": "2025-03-16(일) 휴일에 골프장에서 1,402,920.0원 (접대비)",
+       "related_tx": [],
+       "rule_version": 3,
+       "headline": "휴일(일) 사용",
+       "detail": "2025-03-16 · 골프장 · 1,402,920원",
+       "citation": "사적사용 시나리오 '휴가·휴일 사용' / 공공기관 업무추진비 지침의 공휴일 사용 소명 의무",
+       "explain": "거래일이 토·일·공휴일이고 출장 기록이 없는 거래. 휴일 사용은 사전 승인 또는 소명이 필요한 사적 사용 의심 시나리오."
+      }
+     ]
+    },
+    {
+     "cluster": "entertain",
+     "severity": "violation",
+     "fact": "제한 업종 골프장 (계정 접대비)",
+     "brief_value": "골프장",
+     "brief_verdict": "금지 업종",
+     "lead_rule_id": "R08_banned_mcc",
+     "chips": [],
+     "evidences": [
+      {
+       "rule_id": "R08_banned_mcc",
+       "rule_name": "금지 업종",
+       "rule_class": "위반 가능",
+       "severity": "violation",
+       "cluster": "entertain",
+       "fact": "제한 업종 골프장 (계정 접대비)",
+       "brief_value": "골프장",
+       "brief_verdict": "금지 업종",
+       "evidence": {
+        "mcc": "골프장",
+        "time": "14:07:07",
+        "total": 1402920.0,
+        "account": "접대비",
+        "weekday": "일"
+       },
+       "evidence_text": "금지 업종 골프장, 계정 접대비, 일요일 14:07:07, 1,402,920.0원",
+       "related_tx": [],
+       "rule_version": 3,
+       "headline": "금지 업종 골프장",
+       "detail": "계정 접대비 · 일 14:07 · 1,402,920원",
+       "citation": "계정별 비용정산지침 Don'ts(유흥주점, 골프 등) / 클린카드 제한 업종",
+       "explain": "유흥주점·골프장 등 사용이 제한된 업종. 계정별 규정의 Don'ts에 명시되어 있고, 접대비라도 사전 품의와 상대방 정보가 필요."
+      }
+     ]
+    },
+    {
+     "cluster": "amount",
+     "severity": "advisory",
+     "fact": "동료 중앙값의 3.15배 금액",
+     "brief_value": "3.15배",
+     "brief_verdict": "동료 초과",
+     "lead_rule_id": "R16_amount_outlier",
+     "chips": [],
+     "evidences": [
+      {
+       "rule_id": "R16_amount_outlier",
+       "rule_name": "동료 대비 금액 과다",
+       "rule_class": "참고",
+       "severity": "advisory",
+       "cluster": "amount",
+       "fact": "동료 중앙값의 3.15배 금액",
+       "brief_value": "3.15배",
+       "brief_verdict": "동료 초과",
+       "evidence": {
+        "ratio": 3.15,
+        "total": 1402920.0,
+        "peer_n": 32,
+        "peer_group": "접대비 × 골프장",
+        "peer_median": 445120
+       },
+       "evidence_text": "접대비 × 골프장 동료 중앙값 445,120원의 3.15배인 1,402,920.0원 (비교 32건)",
+       "related_tx": [],
+       "rule_version": 3,
+       "headline": "동료 중앙값의 3.15배 금액",
+       "detail": "접대비 × 골프장 중앙값 445,120원 vs 1,402,920원",
+       "citation": "징계사례 20(KTX 2배 청구)·22(일당 초과)",
+       "explain": "같은 계정·업종 조합에서 다른 사람들의 중앙값보다 2배 이상 큰 금액. 통계적 이상치이며 정당한 사유가 흔하므로 참고용."
+      }
+     ]
     }
    ],
    "context": {
@@ -3231,6 +3876,43 @@
      "explain": "거래일이 토·일·공휴일이고 출장 기록이 없는 거래. 휴일 사용은 사전 승인 또는 소명이 필요한 사적 사용 의심 시나리오."
     }
    ],
+   "findings": [
+    {
+     "cluster": "time",
+     "severity": "violation",
+     "fact": "휴일(03-09 일)에 사용",
+     "brief_value": "03-09 (일)",
+     "brief_verdict": "휴일",
+     "lead_rule_id": "R01_holiday_use",
+     "chips": [],
+     "evidences": [
+      {
+       "rule_id": "R01_holiday_use",
+       "rule_name": "휴일 사용",
+       "rule_class": "위반 가능",
+       "severity": "violation",
+       "cluster": "time",
+       "fact": "휴일(03-09 일)에 사용",
+       "brief_value": "03-09 (일)",
+       "brief_verdict": "휴일",
+       "evidence": {
+        "mcc": "PC/인터넷",
+        "date": "2025-03-09",
+        "total": 469.0,
+        "account": "교육비_구성원L/A",
+        "weekday": "일"
+       },
+       "evidence_text": "2025-03-09(일) 휴일에 PC/인터넷에서 469.0원 (교육비_구성원L/A)",
+       "related_tx": [],
+       "rule_version": 3,
+       "headline": "휴일(일) 사용",
+       "detail": "2025-03-09 · PC/인터넷 · 469원",
+       "citation": "사적사용 시나리오 '휴가·휴일 사용' / 공공기관 업무추진비 지침의 공휴일 사용 소명 의무",
+       "explain": "거래일이 토·일·공휴일이고 출장 기록이 없는 거래. 휴일 사용은 사전 승인 또는 소명이 필요한 사적 사용 의심 시나리오."
+      }
+     ]
+    }
+   ],
    "context": {
     "recent_tx": [
      {
@@ -3566,6 +4248,43 @@
      "detail": "2025-03-09 · PC/인터넷 · 471원",
      "citation": "사적사용 시나리오 '휴가·휴일 사용' / 공공기관 업무추진비 지침의 공휴일 사용 소명 의무",
      "explain": "거래일이 토·일·공휴일이고 출장 기록이 없는 거래. 휴일 사용은 사전 승인 또는 소명이 필요한 사적 사용 의심 시나리오."
+    }
+   ],
+   "findings": [
+    {
+     "cluster": "time",
+     "severity": "violation",
+     "fact": "휴일(03-09 일)에 사용",
+     "brief_value": "03-09 (일)",
+     "brief_verdict": "휴일",
+     "lead_rule_id": "R01_holiday_use",
+     "chips": [],
+     "evidences": [
+      {
+       "rule_id": "R01_holiday_use",
+       "rule_name": "휴일 사용",
+       "rule_class": "위반 가능",
+       "severity": "violation",
+       "cluster": "time",
+       "fact": "휴일(03-09 일)에 사용",
+       "brief_value": "03-09 (일)",
+       "brief_verdict": "휴일",
+       "evidence": {
+        "mcc": "PC/인터넷",
+        "date": "2025-03-09",
+        "total": 471.0,
+        "account": "교육비_구성원L/A",
+        "weekday": "일"
+       },
+       "evidence_text": "2025-03-09(일) 휴일에 PC/인터넷에서 471.0원 (교육비_구성원L/A)",
+       "related_tx": [],
+       "rule_version": 3,
+       "headline": "휴일(일) 사용",
+       "detail": "2025-03-09 · PC/인터넷 · 471원",
+       "citation": "사적사용 시나리오 '휴가·휴일 사용' / 공공기관 업무추진비 지침의 공휴일 사용 소명 의무",
+       "explain": "거래일이 토·일·공휴일이고 출장 기록이 없는 거래. 휴일 사용은 사전 승인 또는 소명이 필요한 사적 사용 의심 시나리오."
+      }
+     ]
     }
    ],
    "context": {
@@ -3930,9 +4649,10 @@
      "brief_value": "당일 1회 · 14일 3회",
      "brief_verdict": "초과",
      "evidence": {
-      "count_in_14d": 3,
+      "window_days": 14,
       "per_day_limit": 2,
       "same_day_count": null,
+      "count_in_window": 3,
       "per_window_limit": 3
      },
      "evidence_text": "같은 날 주유 1회 / 14일 내 3회 (기준: 하루 회, 14일 회)",
@@ -3985,6 +4705,134 @@
      "detail": "국내출장비 × 주유소 중앙값 50,000원 vs 100,000원",
      "citation": "징계사례 20(KTX 2배 청구)·22(일당 초과)",
      "explain": "같은 계정·업종 조합에서 다른 사람들의 중앙값보다 2배 이상 큰 금액. 통계적 이상치이며 정당한 사유가 흔하므로 참고용."
+    }
+   ],
+   "findings": [
+    {
+     "cluster": "trip",
+     "severity": "advisory",
+     "fact": "국내출장 중인데 출장지 밖(서울)에서 사용",
+     "brief_value": "서울",
+     "brief_verdict": "출장지 밖",
+     "lead_rule_id": "R07_outside_trip_area",
+     "chips": [],
+     "evidences": [
+      {
+       "rule_id": "R07_outside_trip_area",
+       "rule_name": "출장 중 출장지 밖 사용",
+       "rule_class": "참고",
+       "severity": "advisory",
+       "cluster": "trip",
+       "fact": "국내출장 중인데 출장지 밖(서울)에서 사용",
+       "brief_value": "서울",
+       "brief_verdict": "출장지 밖",
+       "evidence": {
+        "mcc": "주유소",
+        "trip": "2025-03-18~2025-03-20",
+        "total": 100000.0,
+        "home_sido": "서울",
+        "trip_type": "국내출장",
+        "work_sido": "서울",
+        "merchant_sido": "서울"
+       },
+       "evidence_text": "국내출장(2025-03-18~2025-03-20) 중 서울 지역에서 주유소 100,000.0원 (주거지 서울, 근무지 서울)",
+       "related_tx": [],
+       "rule_version": 3,
+       "headline": "국내출장 중 출장지 밖(서울)에서 사용",
+       "detail": "출장 2025-03-18~2025-03-20 · 주유소 · 100,000원",
+       "citation": "리더 점검 시나리오 '출장 기간 중 출장지 밖 사용' / 징계사례 1·9",
+       "explain": "출장 기간 중 거래인데 가맹점이 출장지가 아닌 곳(해외출장 중 국내, 국내출장 중 자택 인근). 출장이 실제로 이루어졌는지, 카드를 다른 사람이 썼는지 확인 대상."
+      }
+     ]
+    },
+    {
+     "cluster": "fuel",
+     "severity": "advisory",
+     "fact": "주유가 당일 1회 · 14일 3회로 잦음",
+     "brief_value": "당일 1회 · 14일 3회",
+     "brief_verdict": "초과",
+     "lead_rule_id": "R09_excess_fuel",
+     "chips": [],
+     "evidences": [
+      {
+       "rule_id": "R09_excess_fuel",
+       "rule_name": "과다 주유",
+       "rule_class": "참고",
+       "severity": "advisory",
+       "cluster": "fuel",
+       "fact": "주유가 당일 1회 · 14일 3회로 잦음",
+       "brief_value": "당일 1회 · 14일 3회",
+       "brief_verdict": "초과",
+       "evidence": {
+        "window_days": 14,
+        "per_day_limit": 2,
+        "same_day_count": null,
+        "count_in_window": 3,
+        "per_window_limit": 3
+       },
+       "evidence_text": "같은 날 주유 1회 / 14일 내 3회 (기준: 하루 회, 14일 회)",
+       "related_tx": [
+        {
+         "tx_id": "6122188486643033268",
+         "tx_ts": "2025-03-26T07:04:27+09:00",
+         "emp_name": "마*월",
+         "account_policy": "국내출장비",
+         "merchant": "백제고분로주유소",
+         "mcc_name": "주유소",
+         "total": 60000.0
+        },
+        {
+         "tx_id": "1061632939912514866",
+         "tx_ts": "2025-03-26T20:19:10+09:00",
+         "emp_name": "마*월",
+         "account_policy": "국내출장비",
+         "merchant": "백제고분로주유소",
+         "mcc_name": "주유소",
+         "total": 60000.0
+        }
+       ],
+       "rule_version": 3,
+       "headline": "주유 같은 날 1회 / 14일 3회",
+       "detail": "기준 하루 회 · 14일 회",
+       "citation": "리더 점검 시나리오 '과다주유' / 징계사례 2·9",
+       "explain": "같은 날 주유 2회 이상, 또는 14일 안에 3회 이상. 차량 한 대가 쓰기 어려운 빈도로, 타인 차량 주유 의심."
+      }
+     ]
+    },
+    {
+     "cluster": "amount",
+     "severity": "advisory",
+     "fact": "동료 중앙값의 2배 금액",
+     "brief_value": "2배",
+     "brief_verdict": "동료 초과",
+     "lead_rule_id": "R16_amount_outlier",
+     "chips": [],
+     "evidences": [
+      {
+       "rule_id": "R16_amount_outlier",
+       "rule_name": "동료 대비 금액 과다",
+       "rule_class": "참고",
+       "severity": "advisory",
+       "cluster": "amount",
+       "fact": "동료 중앙값의 2배 금액",
+       "brief_value": "2배",
+       "brief_verdict": "동료 초과",
+       "evidence": {
+        "ratio": 2.0,
+        "total": 100000.0,
+        "peer_n": 189,
+        "peer_group": "국내출장비 × 주유소",
+        "peer_median": 50000
+       },
+       "evidence_text": "국내출장비 × 주유소 동료 중앙값 50,000원의 2.0배인 100,000.0원 (비교 189건)",
+       "related_tx": [],
+       "rule_version": 3,
+       "headline": "동료 중앙값의 2.0배 금액",
+       "detail": "국내출장비 × 주유소 중앙값 50,000원 vs 100,000원",
+       "citation": "징계사례 20(KTX 2배 청구)·22(일당 초과)",
+       "explain": "같은 계정·업종 조합에서 다른 사람들의 중앙값보다 2배 이상 큰 금액. 통계적 이상치이며 정당한 사유가 흔하므로 참고용."
+      }
+     ]
     }
    ],
    "context": {
@@ -4437,6 +5285,78 @@
      "detail": "접대비 × 일반음식점 중앙값 78,500원 vs 5,356,000원",
      "citation": "징계사례 20(KTX 2배 청구)·22(일당 초과)",
      "explain": "같은 계정·업종 조합에서 다른 사람들의 중앙값보다 2배 이상 큰 금액. 통계적 이상치이며 정당한 사유가 흔하므로 참고용."
+    }
+   ],
+   "findings": [
+    {
+     "cluster": "trip",
+     "severity": "advisory",
+     "fact": "출장 중 식사(일반음식점)를 접대비 계정으로",
+     "brief_value": "접대비",
+     "brief_verdict": "출장비 아님",
+     "lead_rule_id": "R14_trip_meal_double",
+     "chips": [],
+     "evidences": [
+      {
+       "rule_id": "R14_trip_meal_double",
+       "rule_name": "출장 중 식사 카드 결제",
+       "rule_class": "참고",
+       "severity": "advisory",
+       "cluster": "trip",
+       "fact": "출장 중 식사(일반음식점)를 접대비 계정으로",
+       "brief_value": "접대비",
+       "brief_verdict": "출장비 아님",
+       "evidence": {
+        "mcc": "일반음식점",
+        "trip": "2025-03-12~2025-03-14",
+        "total": 5356000.0,
+        "account": "접대비",
+        "trip_type": "국내출장"
+       },
+       "evidence_text": "국내출장(2025-03-12~2025-03-14) 중 일반음식점 5,356,000.0원을 접대비로 결제",
+       "related_tx": [],
+       "rule_version": 3,
+       "headline": "국내출장 중 식사를 카드로 결제",
+       "detail": "출장 2025-03-12~2025-03-14 · 계정 접대비 · 5,356,000원",
+       "citation": "리더 점검 시나리오 / 징계사례 15·22",
+       "explain": "출장 기간 중 식당·카페 결제. 일당(식비 포함)을 받으면서 식사를 카드로도 결제하면 이중 지급. 일당 지급 방식에 따라 정상일 수 있어 참고용."
+      }
+     ]
+    },
+    {
+     "cluster": "amount",
+     "severity": "advisory",
+     "fact": "동료 중앙값의 68.23배 금액",
+     "brief_value": "68.23배",
+     "brief_verdict": "동료 초과",
+     "lead_rule_id": "R16_amount_outlier",
+     "chips": [],
+     "evidences": [
+      {
+       "rule_id": "R16_amount_outlier",
+       "rule_name": "동료 대비 금액 과다",
+       "rule_class": "참고",
+       "severity": "advisory",
+       "cluster": "amount",
+       "fact": "동료 중앙값의 68.23배 금액",
+       "brief_value": "68.23배",
+       "brief_verdict": "동료 초과",
+       "evidence": {
+        "ratio": 68.23,
+        "total": 5356000.0,
+        "peer_n": 336,
+        "peer_group": "접대비 × 일반음식점",
+        "peer_median": 78500
+       },
+       "evidence_text": "접대비 × 일반음식점 동료 중앙값 78,500원의 68.23배인 5,356,000.0원 (비교 336건)",
+       "related_tx": [],
+       "rule_version": 3,
+       "headline": "동료 중앙값의 68.23배 금액",
+       "detail": "접대비 × 일반음식점 중앙값 78,500원 vs 5,356,000원",
+       "citation": "징계사례 20(KTX 2배 청구)·22(일당 초과)",
+       "explain": "같은 계정·업종 조합에서 다른 사람들의 중앙값보다 2배 이상 큰 금액. 통계적 이상치이며 정당한 사유가 흔하므로 참고용."
+      }
+     ]
     }
    ],
    "context": {
@@ -4989,6 +5909,77 @@
      "detail": "적요: 동료 2명과 만찬",
      "citation": "징계사례 21",
      "explain": "소수 인원 식사에 40만원 이상. 결제 후 현금을 돌려받는 페이백은 거래 데이터만으로 확정할 수 없어 후보만 표시."
+    }
+   ],
+   "findings": [
+    {
+     "cluster": "amount",
+     "severity": "advisory",
+     "fact": "동료 중앙값의 10.48배 금액",
+     "brief_value": "10.48배",
+     "brief_verdict": "동료 초과",
+     "lead_rule_id": "R16_amount_outlier",
+     "chips": [],
+     "evidences": [
+      {
+       "rule_id": "R16_amount_outlier",
+       "rule_name": "동료 대비 금액 과다",
+       "rule_class": "참고",
+       "severity": "advisory",
+       "cluster": "amount",
+       "fact": "동료 중앙값의 10.48배 금액",
+       "brief_value": "10.48배",
+       "brief_verdict": "동료 초과",
+       "evidence": {
+        "ratio": 10.48,
+        "total": 480000.0,
+        "peer_n": 3694,
+        "peer_group": "의욕관리비 × 일반음식점",
+        "peer_median": 45800
+       },
+       "evidence_text": "의욕관리비 × 일반음식점 동료 중앙값 45,800원의 10.48배인 480,000.0원 (비교 3694건)",
+       "related_tx": [],
+       "rule_version": 3,
+       "headline": "동료 중앙값의 10.48배 금액",
+       "detail": "의욕관리비 × 일반음식점 중앙값 45,800원 vs 480,000원",
+       "citation": "징계사례 20(KTX 2배 청구)·22(일당 초과)",
+       "explain": "같은 계정·업종 조합에서 다른 사람들의 중앙값보다 2배 이상 큰 금액. 통계적 이상치이며 정당한 사유가 흔하므로 참고용."
+      }
+     ]
+    },
+    {
+     "cluster": "kickback",
+     "severity": "advisory",
+     "fact": "참석 2명에 비해 큰 식사 금액",
+     "brief_value": "참석 2명",
+     "brief_verdict": "금액 초과",
+     "lead_rule_id": "R21_kickback_candidate",
+     "chips": [],
+     "evidences": [
+      {
+       "rule_id": "R21_kickback_candidate",
+       "rule_name": "고액 식사 페이백 후보",
+       "rule_class": "참고",
+       "severity": "advisory",
+       "cluster": "kickback",
+       "fact": "참석 2명에 비해 큰 식사 금액",
+       "brief_value": "참석 2명",
+       "brief_verdict": "금액 초과",
+       "evidence": {
+        "mcc": "일반음식점",
+        "memo": "동료 2명과 만찬",
+        "total": 480000.0,
+        "attendees_in_memo": 2
+       },
+       "evidence_text": "일반음식점 480,000.0원, 적요 참석 2명: 동료 2명과 만찬",
+       "related_tx": [],
+       "rule_version": 3,
+       "headline": "고액 식사 480,000원, 참석 2명 (페이백 후보)",
+       "detail": "적요: 동료 2명과 만찬",
+       "citation": "징계사례 21",
+       "explain": "소수 인원 식사에 40만원 이상. 결제 후 현금을 돌려받는 페이백은 거래 데이터만으로 확정할 수 없어 후보만 표시."
+      }
+     ]
     }
    ],
    "context": {
@@ -5555,6 +6546,7 @@
     "case_id": null
    },
    "evidences": [],
+   "findings": [],
    "context": {
     "recent_tx": [
      {
@@ -5886,6 +6878,7 @@
     "case_id": null
    },
    "evidences": [],
+   "findings": [],
    "context": {
     "recent_tx": [],
     "peer": {
@@ -6142,6 +7135,7 @@
     "case_id": null
    },
    "evidences": [],
+   "findings": [],
    "context": {
     "recent_tx": [
      {
@@ -6457,6 +7451,7 @@
     "case_id": null
    },
    "evidences": [],
+   "findings": [],
    "context": {
     "recent_tx": [
      {
@@ -6861,6 +7856,7 @@
     "case_id": null
    },
    "evidences": [],
+   "findings": [],
    "context": {
     "recent_tx": [
      {
@@ -7486,6 +8482,7 @@
     "case_id": null
    },
    "evidences": [],
+   "findings": [],
    "context": {
     "recent_tx": [
      {

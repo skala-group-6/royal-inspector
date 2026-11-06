@@ -1,5 +1,6 @@
 # 규칙 카탈로그 — 규칙에 관한 설정은 이 파일 한 곳에만 둔다.
 #  tier:        violation(빨강: 규정에 근거가 있어 걸리면 확인 대상) | advisory(회색: 통계·가설 기반, 참고)
+#  fact_key:    이 규칙이 주장하는 사실의 이름(예 place.merchant_eq_home). 같은 묶음 안에서 fact_key가 같으면 화면에 한 줄로 합쳐진다. 규칙팀이 정함
 #  cluster:     같은 상황에서 함께 걸리는 묶음(time, location, entertain …). 약한 라벨은 묶음당 1표(max), 검토 화면은 묶음당 1줄. 진실은 여기 한 곳(weak_labels.yaml에서 옮김, 2026-11-06)
 #  data_ready:  now / geo(지오코딩 후 정밀화) / partial(후보까지) / no(증빙 파일 필요)
 #  params:      임계치. 2026-10-31 초기값 고정(민감도: docs/RULES.md). 변경 시 version을 올리고 changelog에 사유를 적는다.
@@ -17,6 +18,7 @@ rules:
     name: 휴일 사용
     tier: violation
     cluster: time
+    fact_key: time.holiday
     fact: "휴일({date_md} {weekday})에 사용"
     brief: {value: "{date_md} ({weekday})", verdict: "휴일"}
     data_ready: now
@@ -27,6 +29,7 @@ rules:
     name: 휴가 중 사용
     tier: violation
     cluster: time
+    fact_key: time.leave
     fact: "{leave_type} 낸 날({leave_hours}시간)에 사용"
     brief: {value: "{leave_type} {leave_hours}h", verdict: "휴가일"}
     data_ready: now
@@ -37,6 +40,7 @@ rules:
     name: 분할결제
     tier: violation
     cluster: split_prepay
+    fact_key: amount.split
     fact: "같은 가게에서 {window_min}분 안에 {count_in_window}건으로 나눠 결제"
     brief: {value: "{window_min}분 안 {count_in_window}건", verdict: "분할"}
     data_ready: now
@@ -47,6 +51,7 @@ rules:
     name: 선결제
     tier: violation
     cluster: split_prepay
+    fact_key: amount.round_prepay
     fact: "{total_won} 단위 금액 결제 (선결제 의심)"
     brief: {value: "{total_won}", verdict: "단위 금액"}
     data_ready: now
@@ -57,6 +62,7 @@ rules:
     name: 거주지 인근 사용
     tier: violation
     cluster: location
+    fact_key: place.merchant_eq_home
     fact: "집과 같은 동네({merchant_sigungu_short})에서 사용"
     brief: {value: "{merchant_sigungu_short}", verdict: "집과 같음"}
     data_ready: geo
@@ -67,6 +73,7 @@ rules:
     name: 동일인 동시간 다른 장소
     tier: violation
     cluster: location
+    fact_key: place.two_places_at_once
     fact: "{window_min}분 안에 {this_sigungu}와 {other_sigungu} 두 곳에서 결제"
     brief: {value: "{window_min}분 안 2곳", verdict: "동시"}
     data_ready: geo
@@ -77,6 +84,7 @@ rules:
     name: 출장 중 출장지 밖 사용
     tier: advisory
     cluster: trip
+    fact_key: place.outside_trip
     fact: "{trip_type} 중인데 출장지 밖({merchant_sido})에서 사용"
     brief: {value: "{merchant_sido}", verdict: "출장지 밖"}
     data_ready: geo
@@ -87,6 +95,7 @@ rules:
     name: 금지 업종
     tier: violation
     cluster: entertain
+    fact_key: mcc.banned
     fact: "제한 업종 {mcc} (계정 {account})"
     brief: {value: "{mcc}", verdict: "금지 업종"}
     data_ready: now
@@ -97,8 +106,9 @@ rules:
     name: 과다 주유
     tier: advisory
     cluster: fuel
-    fact: "주유가 당일 {same_day_count}회 · 14일 {count_in_14d}회로 잦음"
-    brief: {value: "당일 {same_day_count}회 · 14일 {count_in_14d}회", verdict: "초과"}
+    fact_key: fuel.frequency
+    fact: "주유가 당일 {same_day_count}회 · {window_days}일 {count_in_window}회로 잦음"
+    brief: {value: "당일 {same_day_count}회 · {window_days}일 {count_in_window}회", verdict: "초과"}
     data_ready: now
     params: {per_day: 2, window_days: 14, per_window: 3}
     explain: "같은 날 주유 2회 이상, 또는 14일 안에 3회 이상. 차량 한 대가 쓰기 어려운 빈도로, 타인 차량 주유 의심."
@@ -107,6 +117,7 @@ rules:
     name: 증빙 필수 업종 증빙 누락
     tier: violation
     cluster: evidence
+    fact_key: evidence.missing
     fact: "증빙 필수 업종({mcc})인데 첨부 없음"
     brief: {value: "{mcc}", verdict: "증빙 없음"}
     data_ready: now
@@ -117,6 +128,7 @@ rules:
     name: 출장 중 계정 불일치
     tier: violation
     cluster: trip
+    fact_key: account.overseas_meal
     fact: "해외출장 중 식사({mcc})를 {account} 계정으로 처리"
     brief: {value: "{account}", verdict: "출장비 아님"}
     data_ready: now
@@ -127,6 +139,7 @@ rules:
     name: 타인 카드 대여 의심
     tier: advisory
     cluster: location
+    fact_key: place.badge_then_away
     fact: "사옥 입문 {minutes_before_purchase}분 뒤 {merchant_sido}에서 결제 (카드 대여 의심)"
     brief: {value: "입문 {minutes_before_purchase}분 뒤 {merchant_sido}", verdict: "{repeat_count}회 반복"}
     data_ready: partial
@@ -137,6 +150,7 @@ rules:
     name: 개인 귀속 물품 의심
     tier: advisory
     cluster: evidence
+    fact_key: item.personal
     fact: "개인 물품 구매 의심 (신호 {score}/4)"
     brief: {value: "신호 {score}/4", verdict: "개인 물품 의심"}
     data_ready: partial
@@ -147,6 +161,7 @@ rules:
     name: 출장 중 식사 카드 결제
     tier: advisory
     cluster: trip
+    fact_key: account.trip_meal_on_card
     fact: "출장 중 식사({mcc})를 {account} 계정으로"
     brief: {value: "{account}", verdict: "출장비 아님"}
     data_ready: now
@@ -157,6 +172,7 @@ rules:
     name: 출장 기간-복귀 교통편 불일치
     tier: advisory
     cluster: trip
+    fact_key: trip.early_return
     fact: "출장 종료 {days_before_end}일 전에 복귀 교통편 구매"
     brief: {value: "종료 {days_before_end}일 전", verdict: "조기 복귀"}
     data_ready: now
@@ -167,6 +183,7 @@ rules:
     name: 동료 대비 금액 과다
     tier: advisory
     cluster: amount
+    fact_key: amount.peer_outlier
     fact: "동료 중앙값의 {ratio}배 금액"
     brief: {value: "{ratio}배", verdict: "동료 초과"}
     data_ready: now
@@ -177,6 +194,7 @@ rules:
     name: 자택방문교통비 경로 밖 사용
     tier: violation
     cluster: fuel
+    fact_key: place.outside_route
     fact: "자택방문교통비를 경로 밖({merchant_sido})에서 사용"
     brief: {value: "{merchant_sido}", verdict: "경로 밖"}
     data_ready: geo
@@ -187,6 +205,7 @@ rules:
     name: 승인자 이해충돌
     tier: violation
     cluster: entertain
+    fact_key: place.merchant_eq_approver_home
     fact: "승인자 집과 같은 동네({approver_sigungu_short}) 가맹점"
     brief: {value: "{approver_sigungu_short}", verdict: "승인자 집과 같음"}
     data_ready: now
@@ -197,6 +216,7 @@ rules:
     name: 증빙 중복 첨부
     tier: violation
     cluster: evidence_file
+    fact_key: evidence.duplicate
     fact: "같은 증빙이 다른 거래에도 사용됨"
     brief: {value: "증빙", verdict: "중복"}
     data_ready: "no"
@@ -207,6 +227,7 @@ rules:
     name: 증빙 위변조
     tier: violation
     cluster: evidence_file
+    fact_key: evidence.forged
     fact: "증빙 위변조 신호"
     brief: {value: "증빙", verdict: "위변조 의심"}
     data_ready: "no"
@@ -217,6 +238,7 @@ rules:
     name: 고액 식사 페이백 후보
     tier: advisory
     cluster: kickback
+    fact_key: amount.per_attendee
     fact: "참석 {attendees_in_memo}명에 비해 큰 식사 금액"
     brief: {value: "참석 {attendees_in_memo}명", verdict: "금액 초과"}
     data_ready: partial

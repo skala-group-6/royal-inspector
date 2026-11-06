@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge"
-import { humanLine, violationClusters } from "@/pack/corp_card"
+import { humanLine, violationFindings } from "@/pack/corp_card"
 import { won, hhmm, mmdd } from "@/lib/format"
 import type { CaseBundle, QueueSource } from "@/types"
 
@@ -7,7 +7,7 @@ import type { CaseBundle, QueueSource } from "@/types"
 export function Conclusion({ c, source }: { c: CaseBundle; source?: QueueSource }) {
   const t = c.transaction
   const { head, tail } = humanLine(c, source)
-  const vio = violationClusters(c.evidences)
+  const vio = violationFindings(c)
   return (
     <div data-slot="case-conclusion" className="flex items-start justify-between gap-6">
       <div className="min-w-0">

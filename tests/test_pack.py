@@ -43,3 +43,20 @@ def test_no_hardcoded_pack_paths_in_engine_code():
     bad = re.compile(r'"(rules|features|labels|synth)/[^"]*\.(yaml|sql)"|ROOT / "(rules|features|labels|synth)"')
     hits = [f for f in list((ROOT / "scripts").glob("*.py")) + [ROOT / "features" / "executor.py", ROOT / "app" / "service.py"] if bad.search(f.read_text())]
     assert not hits, hits
+
+
+def test_rule_catalog_contract():
+    """The catalog is the vessel the rule team fills: every rule has the fields the engine and the screen rely on, and every
+    {placeholder} in fact/brief is a key the rule's SQL actually emits in evidence (or a derived key the service adds)."""
+    import re, yaml
+    sys.path.insert(0, str(ROOT)); import paths as P
+    cat = yaml.safe_load(open(P.RULES_CATALOG))["rules"]
+    derived = {"total_won", "date_md", "merchant_sigungu_short", "approver_sigungu_short", "home_sigungu_short", "work_sigungu_short"}
+    for rid, r in cat.items():
+        for k in ("name", "tier", "cluster", "fact_key", "fact", "brief", "explain", "policy_ref"): assert r.get(k), (rid, k)
+        assert r["tier"] in ("violation", "advisory") and set(r["brief"]) == {"value", "verdict"}, rid
+        sql = P.RULES_SQL_DIR / f"{rid}.sql"
+        if not sql.exists(): assert str(r.get("data_ready")) == "no", f"{rid}: no SQL but data_ready != no"; continue
+        keys = set(re.findall(r"'([a-z_0-9]+)'\s*,", sql.read_text())) | derived
+        used = set(re.findall(r"\{([a-z_0-9]+)\}", r["fact"] + r["brief"]["value"] + r["brief"]["verdict"]))
+        assert used <= keys, f"{rid}: placeholders not in evidence: {sorted(used - keys)}"

@@ -30,7 +30,9 @@ def test_case_bundle_matches_mock_contract(api):
     import json
     rows = api.get(f"/api/queues/{PF}/{PT}/items", params=dict(sources="rule", page_size=1)).json(); tx = rows[0]["tx_id"]
     c = api.get(f"/api/tx/{tx}/case").json()
-    assert set(c) == {"tx_id", "transaction", "evidences", "context", "timeline", "precedents", "score", "policy", "reviews", "profile"}
+    assert set(c) == {"tx_id", "transaction", "evidences", "findings", "context", "timeline", "precedents", "score", "policy", "reviews", "profile"}
+    assert c["findings"] and {"cluster", "severity", "fact", "brief_value", "brief_verdict", "lead_rule_id", "chips", "evidences"} <= set(c["findings"][0])
+    assert len(c["findings"]) <= len(c["evidences"]) and c["findings"][0]["severity"] == "violation"
     mock = json.load(open(ROOT / "web/src/mock/data.json")); m = next(iter(mock["cases"].values()))
     assert set(m["transaction"]) == set(c["transaction"]) and set(m["context"]) == set(c["context"]) and set(m["evidences"][0]) == set(c["evidences"][0])
     assert c["evidences"] and all(isinstance(x["tx_id"], str) for e in c["evidences"] for x in e["related_tx"])

@@ -19,6 +19,7 @@ export interface Evidence {
   related_tx: { tx_id: TxId; tx_ts: string; emp_name: string; account_policy: string; merchant: string; mcc_name: string; total: number }[]
   rule_version: number
 }
+export interface Finding { cluster: string; severity: "violation" | "advisory"; fact: string; brief_value: string; brief_verdict: string; lead_rule_id: string; chips: string[]; evidences: Evidence[] }
 export interface Peer { account_policy: string; mcc_name: string; n: number; median: number; p90: number; percentile_of_this: number; point_in_time?: boolean }
 export interface Context {
   recent_tx: { tx_id: TxId; tx_ts: string; account_policy: string; merchant: string; mcc_name: string; merchant_addr: string | null; total: number; rules: string[] }[]
@@ -39,7 +40,7 @@ export interface Profile {
 }
 export interface CaseBundle {
   tx_id: TxId; transaction: Record<string, unknown> & { tx_ts: string; emp_name: string; dept: string; rank: string | null; merchant: string; mcc_name: string | null; total: number; account_policy: string; memo?: string | null; has_attachment: boolean }
-  evidences: Evidence[]; context: Context; timeline: TimelineRow[]; precedents: { cases: Precedent[]; reviews: Precedent[]; summary: { n: number; violation: number; ok: number } }
+  evidences: Evidence[]; findings: Finding[]; context: Context; timeline: TimelineRow[]; precedents: { cases: Precedent[]; reviews: Precedent[]; summary: { n: number; violation: number; ok: number } }
   score: Score | null; policy: Policy | null; reviews: Review[]; profile: Profile
 }
 export interface MockData {

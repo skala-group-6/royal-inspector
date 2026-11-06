@@ -9,6 +9,7 @@
 | GET /flags | list_flags | 큐와 무관한 "걸린 거래" 목록 |
 | GET /next?after=&pf=&pt= | next_unreviewed | 미검토 다음 거래 id |
 | GET /tx/{id}/case | get_case | 케이스 패널 전체(거래·근거·맥락·타임라인·선례·점수·규정·판정·프로필) — 화면은 이것 하나로 그린다 |
+| GET /tx/{id}/findings | get_findings | **화면의 규칙 줄**: 묶음(cluster)당 1개, 대표 규칙의 fact·brief, 다른 사실은 chips, 같은 fact_key는 접음. 화면은 규칙 번호를 모른다 |
 | GET /tx/{id}, /evidence, /context, /profile, /timeline, /precedents, /score, /reviews | 각 함수 | 부분 조회 |
 | **POST /tx/{id}/review** | review_transaction / create_review | 판정 저장(위반·아님·보류 + 사유·메모). 사람이 누르는 버튼에서만. 이전 판정은 superseded |
 | POST /events | log_event | 화면 행동 기록 → audit_events |

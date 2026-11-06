@@ -63,6 +63,8 @@ def transaction(tx_id: str):
     return clean(t)
 @r.get("/tx/{tx_id}/evidence", response_model=list[S.Evidence])
 def evidence(tx_id: str): return one(S.CaseBundle, s.get_case(tx(tx_id))).evidences
+@r.get("/tx/{tx_id}/findings", response_model=list[S.Finding])
+def findings(tx_id: str): return many(S.Finding, s.get_findings(tx(tx_id)))
 @r.get("/tx/{tx_id}/context", response_model=S.Context)
 def context(tx_id: str): return one(S.Context, s.get_context(tx(tx_id)))
 @r.get("/tx/{tx_id}/profile", response_model=S.Profile)

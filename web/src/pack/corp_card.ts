@@ -28,7 +28,6 @@ export const documentsFor = (ruleIds: string[]): string[] => [...new Set(ruleIds
  * Layer 1: the first thing a reviewer reads: one plain-Korean sentence saying what kind of case this is, in the words a colleague would use.
  * No system vocabulary, no numbers (the amount sits beside it). Composed from the strongest rule + one supporting clause.
  */
-const ORDER = ["R02", "R01", "R05", "R07", "R12", "R17", "R18", "R08", "R11", "R03", "R06", "R10", "R15", "R14", "R09", "R16", "R13", "R04", "R21"]
 const s = (v: unknown, d = "") => (v == null || v === "" ? d : String(v))
 const MCC_WORD: Record<string, string> = { 일반주점: "술집", 주점: "술집", 유흥주점: "유흥주점", 단란주점: "단란주점", 노래방: "노래방", 골프장: "골프장", 골프연습장: "골프연습장", 일반음식점: "식당", 커피전문점: "카페", 주유소: "주유소", 인터넷상거래: "온라인 쇼핑", 오픈마켓: "온라인 쇼핑", 편의점: "편의점" }
 const place = (c: CaseBundle) => MCC_WORD[s(c.transaction.mcc_name)] ?? (s(c.transaction.mcc_name) || "가맹점")
@@ -74,11 +73,10 @@ export function humanLine(c: CaseBundle, source?: QueueSource): { head: string; 
     if (source === "random") return { head: "걸린 규칙 없음", tail: "무작위 표본 · 대부분 '아님'이 정상" }
     return { head: "걸린 규칙 없음" }
   }
-  const vio = c.evidences.filter((e) => e.severity === "violation"); const pool = vio.length ? vio : c.evidences
-  const sorted = [...pool].sort((a, b) => ORDER.indexOf(a.rule_id.slice(0, 3)) - ORDER.indexOf(b.rule_id.slice(0, 3)))
-  const lead = sorted[0]; const k = lead.rule_id.slice(0, 3)
-  const head = (HEAD[k] ?? (() => lead.headline))(c, lead.evidence)
-  const second = sorted.slice(1).find((e) => TAIL[e.rule_id.slice(0, 3)])
+  const leads = (c.findings ?? []).map((f) => f.evidences[0]); if (!leads.length) return { head: c.evidences[0].fact }
+  const lead = leads[0]; const k = lead.rule_id.slice(0, 3)
+  const head = (HEAD[k] ?? (() => lead.fact))(c, lead.evidence)
+  const second = leads.slice(1).find((e) => TAIL[e.rule_id.slice(0, 3)])
   const tail = second ? TAIL[second.rule_id.slice(0, 3)](second.evidence) : undefined
   return { head, tail }
 }
@@ -90,18 +88,7 @@ export function strongestRule(c: CaseBundle): Evidence | undefined {
   return [...pool].sort((a, b) => ORDER.indexOf(a.rule_id.slice(0, 3)) - ORDER.indexOf(b.rule_id.slice(0, 3)))[0]
 }
 
-/** Rules that fired on the same situation (catalog cluster), ordered by strength; the lead is the strongest rule of each cluster. */
-export function groupByCluster(evs: Evidence[]): { cluster: string; lead: Evidence; others: Evidence[] }[] {
-  const rank = (e: Evidence) => (e.severity === "violation" ? 0 : 100) + Math.max(0, ORDER.indexOf(e.rule_id.slice(0, 3)))
-  const by = new Map<string, Evidence[]>()
-  for (const e of [...evs].sort((a, b) => rank(a) - rank(b))) { const k = e.cluster ?? e.rule_id; by.set(k, [...(by.get(k) ?? []), e]) }
-  return [...by.entries()].map(([cluster, list]) => ({ cluster, lead: list[0], others: list.slice(1) }))
-}
-/** Same count for a list row, which only carries rule ids: needs the rule catalog (GET /rules) for tier and cluster. */
-export type RuleInfo = { rule_id: string; tier: "violation" | "advisory"; cluster: string }
-export function violationClustersOf(ruleIds: string[], rules: RuleInfo[]): number {
-  const by = new Map(rules.map((r) => [r.rule_id, r]))
-  return new Set(ruleIds.map((id) => by.get(id)).filter((r) => r?.tier === "violation").map((r) => r!.cluster)).size
-}
-/** How many policy-backed situations (clusters with a violation-tier rule) this case has — the number the "위반 n" badge shows. */
-export const violationClusters = (evs: Evidence[]) => new Set(evs.filter((e) => e.severity === "violation").map((e) => e.cluster ?? e.rule_id)).size
+/** Policy-backed situations = findings with a violation-tier lead (server-grouped). The "위반 n" badge. */
+export const violationFindings = (c: CaseBundle) => (c.findings ?? []).filter((f) => f.severity === "violation").length
+/** The rule the screen leads with: the lead of the first finding (server order: violation first, then the catalog's order). */
+export function strongestRule(c: CaseBundle): Evidence | undefined { return c.findings?.[0]?.evidences[0] }

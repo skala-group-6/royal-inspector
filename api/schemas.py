@@ -27,6 +27,11 @@ class Evidence(BaseModel):
     evidence: dict[str, Any]; evidence_text: str; headline: str; detail: str; citation: str; explain: str
     related_tx: list[RelatedTx]; rule_version: int
 
+class Finding(BaseModel):
+    """One row of the review screen: a cluster of rules that fired on the same situation, led by its strongest rule."""
+    cluster: str; severity: Literal["violation", "advisory"]; fact: str; brief_value: str; brief_verdict: str
+    lead_rule_id: str; chips: list[str]; evidences: list[Evidence]
+
 class Peer(BaseModel):
     account_policy: str | None; mcc_name: str | None; n: int; median: float | None; p90: float | None; percentile_of_this: float | None
     point_in_time: bool | None = None; as_of: str | None = None
@@ -63,7 +68,7 @@ class Week(BaseModel): week_start: str; flagged: int; violations: int
 class Profile(BaseModel): amount: dict[str, Any]; weekly: list[Week]
 
 class CaseBundle(BaseModel):
-    tx_id: TxId; transaction: dict[str, Any]; evidences: list[Evidence]; context: Context; timeline: list[TimelineRow]
+    tx_id: TxId; transaction: dict[str, Any]; evidences: list[Evidence]; findings: list[Finding]; context: Context; timeline: list[TimelineRow]
     precedents: Precedents; score: Score | None; policy: Policy | None; reviews: list[Review]; profile: Profile
 
 class Rule(BaseModel):

@@ -19,7 +19,7 @@ const MAP: Record<string, (ev: Record<string, unknown>) => Finding> = {
   R06: (e) => ({ observed: `${s(e.window_min)}분 안에 ${s(e.this_sigungu)} · ${s(e.other_sigungu)}`, baseline: "동일인이 두 지역에서 결제 불가" }),
   R07: (e) => ({ observed: `${s(e.trip_type)} 중 ${s(e.merchant_sido)} 결제`, baseline: `출장지 밖 (주거지 ${s(e.home_sido)} · 근무지 ${s(e.work_sido)})` }),
   R08: (e) => ({ observed: `업종 ${s(e.mcc)} · 계정 ${s(e.account)}`, baseline: "제한 업종 (Don'ts · 클린카드)" }),
-  R09: (e) => ({ observed: `당일 ${s(e.same_day_count, "1")}회 · 14일 ${s(e.count_in_14d, "1")}회`, baseline: `하루 ${s(e.per_day)}회 · 14일 ${s(e.per_window)}회` }),
+  R09: (e) => ({ observed: `당일 ${s(e.same_day_count, "1")}회 · ${s(e.window_days, "14")}일 ${s(e.count_in_window, "1")}회`, baseline: `하루 ${s(e.per_day)}회 · ${s(e.window_days, "14")}일 ${s(e.per_window)}회` }),
   R10: (e) => ({ observed: `${s(e.mcc)} ${n(e.total)} · 첨부 없음`, baseline: "증빙 필수 업종" }),
   R11: (e) => ({ observed: `업종 ${s(e.mcc)} · 계정 ${s(e.account)}`, baseline: e.reason === "overseas_trip_meal_not_trip_account" ? "해외출장 식사는 출장비 계정" : "금지 업종은 접대비 계정만" }),
   R12: (e) => ({ observed: `입문 ${s(e.badged_in_at)} → ${s(e.minutes_before_purchase)}분 뒤 ${s(e.merchant_sido)} 결제`, baseline: `근무지 ${s(e.work_sido)} · 반복 ${s(e.repeat_count)}회` }),

@@ -61,7 +61,7 @@ def _derived(ev: dict) -> dict:
     if ev.get("leave_type"): d["leave_type"] = str(ev["leave_type"]).strip()
     for k in ("merchant_sigungu", "approver_sigungu", "home_sigungu", "work_sigungu"):
         if ev.get(k): d[k + "_short"] = _SIDO.sub("", str(ev[k]))
-    for k in ("same_day_count", "count_in_14d"):
+    for k in ("same_day_count", "count_in_window"):
         if ev.get(k) is None: d[k] = "1"
     if ev.get("attendees_in_memo") is None: d["attendees_in_memo"] = "?"
     return d
@@ -70,6 +70,9 @@ def render(template: str, ev: dict) -> str:
     """Catalog template → sentence. Unknown placeholders become '—' instead of failing (a pack typo must not break the screen)."""
     try: return str(template).format_map(_Safe(_derived(ev)))
     except (ValueError, IndexError): return str(template)
+
+CATALOG_ORDER = {rid: i for i, rid in enumerate(RULES)}   # the catalog's own order = the pack's order of strength within a tier
+DERIVED_KEYS = {"total_won", "date_md", "merchant_sigungu_short", "approver_sigungu_short", "home_sigungu_short", "work_sigungu_short"}
 
 def rule_fact(rid, ev: dict) -> str: return render(RULES.get(rid, {}).get("fact", RULE_NAME.get(rid, rid)), ev)
 def rule_brief(rid, ev: dict) -> tuple[str, str]:
@@ -135,7 +138,7 @@ def evidence_text(rule_id, ev: dict) -> str:
          "R06": lambda: {"same_person": f"{g('window_min')}분 안에 {g('this_sigungu')}와 {g('other_sigungu')} 두 곳에서 결제", "named_attendee_elsewhere": f"적요에 적힌 동석자가 같은 시각 {g('other_sigungu')}에서 결제", "counterpart": "다른 거래의 동석자로 지목됐으나 같은 시각 다른 지역에서 결제"}.get(g('kind'), ""),
          "R07": lambda: f"{g('trip_type')}({g('trip')}) 중 {g('merchant_sido')} 지역에서 {g('mcc')} {g('total'):,}원 (주거지 {g('home_sido')}, 근무지 {g('work_sido')})",
          "R08": lambda: f"금지 업종 {g('mcc')}, 계정 {g('account')}, {g('weekday')}요일 {g('time')}, {g('total'):,}원",
-         "R09": lambda: f"같은 날 주유 {g('same_day_count') or 1}회 / 14일 내 {g('count_in_14d') or 1}회 (기준: 하루 {g('per_day')}회, 14일 {g('per_window')}회)",
+         "R09": lambda: f"같은 날 주유 {g('same_day_count') or 1}회 / {g('window_days', 14)}일 내 {g('count_in_window') or 1}회 (기준: 하루 {g('per_day')}회, {g('window_days', 14)}일 {g('per_window')}회)",
          "R10": lambda: f"증빙 필수 업종 {g('mcc')} {g('total'):,}원인데 첨부 없음 (계정 {g('account')})",
          "R11": lambda: f"업종 {g('mcc')}와 계정 {g('account')} 불일치" + (" — 해외출장 중 식사를 출장비 외 계정으로" if g('reason') == 'overseas_trip_meal_not_trip_account' else " — 금지 업종을 접대비 외 계정으로"),
          "R12": lambda: f"{g('badged_in_at')} 사옥 입문 {g('minutes_before_purchase')}분 뒤 {g('merchant_sido')}에서 결제 (근무지 {g('work_sido')}). 같은 패턴 {g('repeat_count')}회",
@@ -148,6 +151,25 @@ def evidence_text(rule_id, ev: dict) -> str:
          "R21": lambda: f"{g('mcc')} {g('total'):,}원, 적요 참석 {g('attendees_in_memo') or '?'}명: {g('memo')}"}
     try: return T.get(rule_id[:3], lambda: json.dumps(ev, ensure_ascii=False))()
     except Exception: return json.dumps(ev, ensure_ascii=False)
+
+def get_findings(tx_id, evidences=None) -> list[dict]:
+    """The screen's rows. One finding per catalog cluster: the lead is the strongest rule (violation first, then catalog order);
+    rules in the cluster with a different fact_key appear as chips, rules with the same fact_key as an earlier member are folded
+    (same fact asserted twice → counted once). Rule ids never reach the UI's layout logic; they ride along for drill-down only."""
+    evs = get_evidence(tx_id) if evidences is None else evidences
+    rank = lambda e: (0 if e["severity"] == "violation" else 1, CATALOG_ORDER.get(e["rule_id"], 999))
+    groups: dict[str, list] = {}
+    for e in sorted(evs, key=rank): groups.setdefault(e["cluster"], []).append(e)
+    out = []
+    for cluster, members in groups.items():
+        lead = members[0]; seen = {RULES.get(lead["rule_id"], {}).get("fact_key", lead["rule_id"])}; chips = []
+        for m in members[1:]:
+            fk = RULES.get(m["rule_id"], {}).get("fact_key", m["rule_id"])
+            if fk not in seen: seen.add(fk); chips.append(m["rule_name"])
+        out.append(dict(cluster=cluster, severity=lead["severity"], fact=lead["fact"], brief_value=lead["brief_value"], brief_verdict=lead["brief_verdict"],
+                        lead_rule_id=lead["rule_id"], chips=chips, evidences=members))
+    out.sort(key=lambda f: rank(f["evidences"][0]))
+    return out
 
 def get_evidence(tx_id) -> list[dict]:
     df = q("select rule_id, evidence, related_tx_ids, severity, rule_version from current_flags where tx_id = %s order by severity desc, rule_id", [tx_id])
@@ -240,7 +262,7 @@ def evidence_headline(rule_id, ev: dict, t: dict) -> tuple[str, str]:
          "R06": lambda: ({"same_person": f"{g('window_min')}분 안에 두 지역에서 결제", "named_attendee_elsewhere": "적요의 동석자가 같은 시각 다른 지역에서 결제", "counterpart": "다른 거래의 동석자로 적혔으나 다른 지역에 있었음"}.get(g('kind'), "동시간 다른 장소"), f"{g('this_sigungu')} ↔ {g('other_sigungu')}"),
          "R07": lambda: (f"{g('trip_type')} 중 출장지 밖({g('merchant_sido')})에서 사용", f"출장 {g('trip')} · {g('mcc')} · {won(g('total'))}"),
          "R08": lambda: (f"금지 업종 {g('mcc')}", f"계정 {g('account')} · {g('weekday')} {str(g('time'))[:5]} · {won(g('total'))}"),
-         "R09": lambda: (f"주유 같은 날 {g('same_day_count') or 1}회 / 14일 {g('count_in_14d') or 1}회", f"기준 하루 {g('per_day')}회 · 14일 {g('per_window')}회"),
+         "R09": lambda: (f"주유 같은 날 {g('same_day_count') or 1}회 / {g('window_days', 14)}일 {g('count_in_window') or 1}회", f"기준 하루 {g('per_day')}회 · {g('window_days', 14)}일 {g('per_window')}회"),
          "R10": lambda: (f"증빙 필수 업종({g('mcc')})인데 증빙 없음", f"{won(g('total'))} · 계정 {g('account')}"),
          "R11": lambda: ("해외출장 중 식사를 출장비 외 계정으로" if g('reason') == 'overseas_trip_meal_not_trip_account' else f"{g('mcc')}을 접대비 아닌 계정으로", f"계정 {g('account')}"),
          "R12": lambda: (f"사옥 입문 {g('minutes_before_purchase')}분 뒤 {g('merchant_sido')}에서 결제 (카드 대여 의심)", f"같은 패턴 {g('repeat_count')}회 · 근무지 {g('work_sido')}"),
@@ -349,7 +371,7 @@ def get_case(tx_id) -> dict:
     for e in get_evidence(tx_id):
         h, d = evidence_headline(e["rule_id"], e["evidence"], t)
         evs.append(dict(e, headline=h, detail=d, citation=policy_citation(e["rule_id"], t), explain=rule_explain(e["rule_id"])))
-    return dict(tx_id=tx_id, transaction=t, evidences=evs, context=get_context(tx_id), timeline=get_day_timeline(tx_id),
+    return dict(tx_id=tx_id, transaction=t, evidences=evs, findings=get_findings(tx_id, evs), context=get_context(tx_id), timeline=get_day_timeline(tx_id),
                 precedents=get_precedents(tx_id), score=get_score(tx_id), policy=get_policy(t.get("account_policy")), reviews=get_reviews(tx_id),
                 profile=get_profile(tx_id))
 
