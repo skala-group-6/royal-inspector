@@ -34,7 +34,7 @@
 - 목록 행 사이: 2px + 행 안쪽 여백 `px-2.5 py-2`
 - 제목과 내용 사이: 4~8px
 - 묶음 사이: 16~24px
-- 카드 바깥 여백: 8px (`m-2`), 카드 모서리 `rounded-2xl`, 행 모서리 `rounded-lg`
+- 카드 바깥 여백: 8px (`m-2`), 카드 모서리 `rounded-lg`(10px), 행 모서리 `rounded-lg`
 
 ## 5. 공용 부품 (`web/src/components/layout/list.tsx`)
 | 부품 | 역할 |
