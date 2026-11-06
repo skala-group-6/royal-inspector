@@ -46,7 +46,7 @@ const TAIL: Record<string, (ev: Record<string, unknown>) => string> = {
 
 export function humanLine(c: CaseBundle, source?: QueueSource): { head: string; tail?: string } {
   if (!c.evidences.length) {
-    if (source === "model") return { head: "걸린 규칙은 없지만 평소와 다른 결제", tail: "모델 추천" }
+    if (source === "model") return { head: "규칙엔 안 걸렸지만 평소와 다름", tail: "모델 추천" }
     if (source === "random") return { head: "걸린 규칙 없음", tail: "무작위 표본 · 대부분 '아님'이 정상" }
     return { head: "걸린 규칙 없음" }
   }
