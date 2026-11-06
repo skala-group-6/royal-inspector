@@ -123,14 +123,14 @@ function V3Section() {
   return (
     <section className="mb-12">
       <h2 className="text-base font-semibold">검토 화면 v3 — 다섯 층 (docs/REVIEW_SCREEN.md)</h2>
-      <p className="mt-1 text-sm text-muted-foreground">결론 → 맥락(가장 센 규칙이 그날 동선 또는 금액 비교를 고름) → 해석(규칙 한 줄씩) → 근거(규정·확인할 문서·사례) → 제2의견(모델). 왼쪽이 지금(v2), 오른쪽이 v3. 부품 6개를 순서대로 조립한 것(components/case/case-v3).</p>
+      <p className="mt-1 text-sm text-muted-foreground">결론 → 맥락(가장 센 규칙이 그날 동선 또는 금액 비교를 고름) → 해석(규칙 한 줄씩) → 근거(규정·확인할 문서·사례) → 제2의견(모델). 왼쪽이 이전(v2), 오른쪽이 현재 /review 화면(v3). 부품 6개를 순서대로 조립한 것(components/case/case-v3).</p>
       <div className="mt-3 flex flex-wrap gap-1">
         {items.map((sc) => <Badge key={sc.slug} variant={sc.slug === slug ? "default" : "outline"} className="cursor-pointer" onClick={() => setSlug(sc.slug)}>{sc.title}</Badge>)}
       </div>
       {c && (
         <div className="mt-4 grid grid-cols-1 gap-4 2xl:grid-cols-2">
-          <div className="h-[760px] overflow-hidden rounded-2xl bg-surface-card shadow-sm"><div className="px-8 pt-4 type-meta">지금</div><CasePanel c={c} source={source} /></div>
-          <div className="h-[760px] overflow-hidden rounded-2xl bg-surface-card shadow-sm ring-2 ring-primary/30"><div className="px-8 pt-4 type-meta">제안 v3</div><CasePanelV3 c={c} source={source} /></div>
+          <div className="h-[760px] overflow-hidden rounded-2xl bg-surface-card shadow-sm"><div className="px-8 pt-4 type-meta">이전 (v2)</div><CasePanel c={c} source={source} /></div>
+          <div className="h-[760px] overflow-hidden rounded-2xl bg-surface-card shadow-sm ring-2 ring-primary/30"><div className="px-8 pt-4 type-meta">현재 (v3, /review)</div><CasePanelV3 c={c} source={source} /></div>
         </div>
       )}
     </section>

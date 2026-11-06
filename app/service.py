@@ -135,7 +135,7 @@ def get_context(tx_id, n=20) -> dict:
     t = q("select * from transactions where tenant_id = tenant() and tx_id = %s", [tx_id]).iloc[0]
     recent = q("""select t.tx_id, t.tx_ts, t.account_policy, t.merchant, t.mcc_name, t.merchant_addr, t.total,
                          coalesce((select array_agg(distinct rule_id) from current_flags f where f.tx_id=t.tx_id), '{}'::text[]) rules
-                  from tx_active t where emp_id = %s and tx_id <> %s order by abs(extract(epoch from tx_ts) - extract(epoch from %s::timestamptz)) limit %s""", [int(t.emp_id), tx_id, t.tx_ts, n])
+                  from tx_active t where emp_id = %s and tx_id <> %s and tx_ts < %s order by tx_ts desc, tx_id limit %s""", [int(t.emp_id), tx_id, t.tx_ts, n])   # point-in-time: only earlier transactions
     peer_pit = peer_from_features(tx_id)  # same point-in-time numbers the model sees; fall back to full-period SQL if the table is missing
     peer = q("""select account_policy, mcc_name, count(*) n, percentile_cont(0.5) within group (order by total) median, percentile_cont(0.9) within group (order by total) p90,
                        round(100.0*sum(case when total < %s then 1 else 0 end)/count(*),1) percentile_of_this
