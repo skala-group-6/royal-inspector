@@ -138,14 +138,14 @@ rules:
   R19_duplicate_evidence:
     name: 증빙 중복 첨부
     tier: violation
-    data_ready: no
+    data_ready: "no"
     params: {}
     explain: "같은 증빙 파일이 여러 정산에 첨부됨. 영수증 파일이 있어야 판정 가능."
     policy_ref: "절차 위반 시나리오 '허위 증빙' / 징계사례 16"
   R20_evidence_forgery:
     name: 증빙 위변조
     tier: violation
-    data_ready: no
+    data_ready: "no"
     params: {}
     explain: "증빙 파일의 수정 흔적(해시·메타데이터·픽셀). 영수증 파일이 있어야 판정 가능."
     policy_ref: "절차 위반 시나리오 '허위 증빙' / 징계사례 3·7"

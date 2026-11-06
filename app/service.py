@@ -302,6 +302,24 @@ def get_precedents(tx_id, k=3) -> dict:
                 summary=dict(n=len(rv), violation=sum(r["outcome"] == "violation" for r in rv), ok=sum(r["outcome"] == "ok" for r in rv)))
 
 
+# ---------- one case = everything the panel shows (API /tx/{id}/case and tools/export_mock.py share this) ----------
+DROP_TX_FIELDS = {"home_addr", "approver_addr", "work_site_addr", "reviewer", "tenant_id", "load_id"}   # PII the screen never shows + storage-only keys
+MASK_TX_FIELDS = {"approver"}
+
+def get_case(tx_id) -> dict:
+    t = get_transaction(tx_id)
+    for k in DROP_TX_FIELDS: t.pop(k, None)
+    for k in MASK_TX_FIELDS: t[k] = mask(t.get(k))
+    evs = []
+    for e in get_evidence(tx_id):
+        h, d = evidence_headline(e["rule_id"], e["evidence"], t)
+        evs.append(dict(e, headline=h, detail=d, citation=policy_citation(e["rule_id"], t), explain=rule_explain(e["rule_id"])))
+    return dict(tx_id=tx_id, transaction=t, evidences=evs, context=get_context(tx_id), timeline=get_day_timeline(tx_id),
+                precedents=get_precedents(tx_id), score=get_score(tx_id), policy=get_policy(t.get("account_policy")), reviews=get_reviews(tx_id),
+                profile=get_profile(tx_id))
+
+def tx_exists(tx_id) -> bool: return bool(one("select count(*) from transactions where tenant_id = tenant() and tx_id = %s", [tx_id]))
+
 # ---------- feature table hooks ----------
 def _has_table(name) -> bool: return C.table_exists(con(), name)
 
