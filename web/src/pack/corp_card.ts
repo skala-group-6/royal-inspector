@@ -86,3 +86,9 @@ export function humanLine(c: CaseBundle, source?: QueueSource): { head: string; 
 export const violationFindings = (c: CaseBundle) => (c.findings ?? []).filter((f) => f.severity === "violation").length
 /** The rule the screen leads with: the lead of the first finding (server order: violation first, then the catalog's order). */
 export function strongestRule(c: CaseBundle): Evidence | undefined { return c.findings?.[0]?.evidences[0] }
+/** Same count for a list row, which only carries rule ids: needs the rule catalog (GET /rules) for tier and cluster. */
+export type RuleInfo = { rule_id: string; tier: "violation" | "advisory"; cluster: string }
+export function violationClustersOf(ruleIds: string[], rules: RuleInfo[]): number {
+  const by = new Map(rules.map((r) => [r.rule_id, r]))
+  return new Set(ruleIds.map((id) => by.get(id)).filter((r) => r?.tier === "violation").map((r) => r!.cluster)).size
+}
