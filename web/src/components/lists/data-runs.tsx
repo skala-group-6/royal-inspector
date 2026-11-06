@@ -1,17 +1,19 @@
 import { ListGroup, ListItem, ListMeta } from "@/components/layout/list"
-import { mock } from "@/mock"
+import { usePeriods, useRules } from "@/api/queries"
 
-/** Load/queue history for the 데이터 section. One period in mock; real list comes with the API. */
+/** Queue history for the 데이터 section: one row per built period (GET /queues). */
 export function DataRuns() {
-  const p = mock.period
+  const { data: periods = [] } = usePeriods(); const { data: rules = [] } = useRules()
   return (
     <>
       <ListMeta><span>적재·큐 이력</span></ListMeta>
       <ListGroup>
-        <ListItem active>
-          <div className="type-label">{p.period_from} ~ {p.period_to}</div>
-          <div className="type-meta">큐 {mock.queue.length}건 · 규칙 {mock.rules.length}개</div>
-        </ListItem>
+        {periods.map((p, i) => (
+          <ListItem key={`${p.period_from}~${p.period_to}`} active={i === 0}>
+            <div className="type-label">{p.period_from} ~ {p.period_to}</div>
+            <div className="type-meta">큐 {p.n}건 · 규칙 {rules.length}개 · {p.built_at.slice(0, 16).replace("T", " ")}</div>
+          </ListItem>
+        ))}
       </ListGroup>
     </>
   )

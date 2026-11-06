@@ -8,7 +8,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { conclusion } from "@/lib/conclusion"
 import { finding } from "@/lib/findings"
-import { mock, won, hhmm, mmdd } from "@/mock"
+import { useReasonCodes } from "@/api/queries"
+import { won, hhmm, mmdd } from "@/lib/format"
 import type { CaseBundle, Decision, QueueSource } from "@/types"
 
 const AmountDistribution = lazy(() => import("@/components/charts/amount-distribution").then((m) => ({ default: m.AmountDistribution })))
@@ -21,7 +22,7 @@ const Fallback = <div className="h-20 animate-pulse rounded-lg bg-surface-panel"
  * the amount-distribution chart, a findings table (observed vs baseline), relation tabs, verdict bar with provenance.
  * No prose paragraphs, no repeated facts, no lines (docs/DESIGN.md).
  */
-export function CasePanel({ c, source, onVerdict }: { c: CaseBundle; source?: QueueSource; onVerdict?: (d: Decision, reason?: string, memo?: string) => void }) {
+export function CasePanel({ c, source, period, saving, onVerdict }: { c: CaseBundle; source?: QueueSource; period?: string; saving?: boolean; onVerdict?: (d: Decision, reason?: string, memo?: string) => void }) {
   const t = c.transaction
   const vio = c.evidences.filter((e) => e.severity === "violation").length, adv = c.evidences.length - vio
   const related = c.evidences.flatMap((e) => e.related_tx)
@@ -126,12 +127,13 @@ export function CasePanel({ c, source, onVerdict }: { c: CaseBundle; source?: Qu
           </TabsContent>
         </Tabs>
       </div>
-      <VerdictBar current={c.reviews[0]?.decision} provenance={`규칙 v${c.evidences[0]?.rule_version ?? 2}${c.score ? ` · 모델 ${c.score.model_version}` : ""} · 큐 ${mock.period.period_from.slice(0, 7)}`} onVerdict={onVerdict} />
+      <VerdictBar current={c.reviews[0]?.decision} provenance={`규칙 v${c.evidences[0]?.rule_version ?? 2}${c.score ? ` · 모델 ${c.score.model_version}` : ""}${period ? ` · 큐 ${period}` : ""}`} saving={saving} onVerdict={onVerdict} />
     </div>
   )
 }
 
-function VerdictBar({ current, provenance, onVerdict }: { current?: Decision; provenance: string; onVerdict?: (d: Decision, reason?: string, memo?: string) => void }) {
+function VerdictBar({ current, provenance, saving, onVerdict }: { current?: Decision; provenance: string; saving?: boolean; onVerdict?: (d: Decision, reason?: string, memo?: string) => void }) {
+  const { data: reasonCodes = [] } = useReasonCodes()
   const [pending, setPending] = useState<Decision | null>(null)
   const [reason, setReason] = useState<string>("")
   const [memo, setMemo] = useState("")
@@ -145,7 +147,7 @@ function VerdictBar({ current, provenance, onVerdict }: { current?: Decision; pr
           <span className={`type-label ${pending === "violation" ? "text-destructive" : ""}`}>{label[pending]}</span>
           <Select value={reason} onValueChange={setReason}>
             <SelectTrigger className="w-52" size="sm"><SelectValue placeholder={pending === "violation" ? "조치" : "사유"} /></SelectTrigger>
-            <SelectContent>{mock.reason_codes.map((r) => <SelectItem key={r.code} value={r.code}>{r.label}</SelectItem>)}</SelectContent>
+            <SelectContent>{reasonCodes.map((r) => <SelectItem key={r.code} value={r.code}>{r.label}</SelectItem>)}</SelectContent>
           </Select>
           <Input value={memo} onChange={(e) => setMemo(e.target.value)} placeholder="메모 (선택)" className="h-8 flex-1" onKeyDown={(e) => { if (e.key === "Enter") save(); if (e.key === "Escape") setPending(null) }} />
           <Button size="sm" variant={pending === "violation" ? "destructive" : "default"} onClick={save}>저장 <Kbd>↵</Kbd></Button>
@@ -153,9 +155,9 @@ function VerdictBar({ current, provenance, onVerdict }: { current?: Decision; pr
         </div>
       ) : (
         <div className="flex items-center gap-2">
-          <Button variant="destructive" onClick={() => pick("violation")}>위반 <Kbd className="bg-transparent text-destructive-foreground/80">V</Kbd></Button>
-          <Button variant="outline" onClick={() => pick("ok")}>아님 <Kbd>N</Kbd></Button>
-          <Button variant="outline" onClick={() => pick("hold")}>보류 <Kbd>H</Kbd></Button>
+          <Button variant="destructive" disabled={saving} onClick={() => pick("violation")}>위반 <Kbd className="bg-transparent text-destructive-foreground/80">V</Kbd></Button>
+          <Button variant="outline" disabled={saving} onClick={() => pick("ok")}>아님 <Kbd>N</Kbd></Button>
+          <Button variant="outline" disabled={saving} onClick={() => pick("hold")}>보류 <Kbd>H</Kbd></Button>
           {current && <span className="ml-2 type-meta">현재 판정 {label[current]}</span>}
           <span className="ml-auto type-meta">{provenance} · 이동 <Kbd>J</Kbd> <Kbd>K</Kbd></span>
         </div>

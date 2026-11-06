@@ -1,5 +1,5 @@
 import type { Evidence } from "@/types"
-import { won } from "@/mock"
+import { won } from "@/lib/format"
 
 /**
  * A rule hit is "observed value vs baseline". This maps each rule's evidence fields to those two cells so the findings table

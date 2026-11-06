@@ -4,10 +4,10 @@
 copy = ["data/raw"]
 setup = "python3 -m venv .venv && .venv/bin/pip install -r requirements.txt && pnpm --dir web install --frozen-lockfile && docker compose up -d --wait db && .venv/bin/python scripts/bootstrap_db.py"
 
-# Run = the React review app (web/, Vite dev server). The Streamlit screens are frozen for demo use:
-#   .venv/bin/streamlit run app/Home.py
+# Run = FastAPI (api/main.py, port 8000) + the React review app (web/, Vite dev server proxying /api to it).
+# The Streamlit screens are frozen for demo use: .venv/bin/streamlit run app/Home.py
 [scripts.run.app]
-command = "pnpm --dir web exec vite --host 127.0.0.1 --port $OCTAVE_PORT --strictPort"
+command = ".venv/bin/uvicorn api.main:app --host 127.0.0.1 --port 8000 & API=$!; trap 'kill $API' EXIT; pnpm --dir web exec vite --host 127.0.0.1 --port $OCTAVE_PORT --strictPort"
 
 # Checks run against a throwaway clone of the `ri` database (scripts/db_clone.py, ≈1 s) so they never touch the database the app serves from.
 [[scripts.check]]

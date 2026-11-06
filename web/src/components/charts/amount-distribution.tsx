@@ -1,6 +1,6 @@
 import { Bar, CartesianGrid, ComposedChart, ReferenceLine, Scatter, XAxis, YAxis } from "recharts"
 import { ChartContainer, ChartTooltip, type ChartConfig } from "@/components/ui/chart"
-import { won } from "@/mock"
+import { won } from "@/lib/format"
 import type { Profile } from "@/types"
 
 /**

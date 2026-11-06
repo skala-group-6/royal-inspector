@@ -1,6 +1,6 @@
 import { CartesianGrid, ReferenceArea, Scatter, ScatterChart, XAxis, YAxis } from "recharts"
 import { ChartContainer, ChartTooltip, type ChartConfig } from "@/components/ui/chart"
-import { won, hhmm } from "@/mock"
+import { won, hhmm } from "@/lib/format"
 import type { CaseBundle } from "@/types"
 
 /**

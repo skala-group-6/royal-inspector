@@ -16,7 +16,8 @@ docker compose up -d --wait db             # PostgreSQL 17 (localhost:5433, DB `
 .venv/bin/python -I scripts/train.py --label-source weak   # 3.8단계: 기준선·로지스틱·XGBoost 같은 시험 → models/<v>/manifest.json
 .venv/bin/python -I scripts/score_tx.py                    # 3.9단계: tx_scores (모델마다 1행, rank_pct) + serving 바인딩(rank/discover)
 .venv/bin/python -I scripts/build_queue.py --from 2025-03-01 --to 2025-03-31  # 3.95단계: 검토 큐 (규칙 + 모델 상위 M + 무작위 p%)
-pnpm --dir web install && pnpm --dir web dev  # 검토 화면(React). Octave Run 버튼도 이것을 띄움
+.venv/bin/uvicorn api.main:app --port 8000   # API 서버 (api/main.py, 문서 http://127.0.0.1:8000/api/docs)
+pnpm --dir web install && pnpm --dir web dev  # 검토 화면(React). /api는 Vite가 8000으로 프록시. Octave Run 버튼은 둘을 함께 띄움
 .venv/bin/streamlit run app/Home.py        # (동결) 시연용 Streamlit 화면
 .venv/bin/python -m pytest -q tests        # 테스트는 `ri`를 템플릿 복제한 임시 DB에서 돈다 (tests/conftest.py)
 ```

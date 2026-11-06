@@ -1,4 +1,21 @@
-# 백엔드 / API 설계 (초안, 2026-10-31)
+# 백엔드 / API 설계 (초안 2026-10-31 · HTTP 구현 2026-11-06)
+
+## 0. 구현된 HTTP API (api/main.py, 접두 `/api`, 문서 `/api/docs`)
+| 메서드·경로 | 서비스 함수 | 한 줄 설명 |
+|---|---|---|
+| GET /queues | list_queue_periods | 만들어진 검토 기간 목록 (최신 먼저) |
+| GET /queues/{from}/{to}/items | list_queue | 그 기간의 검토 목록: 규칙 행·모델 추천·무작위 표본. sources, rule_ids, depts, min_total, review_status, sort, page, page_size |
+| GET /queues/{from}/{to}/summary | get_queue_summary | 출처별 건수·검토율·적중률·추정 누락 |
+| GET /flags | list_flags | 큐와 무관한 "걸린 거래" 목록 |
+| GET /next?after=&pf=&pt= | next_unreviewed | 미검토 다음 거래 id |
+| GET /tx/{id}/case | get_case | 케이스 패널 전체(거래·근거·맥락·타임라인·선례·점수·규정·판정·프로필) — 화면은 이것 하나로 그린다 |
+| GET /tx/{id}, /evidence, /context, /profile, /timeline, /precedents, /score, /reviews | 각 함수 | 부분 조회 |
+| **POST /tx/{id}/review** | review_transaction / create_review | 판정 저장(위반·아님·보류 + 사유·메모). 사람이 누르는 버튼에서만. 이전 판정은 superseded |
+| POST /events | log_event | 화면 행동 기록 → audit_events |
+| GET /rules · /reason-codes · /policy/{계정} | list_rules · REASON_CODES · get_policy | 참고 데이터 |
+
+규약: 모든 id는 문자열(원칙 5). 행위자는 `X-Reviewer` 헤더(로그인 전까지 기본 `dev`; 이름은 reviewers 표에 자동 등록, role dev, 학습 라벨 제외). 응답 스키마는 `api/schemas.py`가 `web/src/types.ts`와 1:1. 화면은 TanStack Query(`web/src/api/queries.ts`)로 읽고, 판정 저장 후 케이스·목록을 다시 받는다. 개발 중 Vite가 `/api`를 8000으로 프록시해 CORS가 없다.
+
 
 원칙
 1. 화면이 바뀌어도 남는 것만 백엔드에 둔다. 지금은 파이썬 함수(`app/service.py`)로 만들고 Streamlit이 직접 호출, 나중에 같은 함수를 FastAPI로 노출한다.

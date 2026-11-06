@@ -11,4 +11,6 @@ export default defineConfig({
       "@": resolve(import.meta.dirname, "./src"),
     },
   },
+  // The FastAPI server (api/main.py) runs on 8000; the screen calls same-origin /api so no CORS in dev or prod.
+  server: { proxy: { "/api": { target: process.env.API_URL ?? "http://127.0.0.1:8000", changeOrigin: true } } },
 })

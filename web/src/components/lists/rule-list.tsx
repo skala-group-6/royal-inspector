@@ -1,15 +1,16 @@
 import { Link, useParams } from "@tanstack/react-router"
 import { Badge } from "@/components/ui/badge"
 import { ListGroup, ListItem, ListMeta } from "@/components/layout/list"
-import { mock } from "@/mock"
+import { useRules } from "@/api/queries"
 
 export function RuleList() {
   const { ruleId } = useParams({ strict: false }) as { ruleId?: string }
+  const { data: rules = [] } = useRules()
   return (
     <>
-      <ListMeta><span>규칙 {mock.rules.length}개 · 카탈로그 v2</span></ListMeta>
+      <ListMeta><span>규칙 {rules.length}개 · 카탈로그 v2</span></ListMeta>
       <ListGroup>
-        {mock.rules.map((r) => (
+        {rules.map((r) => (
           <ListItem key={r.rule_id} asChild active={ruleId === r.rule_id} className="flex items-center gap-2">
             <Link to="/rules/$ruleId" params={{ ruleId: r.rule_id }}>
               <span className="w-8 shrink-0 font-mono type-meta">{r.rule_id.slice(0, 3)}</span>

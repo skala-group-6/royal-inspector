@@ -4,7 +4,8 @@ import { CheckListIcon, Database01Icon, Layers01Icon, ChartHistogramIcon, Shield
 import { Badge } from "@/components/ui/badge"
 import { Link } from "@tanstack/react-router"
 import { SCENARIOS, scenarioTx } from "@/lib/scenarios"
-import { mock, mmdd, hhmm } from "@/mock"
+import { mock } from "@/mock"
+import { mmdd, hhmm } from "@/lib/format"
 
 /**
  * Design decision page (dev only, not in the rail): surface layers without lines.

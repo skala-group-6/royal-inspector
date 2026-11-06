@@ -1,14 +1,14 @@
 import { Link, useParams } from "@tanstack/react-router"
 import { Badge } from "@/components/ui/badge"
+import { Skeleton } from "@/components/ui/skeleton"
 import { ListGroup, ListItem, ListMeta } from "@/components/layout/list"
-import { mock, mmdd, hhmm } from "@/mock"
+import { QUEUE_PAGE, useCurrentPeriod, useQueue } from "@/api/queries"
+import { mmdd, hhmm } from "@/lib/format"
 import type { QueueRow } from "@/types"
 
-/** Per-row badges: severity counts from the case bundle when available (mock), else n_rules; provenance for model/random; status when reviewed. */
+/** Per-row badges: violation count when the row has a policy-backed rule (sev 2), otherwise advisory count; provenance for model/random; status when reviewed. */
 function badges(r: QueueRow) {
-  const ev = mock.cases[r.tx_id]?.evidences ?? []
-  const v = ev.length ? ev.filter((e) => e.severity === "violation").length : r.sev === 2 ? r.n_rules : 0
-  const a = ev.length ? ev.length - v : r.sev === 2 ? 0 : r.n_rules
+  const v = r.sev === 2 ? r.n_rules : 0, a = r.sev === 2 ? 0 : r.n_rules
   const out: { label: string; variant: "destructive" | "outline" | "default" }[] = []
   if (v) out.push({ label: `위반 ${v}`, variant: "destructive" })
   if (a) out.push({ label: `참고 ${a}`, variant: "outline" })
@@ -20,12 +20,15 @@ function badges(r: QueueRow) {
 
 export function QueueList() {
   const { txId } = useParams({ strict: false }) as { txId?: string }
-  const rows = mock.queue
+  const { period } = useCurrentPeriod()
+  const { data: rows, isPending, error } = useQueue(period?.period_from, period?.period_to)
+  if (error) return <ListMeta><span className="text-destructive">목록을 불러오지 못했습니다. API 서버가 켜져 있는지 확인하세요.</span></ListMeta>
+  if (!period || isPending || !rows) return <div className="space-y-2 p-3">{Array.from({ length: 8 }, (_, i) => <Skeleton key={i} className="h-10" />)}</div>
   return (
     <>
       <ListMeta>
-        <span>{mock.period.period_from.slice(0, 7)} 큐 · {rows.length}건</span>
-        <span>미검토 {rows.filter((r) => r.review_status === "unreviewed").length}</span>
+        <span>{period.period_from.slice(0, 7)} 큐 · {period.n.toLocaleString("ko-KR")}건{period.n > rows.length ? ` 중 ${rows.length}` : ""}</span>
+        <span>미검토 {rows.filter((r) => r.review_status === "unreviewed").length}{rows.length >= QUEUE_PAGE ? "+" : ""}</span>
       </ListMeta>
       <ListGroup>
         {rows.map((r) => {

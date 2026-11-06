@@ -1,6 +1,6 @@
 import { Outlet, useParams } from "@tanstack/react-router"
 import { Badge } from "@/components/ui/badge"
-import { mock } from "@/mock"
+import { useRules } from "@/api/queries"
 
 export function RulesLayout() {
   return <Outlet />
@@ -12,7 +12,9 @@ export function RulesEmpty() {
 
 export function RuleDetail() {
   const { ruleId } = useParams({ from: "/rules/$ruleId" })
-  const r = mock.rules.find((x) => x.rule_id === ruleId)
+  const { data: rules } = useRules()
+  const r = rules?.find((x) => x.rule_id === ruleId)
+  if (!rules) return null
   if (!r) return <div className="p-6 text-sm text-muted-foreground">해당 규칙이 없습니다. ({ruleId})</div>
   return (
     <div className="p-6 md:p-8">
