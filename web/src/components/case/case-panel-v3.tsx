@@ -10,6 +10,7 @@ import { finding } from "@/lib/findings"
 import { won, hhmm, mmdd } from "@/lib/format"
 import type { CaseBundle, Decision, QueueSource } from "@/types"
 
+const AmountBullet = lazy(() => import("@/components/charts/amount-bullet").then((m) => ({ default: m.AmountBullet })))
 const AmountDistribution = lazy(() => import("@/components/charts/amount-distribution").then((m) => ({ default: m.AmountDistribution })))
 const DayTimeline = lazy(() => import("@/components/charts/day-timeline").then((m) => ({ default: m.DayTimeline })))
 const HistoryWeeks = lazy(() => import("@/components/charts/history-weeks").then((m) => ({ default: m.HistoryWeeks })))
@@ -103,27 +104,15 @@ export function CasePanelV3({ c, source, onVerdict }: { c: CaseBundle; source?: 
 
 /** "이 사람 평소의 12배, 동료 100명 중 6등 금액" + one log scale with the user's usual amount, the peer band and this amount. */
 function AmountSimple({ c }: { c: CaseBundle }) {
-  const { user, peer } = c.profile.amount; const total = c.transaction.total
+  const { user } = c.profile.amount; const total = c.transaction.total
   const ratio = user.p50 ? total / user.p50 : null
   const pct = c.context.peer?.percentile_of_this
   const rankTxt = pct != null ? `동료 100명 중 ${Math.max(1, Math.round(100 - pct))}등` : null
   const parts = [ratio != null ? `이 사람 평소의 ${ratio >= 10 ? Math.round(ratio) : ratio.toFixed(1)}배` : null, rankTxt].filter(Boolean)
-  const vals = [user.p50, peer.p25, peer.p75, total].filter((v): v is number => v != null && v > 0)
-  const lo = Math.min(...vals) / 1.6, hi = Math.max(...vals) * 1.3
-  const x = (v: number) => `${((Math.log(v) - Math.log(lo)) / (Math.log(hi) - Math.log(lo))) * 100}%`
   return (
     <div className="rounded-lg bg-surface-panel px-4 py-3">
       <p className="text-sm font-medium">{parts.length ? `${parts.join(", ")} 금액` : "비교할 과거 기록이 적음"}</p>
-      <div className="relative mt-3 h-6">
-        <div className="absolute inset-x-0 top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-foreground/10" />
-        {peer.p25 != null && peer.p75 != null && <div className="absolute top-1/2 h-1.5 -translate-y-1/2 rounded-full bg-foreground/25" style={{ left: x(peer.p25), width: `calc(${x(peer.p75)} - ${x(peer.p25)})` }} title="동료 보통 범위" />}
-        {user.p50 != null && <div className="absolute top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-foreground/70 ring-2 ring-surface-panel" style={{ left: x(user.p50) }} title="이 사람 평소" />}
-        <div className="absolute top-1/2 size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-destructive ring-2 ring-surface-panel" style={{ left: x(total) }} title="이 건" />
-      </div>
-      <div className="relative mt-1 h-4 type-meta">
-        {user.p50 != null && <span className="absolute -translate-x-1/2" style={{ left: x(user.p50) }}>평소 {won(user.p50)}</span>}
-        <span className="absolute -translate-x-1/2 font-medium text-foreground" style={{ left: x(total) }}>이 건</span>
-      </div>
+      <Suspense fallback={Fallback}><AmountBullet profile={c.profile} className="mt-2" /></Suspense>
     </div>
   )
 }
