@@ -7,7 +7,7 @@ import { SCENARIOS, scenarioTx } from "@/lib/scenarios"
 import { mock } from "@/mock"
 import { mmdd, hhmm } from "@/lib/format"
 import { CasePanel } from "@/components/case/case-panel"
-import { CasePanelV3 } from "@/components/case/case-panel-v3"
+import { CasePanelV3 } from "@/components/case/case-v3"
 import type { CaseBundle } from "@/types"
 
 /**
@@ -122,8 +122,8 @@ function V3Section() {
   const source = cur?.tx ? mock.queue.find((r) => r.tx_id === cur.tx)?.queue_source : undefined
   return (
     <section className="mb-12">
-      <h2 className="text-base font-semibold">검토 화면 v3 제안 — "읽는 화면"에서 "넘기는 화면"으로</h2>
-      <p className="mt-1 text-sm text-muted-foreground">첫 3초: 사람 말 한 문장 + 금액 + 누가·어디서. 다음 7초: 규칙 한 줄씩(관측값 · 기준). 그 밖은 접힘 — 규칙이 필요로 하는 것만 저절로 열림. 왼쪽이 지금, 오른쪽이 제안.</p>
+      <h2 className="text-base font-semibold">검토 화면 v3 — 다섯 층 (docs/REVIEW_SCREEN.md)</h2>
+      <p className="mt-1 text-sm text-muted-foreground">결론 → 맥락(가장 센 규칙이 그날 동선 또는 금액 비교를 고름) → 해석(규칙 한 줄씩) → 근거(규정·확인할 문서·사례) → 제2의견(모델). 왼쪽이 지금(v2), 오른쪽이 v3. 부품 6개를 순서대로 조립한 것(components/case/case-v3).</p>
       <div className="mt-3 flex flex-wrap gap-1">
         {items.map((sc) => <Badge key={sc.slug} variant={sc.slug === slug ? "default" : "outline"} className="cursor-pointer" onClick={() => setSlug(sc.slug)}>{sc.title}</Badge>)}
       </div>

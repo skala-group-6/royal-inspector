@@ -1,7 +1,31 @@
-import type { CaseBundle, QueueSource } from "@/types"
+import type { CaseBundle, Evidence, QueueSource } from "@/types"
 
 /**
- * The first thing a reviewer reads: one plain-Korean sentence saying what kind of case this is, in the words a colleague would use.
+ * Corporate-card pack: everything the review screen needs to know about this domain's rules, in three tables.
+ * The screen (components/case/case-v3) owns the five layers and their order; this file owns what goes into them
+ * (docs/PACK_SPEC.md §7). Moves into the rule catalog (`context`, `documents`) later.
+ */
+
+/** Layer 2: which context the strongest rule needs. place/time rules → that day's timeline; amount rules → amount comparison; else none. */
+export type ContextKind = "day" | "amount" | "none"
+const CONTEXT: Record<string, ContextKind> = {
+  R01: "day", R02: "day", R05: "day", R06: "day", R07: "day", R12: "day", R15: "day", R17: "day", R18: "day",
+  R03: "amount", R04: "amount", R16: "amount", R21: "amount",
+  R08: "none", R09: "none", R10: "none", R11: "none", R13: "none", R14: "none",
+}
+export const contextFor = (ruleId: string): ContextKind => CONTEXT[ruleId.slice(0, 3)] ?? "none"
+
+/** Layer 4: documents the reviewer must check outside the system for each rule (we only know attachment yes/no). */
+const DOCUMENTS: Record<string, string[]> = {
+  R01: ["사전 승인·품의서", "출장/근무 기록"], R02: ["휴가 결재 원문"], R03: ["영수증(분할 건 전부)", "사전 품의서"], R04: ["영수증", "사전 품의서"],
+  R05: ["영수증", "업무 관련성 소명"], R06: ["영수증 2건", "참석자 명단"], R07: ["출장 결재 원문", "영수증"], R08: ["사전 품의서", "참석자 명단"],
+  R09: ["차량 운행 일지"], R10: ["영수증 원본"], R11: ["사전 품의서"], R12: ["카드 소지자 확인"], R13: ["영수증·구매 내역"], R14: ["출장 결재 원문"],
+  R15: ["출장 결재 원문", "교통편 영수증"], R16: ["영수증", "참석자 명단"], R17: ["자택방문 신청서"], R18: ["참석자 명단", "사전 품의서"], R21: ["영수증", "참석자 명단"],
+}
+export const documentsFor = (ruleIds: string[]): string[] => [...new Set(ruleIds.flatMap((r) => DOCUMENTS[r.slice(0, 3)] ?? []))]
+
+/**
+ * Layer 1: the first thing a reviewer reads: one plain-Korean sentence saying what kind of case this is, in the words a colleague would use.
  * No system vocabulary, no numbers (the amount sits beside it). Composed from the strongest rule + one supporting clause.
  */
 const ORDER = ["R02", "R01", "R05", "R07", "R12", "R17", "R18", "R08", "R11", "R03", "R06", "R10", "R15", "R14", "R09", "R16", "R13", "R04", "R21"]
@@ -57,4 +81,11 @@ export function humanLine(c: CaseBundle, source?: QueueSource): { head: string; 
   const second = sorted.slice(1).find((e) => TAIL[e.rule_id.slice(0, 3)])
   const tail = second ? TAIL[second.rule_id.slice(0, 3)](second.evidence) : undefined
   return { head, tail }
+}
+
+/** The rule the screen leads with: policy-backed first, then the pack's order of strength. */
+export function strongestRule(c: CaseBundle): Evidence | undefined {
+  if (!c.evidences.length) return undefined
+  const vio = c.evidences.filter((e) => e.severity === "violation"); const pool = vio.length ? vio : c.evidences
+  return [...pool].sort((a, b) => ORDER.indexOf(a.rule_id.slice(0, 3)) - ORDER.indexOf(b.rule_id.slice(0, 3)))[0]
 }
